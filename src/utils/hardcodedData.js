@@ -79,10 +79,9 @@ export const MARKET_SHARE_DATA = {
 
 export const PRICING_DATA = {
   kpis: {
-    avgMRP: 450,
-    avgECP: 380,
-    avgDiscount: 15.5,
-    rpi: 1.05
+    discount: { value: 12.2, change: -0.2, sparklineData: [ 13, 12.5, 12.8, 12.0, 12.2 ] },
+    weightedDiscount: { value: 11.3, change: 0.5, sparklineData: [ 10.5, 10.8, 11.0, 11.5, 11.3 ] },
+    asp: { value: 96.15, change: -2.2, sparklineData: [ 99, 98.5, 97, 96.5, 96.15 ] }
   },
   ecpComparison: [
     { brand: "Our Brand", platform: "Blinkit", ecp: 350, mrp: 400 },
