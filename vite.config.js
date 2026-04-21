@@ -13,4 +13,21 @@ export default defineConfig({
       'utils': path.resolve(__dirname, './src/utils'),
     },
   },
+  server: {
+    watch: {
+      usePolling: true,
+    },
+    host: true,
+    strictPort: true,
+  },
+  optimizeDeps: {
+    force: true,
+    include: ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
 })
