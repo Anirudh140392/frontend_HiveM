@@ -19,6 +19,7 @@ export default defineConfig({
     },
     host: true,
     strictPort: true,
+    allowedHosts: ['frontendhivem-production.up.railway.app'],
   },
   optimizeDeps: {
     force: true,
