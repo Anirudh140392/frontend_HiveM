@@ -1,121 +1,93 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from "react";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+// MUI Date Picker Providers
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-function App() {
-  const [count, setCount] = useState(0)
+import PricingAnalysis from "./pages/AllPricingAnalysis/PricingAnalysis";
+import MarketShares from "./pages/AllMarketShares/MarketShares";
+import AvailablityAnalysis from "./pages/AllAvailablityAnalysis/AvailablityAnalysis";
+import VisibilityAnalysis from "./pages/AllVisibilityAnalysis/VisibilityAnalysis";
+import RulesPage from "./pages/AutomationRules/RulesPage";
+import OverviewPage from "./pages/Overview/OverviewPage";
+import HistoryPage from "./pages/History/HistoryPage";
+
+import { FilterProvider } from "./utils/FilterContext";
+import { AuthProvider, useAuth } from "./utils/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { HelpProvider } from "./utils/HelpContext";
+import HelpDrawer from "./components/CommonLayout/HelpDrawer";
+
+function AppContent() {
+  const { isLoggedIn, user } = useAuth();
+  const sessionKey = isLoggedIn ? (user?.email || "authenticated") : "guest";
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <HelpProvider>
+      <FilterProvider key={sessionKey}>
+        <HashRouter>
+          <Routes>
+            {/* Default route redirects to Overview since Watch Tower is missing */}
+            <Route path="/" element={<Navigate to="/overview" replace />} />
 
-      <div className="ticks"></div>
+            <Route path="/overview" element={
+              <ProtectedRoute>
+                <OverviewPage />
+              </ProtectedRoute>
+            } />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <Route path="/availability-analysis" element={
+              <ProtectedRoute>
+                <AvailablityAnalysis />
+              </ProtectedRoute>
+            } />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+            <Route path="/visibility-analysis" element={
+              <ProtectedRoute>
+                <VisibilityAnalysis />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/pricing-analysis" element={
+              <ProtectedRoute>
+                <PricingAnalysis />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/market-share" element={
+              <ProtectedRoute>
+                <MarketShares />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/automation-rules" element={
+              <ProtectedRoute>
+                <RulesPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/history" element={
+              <ProtectedRoute>
+                <HistoryPage />
+              </ProtectedRoute>
+            } />
+
+            {/* Catch-all route redirects back to Overview */}
+            <Route path="*" element={<Navigate to="/overview" replace />} />
+          </Routes>
+        </HashRouter>
+      </FilterProvider>
+      {isLoggedIn && <HelpDrawer userDbName={user?.dbName} />}
+    </HelpProvider>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </LocalizationProvider>
+  );
+}

@@ -1,0 +1,748 @@
+import React, { useState, useEffect, Fragment } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, ChevronRight, X, SlidersHorizontal, TrendingUp, LineChartIcon, RefreshCw, AlertTriangle } from "lucide-react";
+import { KpiFilterPanel } from "@/components/KpiFilterPanel";
+import { Badge } from "@/components/ui/badge";
+import TrendsCompetitionDrawer from "./TrendsCompetitionDrawer";
+import { PlatformKpiMatrixSkeleton } from "./AvailabilitySkeletons";
+import { formatNumber } from "../../utils/formatters";
+
+function cn(...classes) {
+    return classes.filter(Boolean).join(" ");
+}
+
+// ========================================
+// CONFIG - Replace with DB/API data
+// ========================================
+const reportTypes = [
+    { key: "platform", label: "Platform" },
+    { key: "format", label: "Category" },
+    { key: "city", label: "City" },
+];
+
+const drillDownOptions = [
+    { key: "region", label: "Region" },
+    { key: "period", label: "Period" },
+    { key: "competitors", label: "Competitors" },
+];
+
+const kpis = [
+    { key: "osa", label: "OSA" },
+    { key: "doi", label: "DOI" },
+    { key: "fillrate", label: "FILLRATE" },
+];
+
+// ✅ Only OSA can drill down when competitors is selected, otherwise all KPIs can drill
+const DRILLDOWN_ENABLED_KPIS = new Set(["osa", "psl"]);
+
+// Filter options are fetched dynamically from the backend API
+
+// ========================================
+// SHARED COMPONENTS
+// ========================================
+
+const ToggleTabs = ({ tabs, activeTab, onChange }) => (
+    <div className="inline-flex bg-slate-100 rounded-lg p-1">
+        {tabs.map((tab) => (
+            <button
+                key={tab.key}
+                onClick={() => onChange(tab.key)}
+                className={cn(
+                    "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                    activeTab === tab.key ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                )}
+            >
+                {tab.label}
+            </button>
+        ))}
+    </div>
+);
+
+const DrillDownDropdown = ({ value, onChange, reportType }) => {
+    const [open, setOpen] = useState(false);
+
+    // Filter out 'region' when 'city' tab is selected
+    const filteredOptions = reportType === 'city'
+        ? drillDownOptions.filter(opt => opt.key !== 'region')
+        : drillDownOptions;
+
+    const current = filteredOptions.find((o) => o.key === value) || filteredOptions[0];
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setOpen(!open)}
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+            >
+                Drill-down: {current?.label}
+                <ChevronDown size={14} className={cn("transition-transform", open && "rotate-180")} />
+            </button>
+
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-20 min-w-[160px]"
+                    >
+                        {filteredOptions.map((opt) => (
+                            <button
+                                key={opt.key}
+                                onClick={() => {
+                                    onChange(opt.key);
+                                    setOpen(false);
+                                }}
+                                className={cn(
+                                    "w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors",
+                                    value === opt.key ? "text-blue-600 font-medium" : "text-slate-700"
+                                )}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
+
+// ---------------------------------------------------------------------------
+// Error State Component - Shows when API fails with refresh button
+// ---------------------------------------------------------------------------
+const ErrorWithRefresh = ({ segmentName, errorMessage, onRetry, isRetrying = false }) => {
+    return (
+        <div className="rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 p-12 flex flex-col items-center justify-center min-h-[450px] gap-6 text-center">
+            <div className="h-20 w-20 rounded-3xl bg-rose-50 flex items-center justify-center mb-2 animate-pulse">
+                <AlertTriangle size={40} className="text-rose-500" strokeWidth={1.5} />
+            </div>
+
+            <div className="max-w-md">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Internal Fetch Error</h3>
+                <p className="text-slate-500 text-base leading-relaxed mb-8">
+                    We encountered an issue while loading the <span className="font-semibold text-slate-700">{segmentName}</span>.
+                    <br />
+                    <span className="text-sm font-mono bg-slate-50 px-2 py-1 rounded-md mt-2 inline-block">
+                        Error code: {errorMessage || "HTTP_UNKNOWN_ERROR"}
+                    </span>
+                </p>
+
+                <button
+                    onClick={onRetry}
+                    disabled={isRetrying}
+                    className={`inline-flex items-center gap-3 px-8 py-3.5 rounded-2xl text-base font-bold transition-all transform active:scale-95
+                        ${isRetrying
+                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                            : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)]'
+                        }`}
+                >
+                    <RefreshCw size={20} className={isRetrying ? "animate-spin" : ""} />
+                    {isRetrying ? "Establishing Connection..." : "Refresh Matrix Data"}
+                </button>
+            </div>
+
+            <p className="text-xs text-slate-400 font-medium tracking-wide uppercase mt-4">
+                Systems fully operational. Try refreshing to restore data.
+            </p>
+        </div>
+    );
+};
+
+// ========================================
+// MAIN TABLE COMPONENT
+// UX: single expand icon column (left) instead of clickable cells
+// ========================================
+export default function KPIMatrixTable({ filters: globalFilters, loading: parentLoading }) {
+    const [reportType, setReportType] = useState("platform");
+    const [drillDimension, setDrillDimension] = useState("region");
+    const [expandedRows, setExpandedRows] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [breakdownLoading, setBreakdownLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [apiData, setApiData] = useState(null);
+
+    // Track retry count to trigger re-fetch
+    const [retryCount, setRetryCount] = useState(0);
+
+    // Use parent loading if provided, otherwise fallback to local state
+    const isLoading = parentLoading !== undefined ? parentLoading : loading;
+
+
+    // Dynamic filter options fetched from backend (lazy-loaded when panel opens)
+    const [filterOptions, setFilterOptions] = useState([
+        { id: 'platform', label: 'Platform', options: [] },
+        { id: 'format', label: 'Category', options: [] },
+        { id: 'city', label: 'City', options: [] },
+        { id: 'brand', label: 'Brand', options: [] },
+        { id: 'month', label: 'Month', options: [] },
+        { id: 'metroFlag', label: 'Metro Flag', options: [] },
+    ]);
+    const [filterOptionsLoaded, setFilterOptionsLoaded] = useState(false);
+
+    // ========================================
+    // FILTER STATE (must be declared before useEffects that reference them)
+    // ========================================
+    const [showFilterPanel, setShowFilterPanel] = useState(false);
+
+    const [tentativeFilters, setTentativeFilters] = useState({
+        platform: [],
+        format: [],
+        city: [],
+        brand: [],
+        month: [],
+        metroFlag: [],
+    });
+
+    const [appliedFilters, setAppliedFilters] = useState({
+        platform: [],
+        format: [],
+        city: [],
+        brand: [],
+        month: [],
+        metroFlag: [],
+    });
+
+    const appliedCount = Object.values(appliedFilters).flat().length;
+
+    // Fetch filter options only when panel is first opened
+    useEffect(() => {
+        if (!showFilterPanel || filterOptionsLoaded) return;
+        const fetchFilterOptions = async () => {
+            try {
+                const filterTypes = [
+                    { id: 'platform', apiType: 'platforms', label: 'Platform' },
+                    { id: 'format', apiType: 'formats', label: 'Category' },
+                    { id: 'city', apiType: 'cities', label: 'City' },
+                    { id: 'brand', apiType: 'brands', label: 'Brand' },
+                    { id: 'month', apiType: 'months', label: 'Month' },
+                    { id: 'metroFlag', apiType: 'metroFlags', label: 'Metro Flag' },
+                ];
+
+                // Build query params from global filters to narrow down options
+                const filterQueryParams = new URLSearchParams();
+                if (globalFilters) {
+                    Object.entries(globalFilters).forEach(([key, value]) => {
+                        if (value && value !== 'All') {
+                            if (Array.isArray(value)) value.forEach(v => filterQueryParams.append(key, v));
+                            else filterQueryParams.append(key, value);
+                        }
+                    });
+                }
+
+                const results = await Promise.all(
+                    filterTypes.map(async (ft) => {
+                        const qp = new URLSearchParams(filterQueryParams);
+                        qp.set('filterType', ft.apiType);
+                        const res = await fetch(`/api/availability-analysis/filter-options?${qp.toString()}`, {
+                            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
+                        });
+                        if (!res.ok) return { id: ft.id, label: ft.label, options: [] };
+                        const data = await res.json();
+                        const opts = (data.options || []).map(v => ({ id: v, label: v }));
+                        return { id: ft.id, label: ft.label, options: opts };
+                    })
+                );
+                setFilterOptions(results);
+                setFilterOptionsLoaded(true);
+            } catch (err) {
+                console.error('Error fetching filter options:', err);
+            }
+        };
+        fetchFilterOptions();
+    }, [showFilterPanel, filterOptionsLoaded, globalFilters]);
+
+    // Helper to merge global and segment-level filters
+    const getCombinedFilters = () => {
+        const combined = { ...globalFilters };
+
+        // Segment-level overrides
+        // If segment-level filters are applied, they should OVERRIDE global ones.
+        // We also remove the global keys (location, category) to prevent additive filtering
+        // in backend services that might handle both keys.
+
+        if (appliedFilters.platform?.length > 0) {
+            combined.platform = appliedFilters.platform;
+        }
+
+        if (appliedFilters.city?.length > 0) {
+            combined.cities = appliedFilters.city;
+            // Remove global location to ensure cities override it
+            delete combined.location;
+        } else if (globalFilters.location) {
+            // Fallback to global location mapped to 'cities' for consistency
+            combined.cities = globalFilters.location;
+        }
+
+        if (appliedFilters.format?.length > 0) {
+            combined.formats = appliedFilters.format;
+            delete combined.category;
+        } else if (globalFilters.category) {
+            combined.formats = globalFilters.category;
+        }
+
+        if (appliedFilters.brand?.length > 0) {
+            combined.brand = appliedFilters.brand;
+        }
+
+        if (appliedFilters.month?.length > 0) {
+            combined.months = appliedFilters.month;
+        }
+
+        if (appliedFilters.metroFlag?.length > 0) {
+            combined.metroFlags = appliedFilters.metroFlag;
+        }
+
+        return combined;
+    };
+
+    // ========================================
+    // DATA FETCHING
+    // ========================================
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                // Mock exact data from the user's screenshot
+                setTimeout(() => {
+                    setApiData({
+                        columns: ["BLINKIT", "INSTAMART", "ZEPTO", "FLIPKART", "AMAZON"],
+                        rows: [
+                            {
+                                kpi: "osa",
+                                BLINKIT: 88.57,
+                                INSTAMART: 87.09,
+                                ZEPTO: 80.95,
+                                FLIPKART: 85.65,
+                                AMAZON: 83.89,
+                                trend: {
+                                    BLINKIT: 2.9,
+                                    INSTAMART: 2.7,
+                                    ZEPTO: -2.6,
+                                    FLIPKART: 2.3,
+                                    AMAZON: -3.2
+                                }
+                            },
+                            {
+                                kpi: "doi",
+                                BLINKIT: 36.9,
+                                INSTAMART: 48.5,
+                                ZEPTO: 37.0,
+                                FLIPKART: 43.2,
+                                AMAZON: 44.9,
+                                trend: {
+                                    BLINKIT: -2.2,
+                                    INSTAMART: -2.0,
+                                    ZEPTO: 3.3,
+                                    FLIPKART: -1.6,
+                                    AMAZON: 3.9
+                                }
+                            },
+                            {
+                                kpi: "fillrate",
+                                BLINKIT: 84.29,
+                                INSTAMART: 90.47,
+                                ZEPTO: 86.97,
+                                FLIPKART: 80.17,
+                                AMAZON: 89.92,
+                                trend: {
+                                    BLINKIT: 3.1,
+                                    INSTAMART: 1.5,
+                                    ZEPTO: -1.6,
+                                    FLIPKART: 3.8,
+                                    AMAZON: -5.2
+                                }
+                            }
+                        ]
+                    });
+                    setLoading(false);
+                }, 600);
+            } catch (err) {
+                console.error("Error fetching matrix data:", err);
+                setError(err.message);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [reportType, drillDimension, globalFilters, appliedFilters, expandedRows.length, retryCount]);
+
+    const handleRetry = () => setRetryCount(prev => prev + 1);
+
+    // ========================================
+    // CHART/DRAWER STATE
+    // ========================================
+    const [showTrendsDrawer, setShowTrendsDrawer] = useState(false);
+    const [selectedCellForTrend, setSelectedCellForTrend] = useState({ entity: null, kpi: null });
+
+    // Use API columns if available, otherwise empty array
+    const entities = apiData?.columns?.filter(c => c !== 'KPI') || [];
+    const drillItems = apiData?.applicableDrillItems || [];
+    const drillLabel = drillDownOptions.find((d) => d.key === drillDimension)?.label;
+
+    // Drill-down enabled logic: only OSA for competitors, all KPIs for other options
+    const isDrillEnabled = (kpiKey) => {
+        if (drillDimension === 'competitors') {
+            return DRILLDOWN_ENABLED_KPIS.has(kpiKey.toLowerCase());
+        }
+        return true; // All KPIs can drill for region/period
+    };
+
+    const toggleRow = (kpiKey) => {
+        if (!isDrillEnabled(kpiKey)) return;
+        setExpandedRows((prev) =>
+            prev.includes(kpiKey) ? prev.filter((k) => k !== kpiKey) : [...prev, kpiKey]
+        );
+    };
+
+    const closeAll = () => {
+        setExpandedRows([]);
+        // Assuming setExpandedBrands and setExpandedSkus are defined elsewhere or not needed here.
+        // If they are part of the state, they should be declared.
+        // For now, I'll keep the original closeAll behavior for expandedRows.
+    };
+
+    const resetFilters = () => {
+        setTentativeFilters({
+            platform: [],
+            format: [],
+            city: [],
+            brand: [],
+            month: [],
+            metroFlag: [],
+        });
+    };
+
+    // Use API data for cells
+    const getCellData = (entity, kpiLabel) => {
+        if (!apiData?.rows) return { value: 0, delta: 0 };
+        const row = apiData.rows.find(r => r.kpi.toLowerCase() === kpiLabel.toLowerCase());
+        if (!row) return { value: 0, delta: 0 };
+        return {
+            value: row[entity] || 0,
+            delta: row.trend && row.trend[entity] !== undefined ? row.trend[entity] : 0
+        };
+    };
+
+    // Use API data for drill breakdown
+    const getDrillData = (entity, kpiLabel, drillItem) => {
+        if (!apiData?.rows) return { value: 0, delta: 0 };
+        const row = apiData.rows.find(r => r.kpi.toLowerCase() === kpiLabel.toLowerCase());
+        if (!row || !row.breakdown || !row.breakdown[entity]) return { value: 0, delta: 0 };
+
+        // Match drillItem (e.g. "North Zone" vs "North Zone")
+        const val = row.breakdown[entity][drillItem];
+        return { value: val !== undefined ? val : 0, delta: 0 };
+    };
+
+    if (isLoading && !apiData) {
+        return <PlatformKpiMatrixSkeleton />;
+    }
+
+    if (error) {
+        return <ErrorWithRefresh segmentName="Platform KPI Matrix" errorMessage={error} onRetry={handleRetry} isRetrying={loading} />;
+    }
+
+    return (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-slate-100">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <ToggleTabs
+                        tabs={reportTypes}
+                        activeTab={reportType}
+                        onChange={(t) => {
+                            setReportType(t);
+                            setExpandedRows([]);
+                        }}
+                    />
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setShowFilterPanel(true)}
+                            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                        >
+                            <SlidersHorizontal size={14} />
+                            Filters
+                            {appliedCount > 0 && (
+                                <Badge className="ml-1 bg-emerald-100 text-emerald-700 border-emerald-200">
+                                    {appliedCount}
+                                </Badge>
+                            )}
+                        </button>
+                        <DrillDownDropdown value={drillDimension} onChange={setDrillDimension} reportType={reportType} />
+                    </div>
+                </div>
+
+                <div className="mt-3 flex items-start justify-between gap-3">
+                    <div>
+                        <h3 className="text-base font-semibold text-slate-900">
+                            {reportTypes.find((r) => r.key === reportType)?.label} KPI Matrix
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                            Use the left arrow to expand drill-down (available only for OSA)
+                        </p>
+                        {drillDimension === "competitors" && (
+                            <p className="text-xs text-slate-400 mt-1">Note: Competitor breakdown is enabled only for OSA</p>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        {expandedRows.length > 0 && (
+                            <button
+                                onClick={closeAll}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200"
+                            >
+                                <X size={12} /> Close All ({expandedRows.length})
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Filter Modal */}
+            {showFilterPanel && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center md:items-start bg-slate-900/40 p-4 md:pt-52 md:pl-40 transition-all backdrop-blur-sm">
+                    <div className="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl h-auto max-h-[80vh] min-h-[50vh] sm:h-[500px] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+                            <div>
+                                <h2 className="text-lg font-semibold text-slate-900">Advanced Filters</h2>
+                                <p className="text-sm text-slate-500">Configure data visibility and rules</p>
+                            </div>
+                            <button
+                                onClick={() => setShowFilterPanel(false)}
+                                className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-hidden bg-slate-50/30 px-6 pt-0 pb-6">
+                            <KpiFilterPanel
+                                sectionConfig={filterOptions}
+                                sectionValues={tentativeFilters}
+                                onSectionChange={(sectionId, values) => {
+                                    setTentativeFilters(prev => ({
+                                        ...prev,
+                                        [sectionId]: values || []
+                                    }));
+                                }}
+                            />
+                        </div>
+
+                        <div className="flex justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
+                            <button
+                                onClick={resetFilters}
+                                className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-medium text-rose-600 hover:bg-rose-50 transition-colors"
+                            >
+                                Reset Filter
+                            </button>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowFilterPanel(false)}
+                                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setAppliedFilters(tentativeFilters);
+                                        setShowFilterPanel(false);
+                                    }}
+                                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 shadow-sm shadow-emerald-200"
+                                >
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Table */}
+            <div className="p-4">
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[760px]">
+                        <thead>
+                            <tr className="border-b border-slate-100">
+                                {/* Expand Icon Column */}
+                                <th className="py-3 px-2 w-12" />
+
+                                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase w-40">KPI</th>
+
+                                {entities.map((e) => (
+                                    <th key={e} className="text-center py-3 px-2 min-w-[110px]">
+                                        <div className="flex items-center justify-center gap-1">
+                                            <span className="text-xs font-semibold text-slate-500 uppercase">{e}</span>
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedCellForTrend({ entity: e, kpi: null });
+                                                    setShowTrendsDrawer(true);
+                                                }}
+                                                className="p-0.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors trend-icon"
+                                                title={`View ${e} trends`}
+                                            >
+                                                <LineChartIcon size={15} />
+                                            </button>
+                                        </div>
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {kpis.map((kpi, kIdx) => {
+                                const drillEnabled = isDrillEnabled(kpi.key);
+                                const isRowExpanded = expandedRows.includes(kpi.key);
+
+                                return (
+                                    <Fragment key={kpi.key}>
+                                        {/* Data Row */}
+                                        <tr
+                                            className={cn(
+                                                "border-b border-slate-50 transition-colors",
+                                                isRowExpanded && drillEnabled && "bg-blue-50/30"
+                                            )}
+                                        >
+                                            {/* Expand Button Cell */}
+                                            <td className="py-2 px-2 align-middle">
+                                                <button
+                                                    type="button"
+                                                    onClick={drillEnabled ? () => toggleRow(kpi.key) : undefined}
+                                                    disabled={!drillEnabled}
+                                                    aria-label={drillEnabled ? `Expand ${kpi.label} row` : `${kpi.label} drill-down not available`}
+                                                    title={drillEnabled ? "Expand row" : "Drill-down not available"}
+                                                    className={cn(
+                                                        "h-8 w-8 inline-flex items-center justify-center rounded-md border transition-colors",
+                                                        drillEnabled
+                                                            ? "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100"
+                                                            : "bg-slate-100 text-slate-300 border-slate-200 cursor-not-allowed"
+                                                    )}
+                                                >
+                                                    <ChevronRight
+                                                        size={16}
+                                                        className={cn("transition-transform", drillEnabled && isRowExpanded && "rotate-90")}
+                                                    />
+                                                </button>
+                                            </td>
+
+                                            {/* KPI Label */}
+                                            <td className="py-3 px-4 text-sm font-medium text-slate-700 select-none">
+                                                <div className="flex items-center gap-2">
+                                                    <span>{kpi.label}</span>
+                                                    {drillEnabled && (
+                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[11px] border border-blue-100">
+                                                            Drill
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </td>
+
+                                            {/* Values */}
+                                            {entities.map((entity) => {
+                                                const cell = getCellData(entity, kpi.key);
+                                                const isGreen = cell.delta >= 0;
+
+                                                return (
+                                                    <td key={entity} className="text-center py-3 px-2">
+                                                        <motion.div
+                                                            className={cn(
+                                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold text-[13px]",
+                                                                isGreen ? "bg-[#dcfce7] text-[#16a34a]" : "bg-[#fee2e2] text-[#ef4444]",
+                                                                loading && "opacity-50 pointer-events-none"
+                                                            )}
+                                                            whileHover={{ scale: 1.05 }}
+                                                        >
+                                                            <span>{kpi.key === 'fillrate' || kpi.key === 'osa' ? `${cell.value}%` : cell.value}</span>
+                                                            <span className="flex items-center text-[11px] font-bold opacity-80 mt-0.5">
+                                                                ~{cell.delta >= 0 ? '+' : ''}{cell.delta}
+                                                            </span>
+                                                        </motion.div>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+
+                                        {/* Drill Row */}
+                                        <AnimatePresence>
+                                            {drillEnabled && isRowExpanded && (
+                                                <motion.tr
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                >
+                                                    <td colSpan={entities.length + 2} className="bg-slate-50/80 p-4">
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <span className="text-sm font-semibold text-slate-700">
+                                                                {kpi.label} → {drillLabel} Breakdown
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => toggleRow(kpi.key)}
+                                                                className="p-1 hover:bg-slate-200 rounded"
+                                                                aria-label="Close drilldown"
+                                                            >
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                                                            {entities.map((entity) => {
+                                                                const row = apiData?.rows?.find(r => r.kpi.toLowerCase() === kpi.key.toLowerCase());
+                                                                const breakdownData = row?.breakdown?.[entity];
+                                                                const isBreakdownLoading2 = breakdownLoading || loading || !breakdownData;
+
+                                                                return (
+                                                                    <div key={entity} className="bg-white rounded-lg p-3 border border-slate-100">
+                                                                        <div className="text-xs font-medium text-slate-700 mb-2">{entity}</div>
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            {isBreakdownLoading2 ? (
+                                                                                // Skeleton loaders while drill-down data loads
+                                                                                [1, 2, 3, 4].map((i) => (
+                                                                                    <div key={`skel-${i}`} className="flex items-center gap-1.5">
+                                                                                        <div className="h-3 w-12 rounded bg-gradient-to-r from-slate-200 to-slate-100 animate-pulse" />
+                                                                                        <div className="h-3 w-8 rounded bg-gradient-to-r from-slate-200 to-slate-100 animate-pulse" />
+                                                                                    </div>
+                                                                                ))
+                                                                            ) : (
+                                                                                Object.keys(breakdownData).map((item) => {
+                                                                                    const drillData = getDrillData(entity, kpi.key, item);
+                                                                                    return (
+                                                                                        <div key={item} className="text-xs">
+                                                                                            <span className="text-slate-400" title={item}>
+                                                                                                {item.includes('Zone') ? item.split(' ')[0] : (item.length > 8 ? item.substring(0, 8) + '..' : item)}
+                                                                                            </span>
+                                                                                            <span className="ml-1 font-medium text-slate-700">{kpi.key === 'psl' ? `₹${formatNumber(drillData.value)}` : `${drillData.value}${['doi', 'assortment'].includes(kpi.key) ? '' : '%'}`}</span>
+                                                                                        </div>
+                                                                                    );
+                                                                                })
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </td>
+                                                </motion.tr>
+                                            )}
+                                        </AnimatePresence>
+                                    </Fragment>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Trends Chart Drawer */}
+            <TrendsCompetitionDrawer
+                dynamicKey="availability"
+                open={showTrendsDrawer}
+                onClose={() => setShowTrendsDrawer(false)}
+                selectedColumn={selectedCellForTrend.entity}
+                selectedLevel={reportType}
+                filters={getCombinedFilters()}
+            />
+        </div>
+    );
+}

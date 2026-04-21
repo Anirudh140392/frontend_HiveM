@@ -1,0 +1,469 @@
+
+import { useState, useEffect, useMemo, useContext } from 'react'
+import { Skeleton } from '@mui/material'
+import { motion } from 'framer-motion'
+import { FilterContext } from '../../utils/FilterContext'
+import axiosInstance from '../../api/axiosInstance'
+import {
+    TrendingUp,
+    TrendingDown,
+    Grid3X3,
+    MapPin,
+    SlidersHorizontal,
+    LineChart,
+    BarChart3,
+} from 'lucide-react'
+import AdvancedFilterModal from './../ControlTower/WatchTower/AdvancedFilterModal'
+import { cn } from '../../lib/utils'
+
+/* --- HELPERS --- */
+const getStatusText = (delta) => {
+    if (!delta) return "text-slate-500";
+    return delta.dir === 'up' ? "text-emerald-500" : "text-rose-500";
+};
+
+const copy = (title, value) => {
+    navigator.clipboard.writeText(`${title}: ${value} `);
+};
+
+const cardSize = {
+    minW: 'min-w-[175px]',
+    py: 'py-2.5',
+    text: 'text-[15px]',
+    delta: 'text-[10px]'
+};
+
+/* --- KPI definitions (ROW headers — vertical, left side) --- */
+const kpiDefs = [
+    { key: 'categorySize', label: 'Category Size' },
+    { key: 'mwMarketShare', label: 'Hiveminds Market Share%' },
+    { key: 'mwSales', label: 'Hiveminds Estimated Sales (Cr)' },
+    { key: 'mlMarketShare', label: 'ML Market Share%' },
+    { key: 'mlSales', label: 'ML Sales' },
+];
+
+/* kpiLabels are built dynamically inside the component using dbDisplayName */
+const baseKpiLabels = {
+    categorySize: 'Category Size',
+    mwMarketShare: 'Hiveminds Market Share%',
+    mwSales: 'Hiveminds Estimated Sales (Cr)',
+    mlMarketShare: 'ML Market Share%',
+    mlSales: 'ML Sales',
+};
+
+/* --- Platform entities (COLUMN headers — horizontal, top) --- */
+/* Fallback while loading; overridden dynamically from backend response */
+const defaultPlatformEntities = [
+    { key: 'odd_overall', name: 'ODD Overall' },
+    { key: 'blinkit', name: 'Blinkit' },
+    { key: 'instamart', name: 'Instamart' },
+    { key: 'zepto', name: 'Zepto' },
+];
+
+const MarketCatOverview = ({
+    loading: parentLoading,
+    onViewTrends = () => { },
+    onViewRca = () => { },
+}) => {
+    // Derive display name from the logged-in user's dbName
+    const dbDisplayName = useMemo(() => {
+        try {
+            const u = JSON.parse(sessionStorage.getItem('user'));
+            if (u?.dbName) {
+                if (u.dbName.toLowerCase() === 'mamaearth') {
+                    return 'The Derma Co.';
+                }
+                return u.dbName
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, c => c.toUpperCase());
+            }
+        } catch { /* ignore */ }
+        return 'Our';
+    }, []);
+
+    // Build dynamic kpiLabels with DB name prefix for our brand KPIs
+    const kpiLabels = useMemo(() => ({
+        ...baseKpiLabels,
+        mwMarketShare: `${dbDisplayName} Market Share%`,
+        mwSales: `${dbDisplayName} Estimated Sales (Cr)`,
+    }), [dbDisplayName]);
+
+    const {
+        selectedChannel,
+        platform: globalPlatform,
+        selectedBrand,
+        selectedCategory,
+        selectedLocation,
+        timeStart,
+        timeEnd,
+        compareStart,
+        compareEnd,
+        categories: contextCategories,
+        locations: contextLocations,
+        brands: contextBrands,
+    } = useContext(FilterContext);
+
+    const [glanceKpis, setGlanceKpis] = useState([
+        'categorySize', 'mwMarketShare', 'mwSales', 'mlMarketShare', 'mlSales'
+    ])
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+
+    const [advancedFilters, setAdvancedFilters] = useState({
+        categories: [],
+        cities: [],
+        dateFrom: '',
+        dateTo: '',
+        kpis: ['categorySize', 'mwMarketShare', 'mwSales', 'mlMarketShare', 'mlSales'],
+        filterLogic: 'OR',
+    })
+
+    // Backend data state
+    const [backendData, setBackendData] = useState(null);
+    const [dataLoading, setDataLoading] = useState(true);
+
+    // Fetch cross-platform data from backend
+    useEffect(() => {
+        const fetchCrossPlatformData = async () => {
+            setDataLoading(true);
+            try {
+                // Mocked hardcoded data matching the user's screenshot perfectly
+                setTimeout(() => {
+                    setBackendData({
+                        _availablePlatforms: ["odd_overall", "blinkit", "zepto", "instamart"],
+                        odd_overall: {
+                            categorySize: { value: "₹ 171.34 Cr", delta: { value: "▼ 36.59% (₹ 270.22 Cr)", dir: "down" }, raw: 171.34 },
+                            mwMarketShare: { value: "5.42%", delta: { value: "▼ 0.39% (5.44%)", dir: "down" }, raw: 5.42 },
+                            mwSales: { value: "₹ 9.28 Cr", delta: { value: "▼ 36.84% (₹ 14.70 Cr)", dir: "down" }, raw: 9.28 },
+                            mlMarketShare: { value: "35.81%", delta: { value: "▲ 0.03% (35.80%)", dir: "up" }, raw: 35.81 },
+                            mlSales: { value: "₹ 61.36 Cr", delta: { value: "▼ 36.57% (₹ 96.74 Cr)", dir: "down" }, raw: 61.36 }
+                        },
+                        blinkit: {
+                            categorySize: { value: "₹ 99.41 Cr", delta: { value: "▼ 35.58% (₹ 154.32 Cr)", dir: "down" }, raw: 99.41 },
+                            mwMarketShare: { value: "4.65%", delta: { value: "▼ 0.08% (4.66%)", dir: "down" }, raw: 4.65 },
+                            mwSales: { value: "₹ 4.63 Cr", delta: { value: "▼ 35.64% (₹ 7.19 Cr)", dir: "down" }, raw: 4.63 },
+                            mlMarketShare: { value: "32.13%", delta: { value: "▲ 0.01% (32.12%)", dir: "up" }, raw: 32.13 },
+                            mlSales: { value: "₹ 31.94 Cr", delta: { value: "▼ 35.58% (₹ 49.57 Cr)", dir: "down" }, raw: 31.94 }
+                        },
+                        zepto: {
+                            categorySize: { value: "₹ 44.69 Cr", delta: { value: "▼ 35.78% (₹ 69.60 Cr)", dir: "down" }, raw: 44.69 },
+                            mwMarketShare: { value: "6.62%", delta: { value: "▼ 0.94% (6.68%)", dir: "down" }, raw: 6.62 },
+                            mwSales: { value: "₹ 2.96 Cr", delta: { value: "▼ 36.38% (₹ 4.65 Cr)", dir: "down" }, raw: 2.96 },
+                            mlMarketShare: { value: "41.69%", delta: { value: "▲ 0.78% (41.36%)", dir: "up" }, raw: 41.69 },
+                            mlSales: { value: "₹ 18.63 Cr", delta: { value: "▼ 35.28% (₹ 28.79 Cr)", dir: "down" }, raw: 18.63 }
+                        },
+                        instamart: {
+                            categorySize: { value: "₹ 27.24 Cr", delta: { value: "▼ 41.16% (₹ 46.30 Cr)", dir: "down" }, raw: 27.24 },
+                            mwMarketShare: { value: "6.23%", delta: { value: "▲ 0.93% (6.17%)", dir: "up" }, raw: 6.23 },
+                            mwSales: { value: "₹ 1.70 Cr", delta: { value: "▼ 40.62% (₹ 2.86 Cr)", dir: "down" }, raw: 1.70 },
+                            mlMarketShare: { value: "39.63%", delta: { value: "▼ 0.19% (39.71%)", dir: "down" }, raw: 39.63 },
+                            mlSales: { value: "₹ 10.80 Cr", delta: { value: "▼ 41.27% (₹ 18.38 Cr)", dir: "down" }, raw: 10.80 }
+                        }
+                    });
+                    setDataLoading(false);
+                }, 800);
+            } catch (error) {
+                console.error("Error setting mocked Cross Platform data:", error);
+                setDataLoading(false);
+            }
+        };
+
+        fetchCrossPlatformData();
+    }, [globalPlatform, selectedCategory, selectedLocation, timeStart, timeEnd, compareStart, compareEnd, advancedFilters]);
+
+    const loading = parentLoading || dataLoading;
+
+    const handleApplyFilters = (filters) => {
+        setAdvancedFilters(filters)
+        setGlanceKpis(filters.kpis)
+    }
+
+    const activeDimensionFilters = [
+        advancedFilters.categories?.length > 0,
+        advancedFilters.cities?.length > 0,
+    ].filter(Boolean).length
+
+    const selectedKpis = kpiDefs.filter(k => glanceKpis.includes(k.key))
+    const kpiCount = selectedKpis.length
+
+    // Derive dynamic platform entities from backend response
+    const platformEntities = useMemo(() => {
+        if (!backendData) return defaultPlatformEntities;
+
+        // Use _availablePlatforms from backend if present
+        if (backendData._availablePlatforms) {
+            return backendData._availablePlatforms.map(key => ({
+                key,
+                name: key === 'odd_overall' ? 'ODD Overall' : key.charAt(0).toUpperCase() + key.slice(1)
+            }));
+        }
+
+        // Fallback: derive from response keys, filtering out internal keys
+        const keys = Object.keys(backendData).filter(k => !k.startsWith('_'));
+        // Ensure odd_overall comes first
+        const sorted = ['odd_overall', ...keys.filter(k => k !== 'odd_overall')];
+        return sorted.map(key => ({
+            key,
+            name: key === 'odd_overall' ? 'ODD Overall' : key.charAt(0).toUpperCase() + key.slice(1)
+        }));
+    }, [backendData]);
+
+    // Build platformData from backend response
+    const platformData = useMemo(() => {
+        if (!backendData) {
+            // Return empty structure while loading
+            return platformEntities.map(e => ({
+                ...e,
+                data: kpiDefs.reduce((acc, kpi) => {
+                    acc[kpi.key] = { value: '—', delta: { value: '—', dir: 'up' }, raw: 0 };
+                    return acc;
+                }, {})
+            }));
+        }
+
+        return platformEntities.map(e => ({
+            ...e,
+            data: backendData[e.key] || kpiDefs.reduce((acc, kpi) => {
+                acc[kpi.key] = { value: '—', delta: { value: '—', dir: 'up' }, raw: 0 };
+                return acc;
+            }, {})
+        }));
+    }, [backendData, platformEntities]);
+
+    const SectionWrapper = ({
+        title,
+        icon: Icon,
+        children,
+        className = '',
+        chip,
+        headerRight
+    }) => {
+        return (
+            <motion.div
+                className={`bg - white rounded - 3xl shadow - lg border border - slate - 100 / 60 ${className} `}
+                style={{ boxShadow: '0 2px 0px rgba(0, 0, 0, 0.04)' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+            >
+                <div className="px-6 py-4 border-b border-slate-100/60">
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                                <Icon size={20} className="text-blue-600" />
+                            </div>
+                            <span className="text-[17px] font-bold text-slate-900" style={{ fontFamily: 'Roboto, sans-serif' }}>
+                                {title}
+                            </span>
+                        </div>
+
+                        {headerRight && (
+                            <div className="flex items-center gap-3">
+                                {headerRight}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="p-6">{children}</div>
+            </motion.div>
+        )
+    }
+
+    return (
+        <>
+            <div>
+                <SectionWrapper
+                    title="Cross Platform Overview"
+                    icon={BarChart3}
+                    chip={`${platformEntities.length} Platforms × ${kpiCount} KPIs`}
+                    headerRight={
+                        <div className="flex items-center gap-3">
+                            {/* Legend */}
+                            <div className="flex items-center gap-2">
+                                <span className="flex items-center gap-1.5 text-[9px] text-emerald-600 bg-emerald-50/50 px-2 py-0.5 rounded-full font-bold border border-emerald-100/50 uppercase tracking-tight">
+                                    <span className="w-1 h-1 rounded-full bg-emerald-500"></span> Growth
+                                </span>
+                                <span className="flex items-center gap-1.5 text-[9px] text-rose-600 bg-rose-50/50 px-2 py-0.5 rounded-full font-bold border border-rose-100/50 uppercase tracking-tight">
+                                    <span className="w-1 h-1 rounded-full bg-rose-500"></span> Decline
+                                </span>
+                            </div>
+                        </div>
+                    }
+                >
+                    {/* ===== TRANSPOSED GRID: KPIs as rows, Platforms as columns ===== */}
+                    <div className="overflow-x-auto no-scrollbar pb-2">
+                        <div className="min-w-max pb-2">
+                            {/* Column Header Row — Platform names */}
+                            <div className="flex items-center gap-2 mb-4 px-1">
+                                <div className="w-48 flex-shrink-0 sticky left-4 bg-white z-20 pr-4 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] border-r border-slate-50">
+                                    <span className="text-xs font-bold text-slate-900 uppercase tracking-[0.15em]">Entity</span>
+                                </div>
+                                {platformEntities.map(plat => (
+                                    <div
+                                        key={plat.key}
+                                        className={cn(
+                                            'flex-1 text-center py-2 px-2 rounded-lg bg-white border border-slate-100/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)]',
+                                            cardSize.minW
+                                        )}
+                                    >
+                                        <div className="text-[11px] font-extrabold text-slate-700 uppercase tracking-[0.12em] whitespace-nowrap">
+                                            {plat.name}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Data Rows — one row per KPI */}
+                            <div className="space-y-3 px-1">
+                                {selectedKpis.map((kpi) => (
+                                    <motion.div
+                                        key={kpi.key}
+                                        className="flex items-center gap-2 p-2 rounded-xl hover:bg-slate-50/50 transition-colors"
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        {/* KPI Label (row header) + Trend/RCA buttons */}
+                                        <div className="w-48 flex-shrink-0 flex items-center gap-2 sticky left-0 bg-white z-20 pr-4 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] border-r border-slate-50">
+                                            <span
+                                                className="text-[12px] font-bold text-slate-600 flex-1 whitespace-normal leading-tight uppercase tracking-wide"
+                                                style={{ fontFamily: 'Roboto, sans-serif' }}
+                                            >
+                                                {kpiLabels[kpi.key] || kpi.label}
+                                            </span>
+
+                                            {/* <div className="flex items-center gap-1">
+                                                <button
+                                                    onClick={(evt) => {
+                                                        evt.stopPropagation();
+                                                        onViewTrends(kpi.label, 'KPI');
+                                                    }}
+                                                    className="h-6.5 w-6.5 rounded-md bg-white border border-slate-100 hover:border-slate-200 hover:bg-slate-50 flex items-center justify-center transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+                                                    title={`View ${kpi.label} Trend`}
+                                                >
+                                                    <LineChart size={13} className="text-slate-400" />
+                                                </button>
+                                                <button
+                                                    onClick={(evt) => {
+                                                        evt.stopPropagation();
+                                                        onViewRca(kpi.label);
+                                                    }}
+                                                    className="h-6.5 w-6.5 rounded-md bg-white border border-slate-100 hover:border-slate-200 hover:bg-slate-50 flex items-center justify-center transition-all hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+                                                    title={`View ${kpi.label} RCA`}
+                                                >
+                                                    <MapPin size={13} className="text-slate-400" />
+                                                </button>
+                                            </div> */}
+                                        </div>
+
+                                        {/* Platform value cards for this KPI */}
+                                        {platformData.map(plat => {
+                                            const cell = plat.data[kpi.key]
+                                            const textColor = getStatusText(cell?.delta)
+                                            const isUp = cell?.delta?.dir === 'up'
+
+
+                                            if (loading) {
+                                                return (
+                                                    <div key={plat.key} className={cn('flex-1 px-3', cardSize.minW, cardSize.py)}>
+                                                        <Skeleton variant="rounded" height={45} width="100%" style={{ borderRadius: "12px" }} />
+                                                        <Skeleton variant="text" width="60%" height={15} className="mx-auto mt-1" />
+                                                    </div>
+                                                )
+                                            }
+                                            return (
+                                                <motion.button
+                                                    key={plat.key}
+                                                    onClick={() => copy(`${plat.name} ${kpi.label} `, cell?.value)}
+                                                    className={cn(
+                                                        'flex-1 px-3 rounded-xl text-center transition-all duration-200 relative overflow-hidden',
+                                                        'bg-gradient-to-br from-white to-slate-50',
+                                                        'border',
+                                                        isUp ? 'border-emerald-100' : 'border-rose-100',
+                                                        'shadow-[0_4px_16px_rgba(0,0,0,0.06)]',
+                                                        'hover:shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:-translate-y-1',
+                                                        'active:scale-[0.98]',
+                                                        cardSize.minW, cardSize.py
+                                                    )}
+                                                    title={`${plat.name} — ${kpi.label}: ${cell?.value} (${cell?.delta?.value})`}
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                >
+                                                    <div className={cn(
+                                                        'absolute inset-0 opacity-10 rounded-xl',
+                                                        isUp ? 'bg-gradient-to-br from-emerald-100 to-transparent' : 'bg-gradient-to-br from-rose-100 to-transparent'
+                                                    )} />
+                                                    <div className={cn('font-bold text-slate-900 tabular-nums relative z-10 leading-tight', cardSize.text)} style={{ fontFamily: 'Roboto, sans-serif' }}>
+                                                        {cell?.value}
+                                                    </div>
+                                                    <div className={cn('font-bold flex items-center justify-center gap-0.5 mt-0.5 relative z-10 whitespace-nowrap', textColor, cardSize.delta)}>
+                                                        <span>{cell?.delta?.value}</span>
+                                                    </div>
+                                                </motion.button>
+                                            )
+                                        })}
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                                <div className="h-6 w-6 rounded-lg bg-slate-900 flex items-center justify-center">
+                                    <TrendingUp size={14} className="text-white" />
+                                </div>
+                                <span className="text-slate-800 text-sm font-bold">
+                                    {platformData.reduce((sum, p) => sum + selectedKpis.filter(k => p.data[k.key]?.delta?.dir === 'up').length, 0)}
+                                </span>
+                                <span className="text-slate-500 text-xs">positive</span>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                                <div className="h-6 w-6 rounded-lg bg-slate-400 flex items-center justify-center">
+                                    <TrendingDown size={14} className="text-white" />
+                                </div>
+                                <span className="text-slate-800 text-sm font-bold">
+                                    {platformData.reduce((sum, p) => sum + selectedKpis.filter(k => p.data[k.key]?.delta?.dir === 'down').length, 0)}
+                                </span>
+                                <span className="text-slate-500 text-xs">negative</span>
+                            </div>
+                        </div>
+                    </div>
+                </SectionWrapper>
+            </div>
+
+            {/* AdvancedFilterModal */}
+            {(() => {
+                // Build dynamic {id, name} arrays from FilterContext values
+                const toOpts = (arr) =>
+                    (arr || [])
+                        .filter(v => v && v !== 'All')
+                        .map(v => ({ id: v, name: v }));
+
+                const categoryOptions = toOpts(contextCategories);
+                const cityOptions = toOpts(contextLocations);
+                const brandOptions = toOpts(contextBrands);
+
+                return (
+                    <AdvancedFilterModal
+                        isOpen={isFilterModalOpen}
+                        onClose={() => setIsFilterModalOpen(false)}
+                        filters={advancedFilters}
+                        onApply={handleApplyFilters}
+                        currentDimension={'platform'}
+                        brands={brandOptions}
+                        categories={categoryOptions}
+                        platforms={[]}
+                        skus={[]}
+                        cities={cityOptions}
+                        kpiOptions={kpiDefs}
+                    />
+                )
+            })()}
+        </>
+    )
+}
+
+export default MarketCatOverview
