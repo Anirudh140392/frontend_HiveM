@@ -36,6 +36,7 @@ import {
   Psychology as InterpretationIcon,
   EmojiObjects as ExampleIcon,
   Calculate as LogicIcon,
+  Description as DescriptionIcon,
 } from "@mui/icons-material";
 
 import { useHelp } from "../../utils/HelpContext";
@@ -43,14 +44,14 @@ import { useHelp } from "../../utils/HelpContext";
 const HelpDrawer = ({ userDbName }) => {
   const { helpDrawerOpen, activeHelpMenu, closeHelp } = useHelp();
   const [activeTab, setActiveTab] = useState(0);
-  const [activeMenu, setActiveMenu] = useState("Business Overview");
+  const [activeMenu, setActiveMenu] = useState("Overview");
   const [expandedKpi, setExpandedKpi] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Sync with context's activeHelpMenu when opening
   React.useEffect(() => {
     if (helpDrawerOpen && activeHelpMenu) {
-      setActiveMenu(activeHelpMenu);
+      setActiveMenu(activeHelpMenu === "Business Overview" ? "Overview" : activeHelpMenu);
     }
   }, [helpDrawerOpen, activeHelpMenu]);
 
@@ -133,7 +134,7 @@ const HelpDrawer = ({ userDbName }) => {
       usage: "Track demand volume.",
       interpretation: "Higher orders → higher demand.",
       pitfalls: "Duplicate orders; cancellations not excluded.",
-      example: "2,000 orders in a week.",
+      example: "2,00,000 orders in a week.",
       logic: "Count of Orders",
     },
     {
@@ -486,6 +487,48 @@ const HelpDrawer = ({ userDbName }) => {
     },
   ];
 
+  const rulesGlossary = [
+    {
+      kpi: "Threshold Rules",
+      definition: "Automation rules triggered when a specific metric (like OSA or Price) crosses a predefined limit.",
+      usage: "Instantly alert teams when inventory drops or prices spike.",
+      interpretation: "Allows for proactive management without manual monitoring.",
+      pitfalls: "Setting thresholds too tight can lead to alert fatigue.",
+      example: "OSA < 70% for 3 consecutive hours triggers an email.",
+      logic: "Value < Threshold",
+    },
+    {
+      kpi: "Multi-Platform Rules",
+      definition: "Rules that monitor conditions across multiple platforms (e.g., Blinkit, Zepto, Instamart) simultaneously.",
+      usage: "Ensure price parity or consistent availability across the quick-commerce landscape.",
+      interpretation: "Helps maintain a unified brand presence.",
+      pitfalls: "",
+      example: "Price mismatch between Blinkit and Zepto > ₹10.",
+      logic: "Abs(Platform A Price - Platform B Price) > Max Diff",
+    },
+  ];
+
+  const historyGlossary = [
+    {
+      kpi: "Execution Status",
+      definition: "The outcome of an automated rule run (Success, Failed, or Pending).",
+      usage: "Verify if rules are firing correctly and actions are being taken.",
+      interpretation: "High failure rate might indicate API or configuration issues.",
+      pitfalls: "",
+      example: "Rule 'Price Monitor' executed successfully at 10:00 AM.",
+      logic: "Outcome of rule engine process",
+    },
+    {
+      kpi: "Impacted SKUs",
+      definition: "The number of unique products that triggered the rule during a specific execution.",
+      usage: "Measure the scale of an event (e.g., a massive stockout across a category).",
+      interpretation: "Higher number suggests a systemic issue rather than an isolated SKU problem.",
+      pitfalls: "",
+      example: "Rule execution affected 45 SKUs.",
+      logic: "Count(Distinct SKU IDs triggering the rule)",
+    },
+  ];
+
   const GlossarySection = ({ title, text, icon, bgColor, borderColor, textColor }) => {
     if (!text) return null;
     return (
@@ -514,36 +557,31 @@ const HelpDrawer = ({ userDbName }) => {
   };
 
   const menuItems = [
-    { label: "Business Overview", icon: <DashboardIcon sx={{ fontSize: "1.1rem" }} /> },
-    { label: "India Overview", icon: <PublicIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "Overview", icon: <DashboardIcon sx={{ fontSize: "1.1rem" }} /> },
     { label: "Availability Analysis", icon: <ShoppingCartIcon sx={{ fontSize: "1rem" }} /> },
     { label: "Visibility Analysis", icon: <VisibilityIcon sx={{ fontSize: "1rem" }} /> },
-    { label: "Market Share", icon: <AutoGraphIcon sx={{ fontSize: "1rem" }} />, hideForDb: ["boat", "mars_petcare"] },
-    { label: "Pricing Analysis", icon: <PriceChangeIcon sx={{ fontSize: "1rem" }} />, hideForDb: ["mamaearth"] },
-    { label: "Performance Marketing", icon: <AdsClickIcon sx={{ fontSize: "1rem" }} />, hideForDb: ["mamaearth", "boat"] },
-    { label: "Content Analysis", icon: <ArticleIcon sx={{ fontSize: "1rem" }} />, showOnlyForDb: ["mars"] },
-    { label: "Inventory Analysis", icon: <InventoryIcon sx={{ fontSize: "1rem" }} />, hideForDb: ["mamaearth", "boat"] },
-    { label: "Scheduled Reports", icon: <ScheduleIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "Market Share", icon: <AutoGraphIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "Pricing Analysis", icon: <PriceChangeIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "Rules", icon: <ScheduleIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "History", icon: <DescriptionIcon sx={{ fontSize: "1rem" }} /> },
   ];
 
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (item.showOnlyForDb && !item.showOnlyForDb.includes(userDbName)) return false;
-    if (item.hideForDb && item.hideForDb.includes(userDbName)) return false;
-    return true;
-  });
+  const filteredMenuItems = menuItems;
 
   const getGlossarySource = () => {
     switch (activeMenu) {
-      case "India Overview":
-        return indiaOverviewGlossary;
+      case "Overview":
+        return businessOverviewGlossary;
       case "Availability Analysis":
         return availabilityAnalysisGlossary;
       case "Market Share":
         return marketShareGlossary;
       case "Visibility Analysis":
         return visibilityAnalysisGlossary;
-      case "Performance Marketing":
-        return performanceMarketingGlossary;
+      case "Rules":
+        return rulesGlossary;
+      case "History":
+        return historyGlossary;
       default:
         return businessOverviewGlossary;
     }
@@ -719,7 +757,7 @@ const HelpDrawer = ({ userDbName }) => {
           <Box sx={{ flex: 1, p: 3, overflowY: "auto" }}>
             <Box>
               <Box sx={{ display: 'grid', gap: 2 }}>
-                {["Business Overview", "India Overview", "Availability Analysis", "Market Share", "Visibility Analysis", "Performance Marketing"].includes(activeMenu) ? (
+                {["Overview", "Availability Analysis", "Market Share", "Visibility Analysis", "Pricing Analysis", "Rules", "History"].includes(activeMenu) ? (
                   filteredGlossary.map((item) => {
                     const isExpanded = expandedKpi === item.kpi;
                     return (
@@ -821,8 +859,9 @@ const HelpDrawer = ({ userDbName }) => {
                   })
                 ) : (
                   <Box sx={{ textAlign: 'center', py: 8 }}>
-                    <Typography sx={{ color: "#64748b" }}>
-                      Glossary content for {activeMenu} is coming soon.
+                    <HelpIcon sx={{ fontSize: 48, color: '#e2e8f0', mb: 2 }} />
+                    <Typography sx={{ color: '#64748b' }}>
+                      No glossary entries found for this module.
                     </Typography>
                   </Box>
                 )}
