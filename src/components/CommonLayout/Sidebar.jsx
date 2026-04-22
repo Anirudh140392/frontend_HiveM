@@ -318,36 +318,6 @@ const Sidebar = ({
       }}>
         {Object.entries(menuSections).map(([sectionName, items]) => (
           <Box key={sectionName} sx={{ mb: 2 }}>
-            {!isCollapsed && (
-              <Typography
-                variant="overline"
-                sx={{
-                  fontSize: "0.68rem",
-                  fontWeight: 800,
-                  color: "rgba(30, 41, 59, 0.4)",
-                  letterSpacing: "0.08em",
-                  mb: 1.5,
-                  mt: 1,
-                  pl: isCollapsed ? 0 : 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: isCollapsed ? 'center' : 'flex-start',
-                  opacity: isCollapsed ? 0 : 1,
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  '&::after': {
-                    content: '""',
-                    flex: isCollapsed ? 0 : 1,
-                    height: '1px',
-                    bgcolor: 'rgba(0, 0, 0, 0.04)',
-                    ml: isCollapsed ? 0 : 1.5,
-                    mr: isCollapsed ? 0 : 1,
-                    transition: 'all 0.3s'
-                  }
-                }}
-              >
-                {sectionName}
-              </Typography>
-            )}
             {items.filter((item) => {
               const dbName = user?.dbName;
               // If user's DB status is inactive, hide all items
