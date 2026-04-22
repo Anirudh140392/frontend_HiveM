@@ -91,7 +91,7 @@ const AutomationRules = () => {
     ];
 
     const toggleRuleSelection = (id) => {
-        setSelectedRules(prev => 
+        setSelectedRules(prev =>
             prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
         );
     };
@@ -105,9 +105,10 @@ const AutomationRules = () => {
     };
 
     return (
-        <Box sx={{ 
-            p: 4, 
-            bgcolor: '#f8fafc', 
+        <Box sx={{
+            p: 4,
+            borderRadius: 5,
+            bgcolor: '#f8fafc',
             minHeight: '100vh',
             fontFamily: "'Inter', 'Roboto', sans-serif",
             '& .MuiTypography-root': { fontFamily: "'Inter', 'Roboto', sans-serif" },
@@ -136,8 +137,8 @@ const AutomationRules = () => {
                     <FormControl size="small" sx={{ minWidth: 200 }}>
                         <Select
                             value="Boat"
-                            sx={{ 
-                                bgcolor: 'white', 
+                            sx={{
+                                bgcolor: 'white',
                                 borderRadius: '12px',
                                 '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' }
                             }}
@@ -178,8 +179,8 @@ const AutomationRules = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.1 }}
                     >
-                        <Card sx={{ 
-                            borderRadius: '24px', 
+                        <Card sx={{
+                            borderRadius: '24px',
                             boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                             border: '1px solid rgba(0,0,0,0.05)',
                             overflow: 'hidden'
@@ -206,7 +207,7 @@ const AutomationRules = () => {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, px: 1 }}>
                 <FormControlLabel
                     control={
-                        <Checkbox 
+                        <Checkbox
                             checked={selectedRules.length === rules.length}
                             onChange={handleSelectAll}
                             sx={{ color: '#cbd5e1' }}
@@ -240,8 +241,8 @@ const AutomationRules = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.1 }}
                         >
-                            <Card sx={{ 
-                                borderRadius: '24px', 
+                            <Card sx={{
+                                borderRadius: '24px',
                                 boxShadow: '0 4px 24px rgba(0,0,0,0.04)',
                                 border: '1px solid rgba(0,0,0,0.05)',
                                 '&:hover': { boxShadow: '0 12px 32px rgba(0,0,0,0.08)' },
@@ -251,57 +252,57 @@ const AutomationRules = () => {
                             }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3 }}>
-                                        <Checkbox 
+                                        <Checkbox
                                             checked={selectedRules.includes(rule.id)}
                                             onChange={() => toggleRuleSelection(rule.id)}
                                             sx={{ mt: -0.5, color: '#cbd5e1' }}
                                         />
-                                        
+
                                         <Box sx={{ flex: 1 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
                                                 <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b' }}>
                                                     {rule.name}
                                                 </Typography>
-                                                <Chip 
-                                                    label={rule.status} 
-                                                    size="small" 
-                                                    sx={{ 
+                                                <Chip
+                                                    label={rule.status}
+                                                    size="small"
+                                                    sx={{
                                                         bgcolor: rule.status === 'active' ? '#ecfdf5' : '#f1f5f9',
                                                         color: rule.status === 'active' ? '#059669' : '#64748b',
                                                         fontWeight: 700,
                                                         fontSize: '10px',
                                                         textTransform: 'uppercase'
-                                                    }} 
+                                                    }}
                                                 />
-                                                <Chip 
-                                                    label={rule.type} 
-                                                    size="small" 
-                                                    sx={{ 
+                                                <Chip
+                                                    label={rule.type}
+                                                    size="small"
+                                                    sx={{
                                                         bgcolor: rule.type === 'Send Alert' ? '#eff6ff' : '#eef2ff',
                                                         color: rule.type === 'Send Alert' ? '#2563eb' : '#4f46e5',
                                                         fontWeight: 700,
                                                         fontSize: '10px'
-                                                    }} 
+                                                    }}
                                                 />
-                                                <Chip 
-                                                    label={rule.platform} 
-                                                    size="small" 
-                                                    sx={{ 
+                                                <Chip
+                                                    label={rule.platform}
+                                                    size="small"
+                                                    sx={{
                                                         bgcolor: '#f5f3ff',
                                                         color: '#7c3aed',
                                                         fontWeight: 700,
                                                         fontSize: '10px'
-                                                    }} 
+                                                    }}
                                                 />
-                                                <Chip 
-                                                    label={rule.entity} 
-                                                    size="small" 
-                                                    sx={{ 
+                                                <Chip
+                                                    label={rule.entity}
+                                                    size="small"
+                                                    sx={{
                                                         bgcolor: '#f5f3ff',
                                                         color: '#7c3aed',
                                                         fontWeight: 700,
                                                         fontSize: '10px'
-                                                    }} 
+                                                    }}
                                                 />
                                             </Box>
 
@@ -353,9 +354,9 @@ const AutomationRules = () => {
                                         {/* Actions */}
                                         <Box sx={{ display: 'flex', gap: 1 }}>
                                             <Tooltip title={rule.status === 'active' ? "Pause" : "Resume"}>
-                                                <IconButton 
-                                                    size="small" 
-                                                    sx={{ 
+                                                <IconButton
+                                                    size="small"
+                                                    sx={{
                                                         bgcolor: rule.status === 'active' ? '#fff7ed' : '#f0fdf4',
                                                         color: rule.status === 'active' ? '#f97316' : '#22c55e',
                                                         '&:hover': { bgcolor: rule.status === 'active' ? '#ffedd5' : '#dcfce7' }

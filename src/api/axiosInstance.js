@@ -5,7 +5,8 @@ import {
   PRICING_DATA, 
   MARKET_SHARE_DATA,
   PRICING_INSIGHTS_DATA,
-  PRICING_DIMENSION_DATA
+  PRICING_DIMENSION_DATA,
+  WATCHTOWER_DATA
 } from "../utils/hardcodedData";
 
 const axiosInstance = axios.create({
@@ -41,11 +42,22 @@ axiosInstance.interceptors.request.use(async (config) => {
     data.data = PRICING_DIMENSION_DATA;
   } else if (url.includes("/pricing-analysis")) {
     data.data = PRICING_DATA;
+  } else if (url.includes("/market-share/sub-category-kpi")) {
+    data = { success: true, ...MARKET_SHARE_DATA.subCategoryKpi };
+  } else if (url.includes("/market-share/drilldown")) {
+    data = { success: true, drilldownData: MARKET_SHARE_DATA.drilldownData };
+  } else if (url.includes("/watchtower/platform-overview")) {
+    data.data = WATCHTOWER_DATA.platformOverview;
+  } else if (url.includes("/watchtower/products")) {
+    data.data = WATCHTOWER_DATA.products;
+  } else if (url.includes("/watchtower/brands-overview")) {
+    data.data = WATCHTOWER_DATA.platformOverview; // Reuse or add specific brand data if needed
+  } else if (url.includes("/watchtower/category-overview")) {
+    data.data = WATCHTOWER_DATA.platformOverview;
+  } else if (url.includes("/watchtower/sku-overview")) {
+    data.data = WATCHTOWER_DATA.platformOverview;
   } else if (url.includes("/market-share")) {
     data.data = MARKET_SHARE_DATA;
-  } else if (url.includes("/watchtower/products")) {
-    // Used in some pricing components
-    data.data = ["Vanilla Tub 500ml", "Chocolate Cone 120ml", "Mango Stick 80ml"]; 
   } else {
     // Generic fallback
     data.data = [];

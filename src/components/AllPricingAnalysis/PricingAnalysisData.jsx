@@ -1251,7 +1251,7 @@ export default function PricingAnalysisData() {
       setEcpByCityData(PRICING_DATA.ecpByCity);
       setDiscountTrendData(PRICING_DATA.discountByCategory);
       setDiscountPlatforms(['Blinkit', 'Instamart', 'Zepto']);
-      
+
       setPricingKpiLoading(false);
       setEcpLoading(false);
       setEcpByBrandLoading(false);
@@ -1271,14 +1271,14 @@ export default function PricingAnalysisData() {
     if (discountBrandData[category]) return; // Already fetched
     setCategoryLoading(prev => ({ ...prev, [category]: true }));
     setTimeout(() => {
-        setDiscountBrandData(prev => ({
-            ...prev,
-            [category]: [
-                { brand: "Our Brand", Blinkit: 15, Instamart: 14, Zepto: 16 },
-                { brand: "Competitor A", Blinkit: 12, Instamart: 13, Zepto: 11 }
-            ]
-        }));
-        setCategoryLoading(prev => ({ ...prev, [category]: false }));
+      setDiscountBrandData(prev => ({
+        ...prev,
+        [category]: [
+          { brand: "Our Brand", Blinkit: 15, Instamart: 14, Zepto: 16 },
+          { brand: "Competitor A", Blinkit: 12, Instamart: 13, Zepto: 11 }
+        ]
+      }));
+      setCategoryLoading(prev => ({ ...prev, [category]: false }));
     }, 300);
   };
 
@@ -2339,7 +2339,7 @@ export default function PricingAnalysisData() {
 
   // MAIN RETURN
   return (
-    <Box sx={{ p: 3, bgcolor: "white", minHeight: "100vh" }}>
+    <Box sx={{ p: 3, borderRadius: 5, bgcolor: "white", minHeight: "100vh" }}>
       {/* KPIs Section */}
       <SnapshotOverview
         title="Pricing Overview"

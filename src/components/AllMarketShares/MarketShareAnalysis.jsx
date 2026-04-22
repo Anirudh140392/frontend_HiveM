@@ -380,24 +380,24 @@ export default function MarketShareAnalysis() {
       // Simulate API delay
       setTimeout(() => {
         if (MARKET_SHARE_DATA) {
-            setKpis(prev => prev.map(k => {
-                if (k.id === "ms-category-size") {
-                    const val = MARKET_SHARE_DATA.categorySize.size;
-                    const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
-                    return { ...k, value: formattedValue, delta: MARKET_SHARE_DATA.categorySize.delta };
-                }
-                if (k.id === "ms-leader-sales") {
-                    const val = MARKET_SHARE_DATA.marketLeader.sales;
-                    const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
-                    return { ...k, value: formattedValue, brand: MARKET_SHARE_DATA.marketLeader.brand, delta: MARKET_SHARE_DATA.marketLeader.delta };
-                }
-                if (k.id === "ms-hiveminds-wrigley") {
-                    const val = MARKET_SHARE_DATA.hivemindsWrigley.sales;
-                    const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
-                    return { ...k, value: formattedValue, delta: MARKET_SHARE_DATA.hivemindsWrigley.delta };
-                }
-                return k;
-            }));
+          setKpis(prev => prev.map(k => {
+            if (k.id === "ms-category-size") {
+              const val = MARKET_SHARE_DATA.categorySize.size;
+              const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
+              return { ...k, value: formattedValue, delta: MARKET_SHARE_DATA.categorySize.delta };
+            }
+            if (k.id === "ms-leader-sales") {
+              const val = MARKET_SHARE_DATA.marketLeader.sales;
+              const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
+              return { ...k, value: formattedValue, brand: MARKET_SHARE_DATA.marketLeader.brand, delta: MARKET_SHARE_DATA.marketLeader.delta };
+            }
+            if (k.id === "ms-hiveminds-wrigley") {
+              const val = MARKET_SHARE_DATA.hivemindsWrigley.sales;
+              const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
+              return { ...k, value: formattedValue, delta: MARKET_SHARE_DATA.hivemindsWrigley.delta };
+            }
+            return k;
+          }));
         }
         setLoading(false);
       }, 500);
@@ -408,7 +408,7 @@ export default function MarketShareAnalysis() {
 
 
   return (
-    <div className="relative min-h-screen bg-slate-50 text-slate-900 px-3 md:px-6 py-3 md:py-5 flex flex-col gap-1 md:gap-0">
+    <div className="relative min-h-screen bg-slate-50 text-slate-900 px-3 md:px-6 py-3 md:py-5 flex flex-col gap-1 md:gap-0 rounded-2xl">
       {/* <HeaderStats /> */}
       <SnapshotOverview
         loading={loading}

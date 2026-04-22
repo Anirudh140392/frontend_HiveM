@@ -27,13 +27,13 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip
+    ResponsiveContainer,
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip as RechartsTooltip
 } from 'recharts';
 
 const OverviewDashboard = () => {
@@ -128,10 +128,11 @@ const OverviewDashboard = () => {
     ];
 
     return (
-        <Box sx={{ 
-            p: 3, 
-            bgcolor: '#fbfcfd', 
-            minHeight: '100vh', 
+        <Box sx={{
+            p: 3,
+            borderRadius: 5,
+            bgcolor: '#fbfcfd',
+            minHeight: '100vh',
             fontFamily: "'Inter', 'Roboto', sans-serif",
             '& .MuiTypography-root': { fontFamily: "'Inter', 'Roboto', sans-serif" },
             '& .MuiButton-root': { fontFamily: "'Inter', 'Roboto', sans-serif" },
@@ -148,16 +149,16 @@ const OverviewDashboard = () => {
                         <Typography variant="body2" sx={{ color: '#64748b' }}>
                             Performance metrics for All Brands
                         </Typography>
-                        <Chip 
-                            label="Blinkit" 
-                            size="small" 
-                            sx={{ 
-                                bgcolor: '#eff6ff', 
-                                color: '#3b82f6', 
-                                fontWeight: 700, 
+                        <Chip
+                            label="Blinkit"
+                            size="small"
+                            sx={{
+                                bgcolor: '#eff6ff',
+                                color: '#3b82f6',
+                                fontWeight: 700,
                                 fontSize: '10px',
                                 height: '20px'
-                            }} 
+                            }}
                         />
                     </Box>
                 </Box>
@@ -180,20 +181,20 @@ const OverviewDashboard = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
                     >
-                        <Card sx={{ 
-                            borderRadius: '16px', 
+                        <Card sx={{
+                            borderRadius: '16px',
                             boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
                             border: '1px solid rgba(0,0,0,0.04)',
                             height: '100%'
                         }}>
                             <CardContent sx={{ p: '20px !important' }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                                    <Box sx={{ 
-                                        p: 1.5, 
-                                        borderRadius: '12px', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center' 
+                                    <Box sx={{
+                                        p: 1.5,
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
                                     }} className={card.iconBg}>
                                         {card.icon}
                                     </Box>
@@ -214,8 +215,8 @@ const OverviewDashboard = () => {
             </Box>
 
             {/* Ad Type Intelligence Section */}
-            <Card sx={{ 
-                borderRadius: '16px', 
+            <Card sx={{
+                borderRadius: '16px',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                 border: '1px solid rgba(0,0,0,0.05)'
             }}>
@@ -226,50 +227,50 @@ const OverviewDashboard = () => {
                             <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', fontSize: '1rem' }}>
                                 Ad Type Intelligence
                             </Typography>
-                            <Chip 
-                                label="Blinkit" 
-                                size="small" 
-                                sx={{ 
-                                    bgcolor: '#fef3c7', 
-                                    color: '#d97706', 
-                                    fontWeight: 700, 
+                            <Chip
+                                label="Blinkit"
+                                size="small"
+                                sx={{
+                                    bgcolor: '#fef3c7',
+                                    color: '#d97706',
+                                    fontWeight: 700,
                                     fontSize: '10px',
                                     height: '20px'
-                                }} 
+                                }}
                             />
                         </Box>
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Chip 
-                                icon={<CheckCircle2 size={12} />} 
-                                label="34 Active" 
+                            <Chip
+                                icon={<CheckCircle2 size={12} />}
+                                label="34 Active"
                                 size="small"
-                                sx={{ 
-                                    bgcolor: 'transparent', 
+                                sx={{
+                                    bgcolor: 'transparent',
                                     border: '1px solid #10b981',
-                                    color: '#10b981', 
+                                    color: '#10b981',
                                     fontWeight: 600,
                                     '& .MuiChip-icon': { color: '#10b981' }
-                                }} 
+                                }}
                             />
-                            <Chip 
-                                icon={<PauseCircle size={12} />} 
-                                label="48 Paused" 
+                            <Chip
+                                icon={<PauseCircle size={12} />}
+                                label="48 Paused"
                                 size="small"
-                                sx={{ 
-                                    bgcolor: 'transparent', 
+                                sx={{
+                                    bgcolor: 'transparent',
                                     border: '1px solid #f59e0b',
-                                    color: '#f59e0b', 
+                                    color: '#f59e0b',
                                     fontWeight: 600,
                                     '& .MuiChip-icon': { color: '#f59e0b' }
-                                }} 
+                                }}
                             />
                         </Box>
                     </Box>
 
                     {/* Tabs */}
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3, bgcolor: '#f8fafc', borderRadius: '12px', p: 0.5 }}>
-                        <Tabs 
-                            value={activeTab} 
+                        <Tabs
+                            value={activeTab}
                             onChange={handleTabChange}
                             sx={{
                                 minHeight: '36px',
@@ -335,8 +336,8 @@ const OverviewDashboard = () => {
 
             {/* Charts Section */}
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, mt: 4 }}>
-                <Card sx={{ 
-                    borderRadius: '16px', 
+                <Card sx={{
+                    borderRadius: '16px',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                     border: '1px solid rgba(0,0,0,0.05)'
                 }}>
@@ -352,8 +353,8 @@ const OverviewDashboard = () => {
                                 <AreaChart data={spendSalesData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorSpend" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
-                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -368,8 +369,8 @@ const OverviewDashboard = () => {
                     </CardContent>
                 </Card>
 
-                <Card sx={{ 
-                    borderRadius: '16px', 
+                <Card sx={{
+                    borderRadius: '16px',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                     border: '1px solid rgba(0,0,0,0.05)'
                 }}>
@@ -385,8 +386,8 @@ const OverviewDashboard = () => {
                                 <AreaChart data={impressionsData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorImp" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2}/>
-                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />

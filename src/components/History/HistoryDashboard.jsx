@@ -109,10 +109,11 @@ const HistoryDashboard = () => {
     );
 
     return (
-        <Box sx={{ 
-            p: 4, 
-            bgcolor: '#f8fafc', 
-            minHeight: '100vh', 
+        <Box sx={{
+            p: 4,
+            bgcolor: '#f8fafc',
+            borderRadius: 5,
+            minHeight: '100vh',
             fontFamily: "'Inter', 'Roboto', sans-serif",
             '& .MuiTypography-root': { fontFamily: "'Inter', 'Roboto', sans-serif" },
             '& .MuiButton-root': { fontFamily: "'Inter', 'Roboto', sans-serif" },
@@ -132,8 +133,8 @@ const HistoryDashboard = () => {
             </Typography>
 
             {/* Filter Section */}
-            <Card sx={{ 
-                borderRadius: '16px', 
+            <Card sx={{
+                borderRadius: '16px',
                 boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
                 border: '1px solid rgba(0,0,0,0.05)',
                 mb: 4
@@ -208,8 +209,8 @@ const HistoryDashboard = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
                     >
-                        <Card sx={{ 
-                            borderRadius: '16px', 
+                        <Card sx={{
+                            borderRadius: '16px',
                             boxShadow: '0 2px 12px rgba(0,0,0,0.02)',
                             border: stat.active ? '2px solid #3b82f6' : '1px solid rgba(0,0,0,0.05)',
                             height: '100%'
@@ -231,8 +232,8 @@ const HistoryDashboard = () => {
             </Box>
 
             {/* Timeline List */}
-            <Card sx={{ 
-                borderRadius: '16px', 
+            <Card sx={{
+                borderRadius: '16px',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                 border: '1px solid rgba(0,0,0,0.05)'
             }}>
@@ -244,32 +245,32 @@ const HistoryDashboard = () => {
                         1-20 of 2962
                     </Typography>
                 </Box>
-                
+
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     {timelineData.map((item, idx) => (
-                        <Box 
-                            key={item.id} 
-                            sx={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                p: 3, 
+                        <Box
+                            key={item.id}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                p: 3,
                                 borderBottom: idx !== timelineData.length - 1 ? '1px solid #f8fafc' : 'none',
                                 '&:hover': { bgcolor: '#f8fafc' },
                                 transition: 'background-color 0.2s'
                             }}
                         >
-                            <Box sx={{ 
-                                width: 40, 
-                                height: 40, 
-                                borderRadius: '50%', 
-                                display: 'flex', 
-                                alignItems: 'center', 
+                            <Box sx={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
                                 justifyContent: 'center',
                                 mr: 3
                             }} className={item.iconBg}>
                                 {item.icon}
                             </Box>
-                            
+
                             <Box sx={{ flex: 1 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                     <Chip label={item.type} size="small" sx={{ bgcolor: '#f1f5f9', color: '#64748b', fontWeight: 700, fontSize: '10px', height: '20px' }} />
@@ -286,13 +287,13 @@ const HistoryDashboard = () => {
                             </Box>
 
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Box sx={{ 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: 1, 
-                                    bgcolor: '#f8fafc', 
-                                    px: 2, 
-                                    py: 1, 
+                                <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    bgcolor: '#f8fafc',
+                                    px: 2,
+                                    py: 1,
                                     borderRadius: '20px',
                                     border: '1px solid #f1f5f9'
                                 }}>
