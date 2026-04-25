@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import eyLogo from "../../assets/sidebar_logo.png";
-const hivemindsLogo = "/trailytics_new_logo.png";
+const hivemindsLogo = "/Demo.png";
 import mamaearthLogo from "../../assets/mamaearth.jpeg";
 import marsPetcareLogo from "../../assets/Mars_Petcare_Logo.jpg";
 import boatLogo from "../../assets/Boat.png";
@@ -125,6 +125,7 @@ const Sidebar = ({
       { label: "Pricing Analysis", path: "/pricing-analysis", icon: <PriceChangeIcon sx={{ fontSize: '1rem' }} /> },
       { label: "Rules", path: "/automation-rules", icon: <ScheduleIcon sx={{ fontSize: '1rem' }} /> },
       { label: "History", path: "/history", icon: <DescriptionIcon sx={{ fontSize: '1rem' }} /> },
+      { label: "Market Intelligence", path: "http://trailytics.in/", icon: <PublicIcon sx={{ fontSize: '1rem' }} /> },
     ],
   };
 
@@ -257,7 +258,7 @@ const Sidebar = ({
             {user?.dbName === 'mars' || !user?.dbName && (
               <img
                 src={hivemindsLogo}
-                alt="Hiveminds Logo"
+                alt="Logo"
                 style={{
                   maxHeight: isCollapsed ? '32px' : '45px',
                   width: isCollapsed ? '100%' : 'auto',
