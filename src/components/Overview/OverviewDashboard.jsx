@@ -96,16 +96,27 @@ const OverviewDashboard = () => {
         // Helper to check if filter is effectively 'All'
         const isAll = (val, total) => val === 'All' || (Array.isArray(val) && (val.includes('All') || val.length === 0 || val.length === total));
 
+        const getHashVariance = (val) => {
+            if (!val || val === 'All' || (Array.isArray(val) && val.length === 0)) return 0;
+            const str = Array.isArray(val) ? [...val].sort().join(',') : String(val);
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return (Math.abs(hash) % 20) / 100; // returns 0.00 to 0.19
+        };
+
         const channelMult = isAll(selectedChannel, 1) ? 1.2 : 0.8;
-        const platformMult = isAll(selectedPlatform, 3) ? 1.1 : (Array.isArray(selectedPlatform) ? (0.4 + (selectedPlatform.length * 0.2)) : 0.7);
-        const brandMult = isAll(globalSelectedBrand, 3) ? 1.0 : (Array.isArray(globalSelectedBrand) ? (0.5 + (globalSelectedBrand.length * 0.15)) : 0.6);
+        const platformMult = (isAll(selectedPlatform, 3) ? 1.1 : (Array.isArray(selectedPlatform) ? (0.4 + (selectedPlatform.length * 0.2)) : 0.7)) + getHashVariance(selectedPlatform);
+        const brandMult = (isAll(globalSelectedBrand, 3) ? 1.0 : (Array.isArray(globalSelectedBrand) ? (0.5 + (globalSelectedBrand.length * 0.15)) : 0.6)) + getHashVariance(globalSelectedBrand);
         
         // Category multiplier — scales volume/currency KPIs with number of selected categories
         const totalCategories = 8; // TWS, Headphone, Wired Earphone, Speaker, Soundbar, Neckband, Wearables, Accessories
         const catCount = isAll(selectedCategory, totalCategories)
             ? totalCategories
             : (Array.isArray(selectedCategory) ? selectedCategory.length : (selectedCategory ? 1 : totalCategories));
-        const categoryMult = catCount / totalCategories;
+        const categoryMult = (catCount / totalCategories) + getHashVariance(selectedCategory);
 
         // Date range multiplier
         const days = timeEnd && timeStart ? timeEnd.diff(timeStart, 'days') + 1 : 7;
@@ -124,27 +135,27 @@ const OverviewDashboard = () => {
             ],
             adTypeData: {
                 0: [ // Product Listing
-                    { title: "ROAS", value: `${(28.15 * (1 + (combinedMult * 0.05 / dateMult))).toFixed(2)}x`, status: "Strong returns", statusIcon: <Flame className="w-3.5 h-3.5 text-orange-500" />, bgColor: "bg-[#ecfdf5]", borderColor: "border-[#10b981]/20", titleIcon: <TrendingUp className="w-3.5 h-3.5 text-[#10b981] mr-1" /> },
-                    { title: "ACoS", value: `${(3.55 * (1 - (combinedMult * 0.02 / dateMult))).toFixed(2)}%`, status: "Efficient", statusIcon: <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981]" />, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Target className="w-3.5 h-3.5 text-rose-400 mr-1" /> },
-                    { title: "CTR", value: `${(1.49 * (1 + (combinedMult * 0.01 / dateMult))).toFixed(2)}%`, status: "Click-through rate", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <MousePointerClick className="w-3.5 h-3.5 text-blue-400 mr-1" /> },
-                    { title: "CVR", value: `${(47.34 * (1 + (combinedMult * 0.03 / dateMult))).toFixed(2)}%`, status: "Conversion rate", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Zap className="w-3.5 h-3.5 text-indigo-400 mr-1" /> },
-                    { title: "CPC", value: `₹${Math.round(25 * (1 + (combinedMult * 0.02 / dateMult)))}`, status: "Cost per click", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <BarChart2 className="w-3.5 h-3.5 text-sky-400 mr-1" /> },
+                    { title: "ROAS", value: `${(28.15 * (1 + (combinedMult * 0.05))).toFixed(2)}x`, status: "Strong returns", statusIcon: <Flame className="w-3.5 h-3.5 text-orange-500" />, bgColor: "bg-[#ecfdf5]", borderColor: "border-[#10b981]/20", titleIcon: <TrendingUp className="w-3.5 h-3.5 text-[#10b981] mr-1" /> },
+                    { title: "ACoS", value: `${(3.55 * (1 - (combinedMult * 0.02))).toFixed(2)}%`, status: "Efficient", statusIcon: <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981]" />, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Target className="w-3.5 h-3.5 text-rose-400 mr-1" /> },
+                    { title: "CTR", value: `${(1.49 * (1 + (combinedMult * 0.01))).toFixed(2)}%`, status: "Click-through rate", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <MousePointerClick className="w-3.5 h-3.5 text-blue-400 mr-1" /> },
+                    { title: "CVR", value: `${(47.34 * (1 + (combinedMult * 0.03))).toFixed(2)}%`, status: "Conversion rate", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Zap className="w-3.5 h-3.5 text-indigo-400 mr-1" /> },
+                    { title: "CPC", value: `₹${Math.round(25 * (1 + (combinedMult * 0.02)))}`, status: "Cost per click", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <BarChart2 className="w-3.5 h-3.5 text-sky-400 mr-1" /> },
                     { title: "Add to Cart", value: `${Math.round(16.8 * combinedMult)}K`, status: "Cart additions", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <ShoppingCart className="w-3.5 h-3.5 text-orange-400 mr-1" /> }
                 ],
                 1: [ // Product Rec
-                    { title: "ROAS", value: `${(15.42 * (1 + (combinedMult * 0.04 / dateMult))).toFixed(2)}x`, status: "Steady", statusIcon: <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981]" />, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <TrendingUp className="w-3.5 h-3.5 text-[#10b981] mr-1" /> },
-                    { title: "ACoS", value: `${(6.48 * (1 - (combinedMult * 0.01 / dateMult))).toFixed(2)}%`, status: "Normal", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Target className="w-3.5 h-3.5 text-rose-400 mr-1" /> },
-                    { title: "CTR", value: `${(0.82 * (1 + (combinedMult * 0.02 / dateMult))).toFixed(2)}%`, status: "Room for growth", statusIcon: null, bgColor: "bg-[#fffbeb]", borderColor: "border-amber-100", titleIcon: <MousePointerClick className="w-3.5 h-3.5 text-blue-400 mr-1" /> },
-                    { title: "CVR", value: `${(22.15 * (1 + (combinedMult * 0.02 / dateMult))).toFixed(2)}%`, status: "Lower funnel", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Zap className="w-3.5 h-3.5 text-indigo-400 mr-1" /> },
-                    { title: "CPC", value: `₹${Math.round(18 * (1 + (combinedMult * 0.01 / dateMult)))}`, status: "Competitive", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <BarChart2 className="w-3.5 h-3.5 text-sky-400 mr-1" /> },
+                    { title: "ROAS", value: `${(15.42 * (1 + (combinedMult * 0.04))).toFixed(2)}x`, status: "Steady", statusIcon: <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981]" />, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <TrendingUp className="w-3.5 h-3.5 text-[#10b981] mr-1" /> },
+                    { title: "ACoS", value: `${(6.48 * (1 - (combinedMult * 0.01))).toFixed(2)}%`, status: "Normal", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Target className="w-3.5 h-3.5 text-rose-400 mr-1" /> },
+                    { title: "CTR", value: `${(0.82 * (1 + (combinedMult * 0.02))).toFixed(2)}%`, status: "Room for growth", statusIcon: null, bgColor: "bg-[#fffbeb]", borderColor: "border-amber-100", titleIcon: <MousePointerClick className="w-3.5 h-3.5 text-blue-400 mr-1" /> },
+                    { title: "CVR", value: `${(22.15 * (1 + (combinedMult * 0.02))).toFixed(2)}%`, status: "Lower funnel", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Zap className="w-3.5 h-3.5 text-indigo-400 mr-1" /> },
+                    { title: "CPC", value: `₹${Math.round(18 * (1 + (combinedMult * 0.01)))}`, status: "Competitive", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <BarChart2 className="w-3.5 h-3.5 text-sky-400 mr-1" /> },
                     { title: "Add to Cart", value: `${Math.round(4.2 * combinedMult)}K`, status: "Consistent", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <ShoppingCart className="w-3.5 h-3.5 text-orange-400 mr-1" /> }
                 ],
                 2: [ // Brand Booster
-                    { title: "ROAS", value: `${(12.24 * (1 + (combinedMult * 0.03 / dateMult))).toFixed(2)}x`, status: "Awareness focus", statusIcon: <Info className="w-3.5 h-3.5 text-blue-500" />, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <TrendingUp className="w-3.5 h-3.5 text-[#10b981] mr-1" /> },
-                    { title: "ACoS", value: `${(8.15 * (1 - (combinedMult * 0.01 / dateMult))).toFixed(2)}%`, status: "Investment", statusIcon: null, bgColor: "bg-[#eff6ff]", borderColor: "border-blue-100", titleIcon: <Target className="w-3.5 h-3.5 text-rose-400 mr-1" /> },
-                    { title: "CTR", value: `${(2.14 * (1 + (combinedMult * 0.04 / dateMult))).toFixed(2)}%`, status: "High engagement", statusIcon: <Flame className="w-3.5 h-3.5 text-orange-500" />, bgColor: "bg-[#ecfdf5]", borderColor: "border-[#10b981]/20", titleIcon: <MousePointerClick className="w-3.5 h-3.5 text-blue-400 mr-1" /> },
-                    { title: "CVR", value: `${(15.42 * (1 + (combinedMult * 0.01 / dateMult))).toFixed(2)}%`, status: "Top funnel", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Zap className="w-3.5 h-3.5 text-indigo-400 mr-1" /> },
-                    { title: "CPC", value: `₹${Math.round(32 * (1 + (combinedMult * 0.03 / dateMult)))}`, status: "Premium", statusIcon: null, bgColor: "bg-[#fef2f2]", borderColor: "border-rose-100", titleIcon: <BarChart2 className="w-3.5 h-3.5 text-sky-400 mr-1" /> },
+                    { title: "ROAS", value: `${(12.24 * (1 + (combinedMult * 0.03))).toFixed(2)}x`, status: "Awareness focus", statusIcon: <Info className="w-3.5 h-3.5 text-blue-500" />, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <TrendingUp className="w-3.5 h-3.5 text-[#10b981] mr-1" /> },
+                    { title: "ACoS", value: `${(8.15 * (1 - (combinedMult * 0.01))).toFixed(2)}%`, status: "Investment", statusIcon: null, bgColor: "bg-[#eff6ff]", borderColor: "border-blue-100", titleIcon: <Target className="w-3.5 h-3.5 text-rose-400 mr-1" /> },
+                    { title: "CTR", value: `${(2.14 * (1 + (combinedMult * 0.04))).toFixed(2)}%`, status: "High engagement", statusIcon: <Flame className="w-3.5 h-3.5 text-orange-500" />, bgColor: "bg-[#ecfdf5]", borderColor: "border-[#10b981]/20", titleIcon: <MousePointerClick className="w-3.5 h-3.5 text-blue-400 mr-1" /> },
+                    { title: "CVR", value: `${(15.42 * (1 + (combinedMult * 0.01))).toFixed(2)}%`, status: "Top funnel", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <Zap className="w-3.5 h-3.5 text-indigo-400 mr-1" /> },
+                    { title: "CPC", value: `₹${Math.round(32 * (1 + (combinedMult * 0.03)))}`, status: "Premium", statusIcon: null, bgColor: "bg-[#fef2f2]", borderColor: "border-rose-100", titleIcon: <BarChart2 className="w-3.5 h-3.5 text-sky-400 mr-1" /> },
                     { title: "Add to Cart", value: `${Math.round(2.8 * combinedMult)}K`, status: "Discovery", statusIcon: null, bgColor: "bg-[#f8fafc]", borderColor: "border-slate-100", titleIcon: <ShoppingCart className="w-3.5 h-3.5 text-orange-400 mr-1" /> }
                 ]
             },
