@@ -41,8 +41,8 @@ export default function VisibilityAnalysis() {
     pincode: selectedPincode || "All",
     months: 6,
     timeStep: "Weekly",
-    startDate: "2025-01-01",
-    endDate: "2025-01-31"
+    startDate: timeStart ? timeStart.format('YYYY-MM-DD') : dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+    endDate: timeEnd ? timeEnd.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD')
   });
 
   // ============ Set hardcoded dates on mount ============
@@ -51,6 +51,21 @@ export default function VisibilityAnalysis() {
       setVisibilityDatesReady(true);
     }
   }, [visibilityDatesReady]);
+
+  // Sync filters with FilterContext when context values change
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      platform: platform || prev.platform,
+      brand: selectedBrand || prev.brand,
+      keyword: selectedKeyword || prev.keyword,
+      category: selectedCategory || prev.category,
+      channel: selectedChannel || prev.channel,
+      zone: selectedZone || prev.zone,
+      startDate: timeStart ? timeStart.format('YYYY-MM-DD') : prev.startDate,
+      endDate: timeEnd ? timeEnd.format('YYYY-MM-DD') : prev.endDate,
+    }));
+  }, [platform, selectedBrand, selectedKeyword, selectedCategory, selectedChannel, selectedZone, timeStart, timeEnd]);
 
   // Loading and error states
   const [loading, setLoading] = useState({

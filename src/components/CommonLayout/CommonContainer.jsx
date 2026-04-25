@@ -14,7 +14,8 @@ export default function CommonContainer({
   hideFilters = false,
   children,
 }) {
-  const { platforms } = React.useContext(FilterContext);
+  const filterContext = React.useContext(FilterContext);
+  const platforms = filterContext?.platforms || [];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { user } = useAuth();

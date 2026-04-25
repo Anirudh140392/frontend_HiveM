@@ -41,24 +41,24 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
 
+import { FilterContext } from '../../utils/FilterContext';
+
 const HistoryDashboard = () => {
+    const { 
+        selectedBrand: globalSelectedBrand,
+        platform: globalSelectedPlatform,
+        timeStart,
+        timeEnd
+    } = React.useContext(FilterContext);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedBrand, setSelectedBrand] = useState('Boat');
-    const [selectedPlatform, setSelectedPlatform] = useState('All platforms');
     const [selectedSource, setSelectedSource] = useState('All activity sources');
     const [statusFilter, setStatusFilter] = useState('All Statuses');
     const [typeFilter, setTypeFilter] = useState('All Types');
     const [debugItem, setDebugItem] = useState(null);
 
-    const brands = [
-        "All", "Boat", "Bowlers", "Bunge", "Continental Coffee", "Cremica", 
-        "Godrej Consumer Products Ltd", "Mamaearth", "Pidilite", 
-        "Prestige", "Protinex (Danone)", "Samsonite", 
-        "Smoke Boat Blinkit 202604240116", "Sony", "Sugar Cosmetics", "Zydus"
-    ];
     const generateHistoryForBrand = (brand) => {
-        const platformMap = { "Boat": "Amazon", "Sony": "Amazon", "Mamaearth": "Instamart", "Prestige": "Amazon", "Zydus": "Blinkit" };
-        const mainPlatform = platformMap[brand] || "Amazon";
+        const brandsList = ["Cadbury", "Ferrero", "Haldiram's", "Nestle"];
+        const isAll = brand === "All" || (Array.isArray(brand) && (brand.includes("All") || brand.length === 0 || brand.length === 4));
         
         const types = ["STATUS", "BUDGET", "BID", "ALERT", "KEYWORD", "TARGETING"];
         const statuses = ["success", "pending", "failed", "skipped"];
@@ -79,22 +79,29 @@ const HistoryDashboard = () => {
             TARGETING: "bg-rose-50"
         };
 
-        return Array.from({ length: 15 }, (_, i) => {
+        const days = timeEnd && timeStart ? timeEnd.diff(timeStart, 'days') + 1 : 7;
+        const baseDate = timeEnd ? timeEnd.clone() : null;
+
+        return Array.from({ length: Math.min(20, days * 2) }, (_, i) => {
             const type = types[i % types.length];
+            const actionDate = baseDate ? baseDate.clone().subtract(Math.floor(i / 2), 'days').subtract(i % 24, 'hours') : null;
+            
+            const brandToUseForThisItem = isAll ? brandsList[i % 4] : (Array.isArray(brand) ? brand[0] : brand);
             return {
-                id: `${brand}-hist-${i + 1}`,
+                id: `${brandToUseForThisItem}-hist-${i + 1}`,
+                brand: brandToUseForThisItem,
                 type: type,
                 status: statuses[i % statuses.length],
                 source: i % 3 === 0 ? "Manual" : "Rule",
-                platform: mainPlatform,
-                title: `${brand} ${type.toLowerCase()} check`,
-                subtitle: `Process ${1000 + i}`,
-                timeAgo: `${i + 1}h ago`,
+                platform: ["Blinkit", "Zepto", "Instamart"][i % 3],
+                title: `${brandToUseForThisItem} ${type.toLowerCase()} update`,
+                subtitle: `Process ID: ${1000 + i}`,
+                timeAgo: actionDate ? actionDate.format("DD MMM, HH:mm") : `${i + 1}h ago`,
                 icon: icons[type],
                 iconBg: bgs[type],
-                actionLeft: "Value A",
-                actionRight: "Value B",
-                actionRightColor: "text-emerald-600"
+                actionLeft: i % 2 === 0 ? "₹500" : "Paused",
+                actionRight: i % 2 === 0 ? "₹750" : "Active",
+                actionRightColor: i % 2 === 0 ? "text-emerald-600" : "text-blue-600"
             };
         });
     };
@@ -102,8 +109,8 @@ const HistoryDashboard = () => {
     const [historyData, setHistoryData] = useState([]);
 
     useEffect(() => {
-        setHistoryData(generateHistoryForBrand(selectedBrand));
-    }, [selectedBrand]);
+        setHistoryData(generateHistoryForBrand(globalSelectedBrand));
+    }, [globalSelectedBrand, timeStart, timeEnd]);
 
     const stats = [
         { label: "Total", value: historyData.length, icon: <ClipboardList className="w-6 h-6 text-amber-600" />, active: true },
@@ -150,10 +157,18 @@ const HistoryDashboard = () => {
                              item.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === 'All Statuses' || item.status.toLowerCase() === statusFilter.toLowerCase();
         const matchesType = typeFilter === 'All Types' || item.type.toLowerCase() === typeFilter.toLowerCase();
-        const matchesPlatform = selectedPlatform === 'All platforms' || item.platform.toLowerCase() === selectedPlatform.toLowerCase();
+        const matchesPlatform = globalSelectedPlatform === 'All' || 
+                              (Array.isArray(globalSelectedPlatform) 
+                                ? (globalSelectedPlatform.includes('All') || globalSelectedPlatform.some(p => p.toLowerCase() === item.platform.toLowerCase()))
+                                : (globalSelectedPlatform && item.platform && item.platform.toLowerCase() === globalSelectedPlatform.toLowerCase()));
         const matchesSource = selectedSource === 'All activity sources' || item.source.toLowerCase() === selectedSource.toLowerCase();
         
-        return matchesSearch && matchesStatus && matchesType && matchesPlatform && matchesSource;
+        const matchesBrand = globalSelectedBrand === 'All' || 
+                           (Array.isArray(globalSelectedBrand) 
+                             ? (globalSelectedBrand.includes('All') || globalSelectedBrand.some(b => b.toLowerCase() === item.brand.toLowerCase()))
+                             : (globalSelectedBrand && item.brand && item.brand.toLowerCase() === globalSelectedBrand.toLowerCase()));
+
+        return matchesSearch && matchesStatus && matchesType && matchesPlatform && matchesSource && matchesBrand;
     });
 
     const FilterChip = ({ icon, label, active, onClick }) => (
@@ -217,31 +232,7 @@ const HistoryDashboard = () => {
             }}>
                 <CardContent sx={{ p: '24px !important' }}>
                     {/* Selectors Row */}
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, mb: 3 }}>
-                        <FormControl fullWidth size="small">
-                            <Select
-                                value={selectedBrand}
-                                onChange={(e) => setSelectedBrand(e.target.value)}
-                                sx={{ borderRadius: '12px', bgcolor: '#f8fafc' }}
-                                startAdornment={<Box sx={{ mr: 1, display: 'flex' }}><Layers size={18} className="text-slate-400" /></Box>}
-                            >
-                                {brands.map(brand => <MenuItem key={brand} value={brand}>{brand}</MenuItem>)}
-                            </Select>
-                        </FormControl>
-                        <FormControl fullWidth size="small">
-                            <Select
-                                value={selectedPlatform}
-                                onChange={(e) => setSelectedPlatform(e.target.value)}
-                                sx={{ borderRadius: '12px', bgcolor: '#f8fafc' }}
-                                startAdornment={<Box sx={{ mr: 1, display: 'flex' }}><Layers size={18} className="text-slate-400" /></Box>}
-                            >
-                                <MenuItem value="All platforms">All platforms</MenuItem>
-                                <MenuItem value="Amazon">Amazon</MenuItem>
-                                <MenuItem value="Blinkit">Blinkit</MenuItem>
-                                <MenuItem value="Instamart">Instamart</MenuItem>
-                                <MenuItem value="Zepto">Zepto</MenuItem>
-                            </Select>
-                        </FormControl>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 2, mb: 3 }}>
                         <FormControl fullWidth size="small">
                             <Select
                                 value={selectedSource}

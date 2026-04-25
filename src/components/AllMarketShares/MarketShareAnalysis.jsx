@@ -381,18 +381,21 @@ export default function MarketShareAnalysis() {
       setTimeout(() => {
         if (MARKET_SHARE_DATA) {
           setKpis(prev => prev.map(k => {
+            const days = timeEnd && timeStart ? timeEnd.diff(timeStart, 'days') + 1 : 30;
+            const dateMult = days / 30; // Normalize to a month
+
             if (k.id === "ms-category-size") {
-              const val = MARKET_SHARE_DATA.categorySize.size;
+              const val = MARKET_SHARE_DATA.categorySize.size * dateMult;
               const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
               return { ...k, value: formattedValue, delta: MARKET_SHARE_DATA.categorySize.delta };
             }
             if (k.id === "ms-leader-sales") {
-              const val = MARKET_SHARE_DATA.marketLeader.sales;
+              const val = MARKET_SHARE_DATA.marketLeader.sales * dateMult;
               const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
               return { ...k, value: formattedValue, brand: MARKET_SHARE_DATA.marketLeader.brand, delta: MARKET_SHARE_DATA.marketLeader.delta };
             }
             if (k.id === "ms-hiveminds-wrigley") {
-              const val = MARKET_SHARE_DATA.hivemindsWrigley.sales;
+              const val = MARKET_SHARE_DATA.hivemindsWrigley.sales * dateMult;
               const formattedValue = `₹ ${(val / 10000000).toFixed(2)} Cr`;
               return { ...k, value: formattedValue, delta: MARKET_SHARE_DATA.hivemindsWrigley.delta };
             }

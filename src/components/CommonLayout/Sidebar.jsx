@@ -119,10 +119,10 @@ const Sidebar = ({
   const menuSections = {
     "MAIN MENU": [
       { label: "Overview", path: "/overview", icon: <DashboardIcon sx={{ fontSize: '1rem' }} /> },
-      { label: "Availability Analysis", path: "/availability-analysis", icon: <ShoppingCartIcon sx={{ fontSize: '1rem' }} /> },
-      { label: "Visibility Analysis", path: "/visibility-analysis", icon: <VisibilityIcon sx={{ fontSize: '1rem' }} /> },
-      { label: "Market Share", path: "/market-share", icon: <AutoGraphIcon sx={{ fontSize: '1rem' }} /> },
-      { label: "Pricing Analysis", path: "/pricing-analysis", icon: <PriceChangeIcon sx={{ fontSize: '1rem' }} /> },
+      // { label: "Availability Analysis", path: "/availability-analysis", icon: <ShoppingCartIcon sx={{ fontSize: '1rem' }} /> },
+      // { label: "Visibility Analysis", path: "/visibility-analysis", icon: <VisibilityIcon sx={{ fontSize: '1rem' }} /> },
+      // { label: "Market Share", path: "/market-share", icon: <AutoGraphIcon sx={{ fontSize: '1rem' }} /> },
+      // { label: "Pricing Analysis", path: "/pricing-analysis", icon: <PriceChangeIcon sx={{ fontSize: '1rem' }} /> },
       { label: "Rules", path: "/automation-rules", icon: <ScheduleIcon sx={{ fontSize: '1rem' }} /> },
       { label: "History", path: "/history", icon: <DescriptionIcon sx={{ fontSize: '1rem' }} /> },
       { label: "Market Intelligence", path: "http://trailytics.in/", icon: <PublicIcon sx={{ fontSize: '1rem' }} /> },

@@ -2,7 +2,13 @@ import React, { createContext, useState, useEffect, useCallback } from "react";
 import dayjs from "dayjs";
 import { useAuth } from "./AuthContext";
 
-export const FilterContext = createContext();
+export const FilterContext = createContext({
+    platforms: [],
+    categories: [],
+    brands: [],
+    channels: [],
+    locations: []
+});
 
 // Context ready states so children know when async data has loaded
 export const initialContextLoaded = (ctx) => ctx.datesFetched && ctx.platformsFetched;
@@ -10,25 +16,25 @@ export const initialContextLoaded = (ctx) => ctx.datesFetched && ctx.platformsFe
 
 // Static fallback data (used if API is unreachable)
 const FALLBACK_PLATFORMS = ["Blinkit", "Zepto", "Instamart"];
-const FALLBACK_CATEGORIES = ["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC"];
+const FALLBACK_CATEGORIES = ["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC", "Snacks"];
 const FALLBACK_LOCATIONS = [];
-const FALLBACK_BRANDS = [];
-const FALLBACK_CHANNELS = ["Ecom", "ModernTrade"];
+const FALLBACK_BRANDS = ["Cadbury", "Ferrero", "Haldiram's", "Nestle"];
+const FALLBACK_CHANNELS = ["Ecom"];
 
 export const FilterProvider = ({ children }) => {
     const { isLoggedIn } = useAuth();
     const isAuthenticated = true;
 
     // Channel state
-    const [channels, setChannels] = useState(["Ecom", "ModernTrade"]);
+    const [channels, setChannels] = useState(["Ecom"]);
     const [selectedChannel, setSelectedChannel] = useState("All");
 
     // Platform state
-    const [platforms, setPlatforms] = useState(["Blinkit", "Zepto", "Instamart", "Swiggy", "Amazon", "Flipkart"]);
+    const [platforms, setPlatforms] = useState(["Blinkit", "Zepto", "Instamart"]);
     const [platform, setPlatform] = useState("All");
 
     // Brand state
-    const [brands, setBrands] = useState(["Brand A", "Brand B", "Brand C"]);
+    const [brands, setBrands] = useState(["Cadbury", "Ferrero", "Haldiram's", "Nestle"]);
     const [selectedBrand, setSelectedBrand] = useState("All");
 
     // Location state
@@ -52,7 +58,7 @@ export const FilterProvider = ({ children }) => {
     const [selectedKeywordType, setSelectedKeywordType] = useState(["All"]);
 
     // Category state
-    const [categories, setCategories] = useState(["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC", "Snacks", "Beverages"]);
+    const [categories, setCategories] = useState(["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC", "Snacks"]);
     const [visibilityCategories, setVisibilityCategories] = useState(["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC"]);
     const [selectedCategory, setSelectedCategory] = useState("All");
 

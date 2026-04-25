@@ -56,60 +56,24 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { FilterContext } from '../../utils/FilterContext';
+
 const AutomationRules = () => {
+    const { 
+        selectedBrand: globalSelectedBrand,
+        platform: globalSelectedPlatform,
+        timeStart,
+        timeEnd
+    } = React.useContext(FilterContext);
     const [selectedRules, setSelectedRules] = useState([]);
-    const [rules, setRules] = useState([
-        {
-            id: 1,
-            name: "test_alert",
-            status: "active",
-            type: "Send Alert",
-            platform: "Amazon",
-            entity: "Boat Amazon India",
-            triggers: 5,
-            lastRun: "21/04/2026, 00:00:17",
-            nextRun: "22/04/2026, 00:00:17",
-            schedule: "daily",
-            created: "17/04/2026",
-            runsAt: "Runs at specific times"
-        },
-        {
-            id: 2,
-            name: "boat Zepto test",
-            status: "active",
-            type: "Pause Campaign",
-            platform: "Zepto",
-            entity: "Boat Zepto",
-            triggers: 7,
-            lastRun: "20/04/2026, 16:18:09",
-            nextRun: "20/04/2026, 21:48:00",
-            schedule: "daily",
-            created: "17/04/2026",
-            runsAt: "Runs at specific times: 16:18"
-        },
-        {
-            id: 3,
-            name: "test_blinkit",
-            status: "paused",
-            type: "Pause Campaign",
-            platform: "BLINKIT",
-            entity: "Boat Blinkit",
-            triggers: 3,
-            lastRun: "17/04/2026, 13:06:03",
-            nextRun: null,
-            schedule: "daily",
-            created: "17/04/2026",
-            runsAt: "Runs at specific times: 13:06"
-        }
-    ]);
+    const [rules, setRules] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedBrand, setSelectedBrand] = useState('Prestige');
     const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
     const [editingRuleId, setEditingRuleId] = useState(null);
     const [statusFilter, setStatusFilter] = useState('All');
     const [newRuleData, setNewRuleData] = useState({
         platform: "Amazon - PrestigeAmazon",
-        company: "Prestige",
+        company: "Cadbury",
         name: "Pause High ACOS",
         notes: "Automatically pause campaigns when ACOS exceeds 40%",
         actionType: "Send Alert",
@@ -118,86 +82,40 @@ const AutomationRules = () => {
         runAtScheduledTimes: false
     });
 
-    const brands = [
-        "All", "Boat", "Bowlers", "Bunge", "Continental Coffee", "Cremica", 
-        "Godrej Consumer Products Ltd", "Mamaearth", "Pidilite", 
-        "Prestige", "Protinex (Danone)", "Samsonite", 
-        "Smoke Boat Blinkit 202604240116", "Sony", "Sugar Cosmetics", "Zydus"
-    ];
-
     const generateRulesForBrand = (brand) => {
-        if (brand === "All") {
-            const majorBrands = ["Boat", "Sony", "Mamaearth", "Prestige", "Zydus", "Pidilite", "Samsonite"];
-            return majorBrands.flatMap((b, i) => {
-                const platformMap = { "Boat": "Amazon", "Sony": "Amazon", "Mamaearth": "Instamart", "Prestige": "Amazon", "Zydus": "Blinkit", "Pidilite": "Amazon", "Samsonite": "Amazon" };
-                const platform = platformMap[b];
-                return [
-                    {
-                        id: `all-${i}-1`,
-                        name: `${b}_Performance_Guard`,
-                        status: i % 2 === 0 ? "active" : "paused",
-                        type: "Pause Campaign",
-                        platform: platform,
-                        entity: `${b} Main`,
-                        triggers: Math.floor(Math.random() * 10),
-                        lastRun: "24/04/2026",
-                        nextRun: "25/04/2026",
-                        schedule: "daily",
-                        created: "01/04/2026",
-                        runsAt: "Runs at 08:00"
-                    },
-                    {
-                        id: `all-${i}-2`,
-                        name: `${b}_Alert`,
-                        status: "active",
-                        type: "Send Alert",
-                        platform: platform,
-                        entity: `${b} Global`,
-                        triggers: Math.floor(Math.random() * 20),
-                        lastRun: "Just now",
-                        nextRun: "Calculating...",
-                        schedule: "hourly",
-                        created: "05/04/2026",
-                        runsAt: "Runs every hour"
-                    }
-                ];
-            });
-        }
-
-        const platformMap = {
-            "Boat": "Amazon", "Sony": "Amazon", "Mamaearth": "Instamart", 
-            "Prestige": "Amazon", "Bunge": "Zepto", "Zydus": "Blinkit",
-            "Pidilite": "Amazon", "Samsonite": "Amazon", "Sugar Cosmetics": "Amazon",
-            "Bowlers": "Amazon", "Cremica": "Amazon", "Continental Coffee": "Amazon",
-            "Godrej Consumer Products Ltd": "Amazon", "Protinex (Danone)": "Amazon",
-            "Smoke Boat Blinkit 202604240116": "Blinkit"
-        };
-        const platform = platformMap[brand] || "Amazon";
-        const entityPrefix = brand.split(' ')[0];
-
+        const brandsList = ["Cadbury", "Ferrero", "Haldiram's", "Nestle"];
+        const isAll = brand === "All" || (Array.isArray(brand) && (brand.includes("All") || brand.length === 0 || brand.length === 4));
+        
         const ruleTypes = ["Pause Campaign", "Send Alert", "Change Budget", "Enable Campaign"];
-        const schedules = ["daily", "hourly", "weekly", "Custom"];
+        const baseDate = timeEnd ? timeEnd.clone() : null;
 
-        return Array.from({ length: 15 }, (_, i) => ({
-            id: `${brand}-${i + 1}`,
-            name: `${brand}_${ruleTypes[i % 4].split(' ')[0]}_${i + 1}`,
-            status: i % 5 === 0 ? "paused" : "active",
-            type: ruleTypes[i % 4],
-            platform: platform,
-            entity: `${entityPrefix}_Campaign_${100 + i}`,
-            triggers: Math.floor(Math.random() * 50),
-            lastRun: `${20 + (i % 5)}/04/2026`,
-            nextRun: i % 2 === 0 ? "26/04/2026" : null,
-            schedule: i % 3 === 0 ? "daily" : "hourly",
-            created: "01/04/2026",
-            runsAt: i % 2 === 0 ? `Runs at ${0 + i}:00` : "Paused"
-        }));
+        return Array.from({ length: 15 }, (_, i) => {
+            const brandToUseForThisRule = isAll ? brandsList[i % 4] : (Array.isArray(brand) ? brand[0] : brand);
+            const platforms = ["Blinkit", "Zepto", "Instamart"];
+            const platform = platforms[i % 3];
+            
+            return {
+                id: `${brandToUseForThisRule}-${i + 1}`,
+                brand: brandToUseForThisRule,
+                name: `${brandToUseForThisRule}_${ruleTypes[i % 4].split(' ')[0]}_${i + 1}`,
+                status: i % 5 === 0 ? "paused" : "active",
+                type: ruleTypes[i % 4],
+                platform: platform,
+                entity: `${brandToUseForThisRule.split(' ')[0]}_Campaign_${100 + i}`,
+                triggers: Math.floor(Math.random() * 50),
+                lastRun: baseDate ? baseDate.clone().subtract(i % 3, 'days').subtract(i, 'hours').format("DD/MM/YYYY, HH:mm:ss") : `${20 + (i % 5)}/04/2026`,
+                nextRun: i % 2 === 0 ? (baseDate ? baseDate.clone().add(1, 'days').format("DD/MM/YYYY, HH:mm:ss") : "26/04/2026") : null,
+                schedule: i % 3 === 0 ? "daily" : "hourly",
+                created: baseDate ? baseDate.clone().subtract(30, 'days').format("DD/MM/YYYY") : "01/04/2026",
+                runsAt: i % 2 === 0 ? `Runs at ${0 + i}:00` : "Paused"
+            };
+        });
     };
 
     useEffect(() => {
-        setRules(generateRulesForBrand(selectedBrand));
+        setRules(generateRulesForBrand(globalSelectedBrand));
         setSelectedRules([]);
-    }, [selectedBrand]);
+    }, [globalSelectedBrand, timeStart, timeEnd]);
 
     const templateList = [
         { title: "Pause High ACOS", desc: "Automatically pause campaigns when ACOS exceeds 40%", icon: <Pause size={18} />, color: "#f43f5e", bg: "#fff1f2", border: "#ffe4e6" },
@@ -235,7 +153,7 @@ const AutomationRules = () => {
         setEditingRuleId(rule.id);
         setNewRuleData({
             platform: `${rule.platform} - ${rule.entity}`,
-            company: selectedBrand,
+            company: globalSelectedBrand,
             name: rule.name,
             notes: "",
             actionType: rule.type,
@@ -244,6 +162,15 @@ const AutomationRules = () => {
             runAtScheduledTimes: rule.schedule !== 'daily'
         });
         setIsCreateDrawerOpen(true);
+    };
+
+    const toggleRuleStatus = (ruleId) => {
+        setRules(prev => prev.map(rule => {
+            if (rule.id === ruleId) {
+                return { ...rule, status: rule.status === 'active' ? 'paused' : 'active' };
+            }
+            return rule;
+        }));
     };
 
     const handleCloneRule = (rule) => {
@@ -338,7 +265,7 @@ const AutomationRules = () => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
-        link.setAttribute('download', `${selectedBrand}_Automation_Rules.csv`);
+        link.setAttribute('download', `${globalSelectedBrand}_Automation_Rules.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -349,11 +276,19 @@ const AutomationRules = () => {
                             rule.platform.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             rule.entity.toLowerCase().includes(searchQuery.toLowerCase());
         
+        const matchesPlatform = globalSelectedPlatform === 'All' || 
+                              (Array.isArray(globalSelectedPlatform) 
+                                ? (globalSelectedPlatform.includes('All') || globalSelectedPlatform.some(p => p.toLowerCase() === rule.platform.toLowerCase()))
+                                : (globalSelectedPlatform && rule.platform && rule.platform.toLowerCase() === globalSelectedPlatform.toLowerCase()));
         const matchesStatus = statusFilter === 'All' || 
                             (statusFilter === 'Active' && rule.status === 'active') ||
                             (statusFilter === 'Paused' && rule.status === 'paused');
-                            
-        return matchesSearch && matchesStatus;
+        const matchesBrand = globalSelectedBrand === 'All' || 
+                           (Array.isArray(globalSelectedBrand) 
+                             ? (globalSelectedBrand.includes('All') || globalSelectedBrand.some(b => b.toLowerCase() === rule.brand.toLowerCase()))
+                             : (globalSelectedBrand && rule.brand && rule.brand.toLowerCase() === globalSelectedBrand.toLowerCase()));
+
+        return matchesSearch && matchesStatus && matchesPlatform && matchesBrand;
     });
 
     return (
@@ -404,28 +339,7 @@ const AutomationRules = () => {
                             ),
                         }}
                     />
-                    <FormControl size="small" sx={{ minWidth: 200 }}>
-                        <Select
-                            value={selectedBrand}
-                            onChange={(e) => setSelectedBrand(e.target.value)}
-                            sx={{
-                                bgcolor: 'white',
-                                borderRadius: '12px',
-                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e2e8f0' }
-                            }}
-                        >
-                            {brands.map(brand => (
-                                <MenuItem key={brand} value={brand}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Avatar sx={{ width: 20, height: 20, fontSize: '10px', bgcolor: '#8b5cf6' }}>
-                                            {brand.charAt(0)}
-                                        </Avatar>
-                                        {brand}
-                                    </Box>
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+
                     <Button
                         variant="contained"
                         startIcon={<Plus size={18} />}
@@ -793,7 +707,7 @@ const AutomationRules = () => {
                                         </Box>
                                     )}
                                 >
-                                    {brands.map(brand => (
+                                    {["Cadbury", "Ferrero", "Haldiram's", "Nestle"].map(brand => (
                                         <MenuItem key={brand} value={brand}>
                                             <Typography variant="body2">{brand}</Typography>
                                         </MenuItem>
