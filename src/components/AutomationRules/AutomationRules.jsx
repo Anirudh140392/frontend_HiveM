@@ -61,6 +61,7 @@ import { FilterContext } from '../../utils/FilterContext';
 const AutomationRules = () => {
     const { 
         selectedBrand: globalSelectedBrand,
+        selectedCategory: globalSelectedCategory,
         platform: globalSelectedPlatform,
         timeStart,
         timeEnd
@@ -82,22 +83,21 @@ const AutomationRules = () => {
         runAtScheduledTimes: false
     });
 
-    const generateRulesForBrand = (brand) => {
-        const brandsList = ["Cadbury", "Ferrero", "Haldiram's", "Nestle"];
-        const isAll = brand === "All" || (Array.isArray(brand) && (brand.includes("All") || brand.length === 0 || brand.length === 4));
-        
+    const generateRulesForBrand = (activeBrands) => {
+        const allBrands = ["Audio", "Accessories", "Wearables"];
+        const brandsToUse = Array.isArray(activeBrands) ? activeBrands : (activeBrands === "All" ? allBrands : [activeBrands]);
         const ruleTypes = ["Pause Campaign", "Send Alert", "Change Budget", "Enable Campaign"];
         const baseDate = timeEnd ? timeEnd.clone() : null;
 
         return Array.from({ length: 15 }, (_, i) => {
-            const brandToUseForThisRule = isAll ? brandsList[i % 4] : (Array.isArray(brand) ? brand[0] : brand);
+            const brandToUseForThisRule = brandsToUse[i % brandsToUse.length];
             const platforms = ["Blinkit", "Zepto", "Instamart"];
             const platform = platforms[i % 3];
             
             return {
                 id: `${brandToUseForThisRule}-${i + 1}`,
                 brand: brandToUseForThisRule,
-                name: `${brandToUseForThisRule}_${ruleTypes[i % 4].split(' ')[0]}_${i + 1}`,
+                name: `boat_${brandToUseForThisRule}_${ruleTypes[i % 4].split(' ')[0]}_${i + 1}`,
                 status: i % 5 === 0 ? "paused" : "active",
                 type: ruleTypes[i % 4],
                 platform: platform,
@@ -112,10 +112,42 @@ const AutomationRules = () => {
         });
     };
 
+    // Map category → brands so category filter also works
+    const BRAND_CATEGORY_MAP = {
+        "Audio": ["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband"],
+        "Accessories": ["Accessories"],
+        "Wearables": ["Wearables"]
+    };
+
+    const resolveBrandsFromFilters = (brand, category) => {
+        const allBrands = ["Audio", "Accessories", "Wearables"];
+        let brandsFromCategory = null;
+        const catVal = category;
+        if (catVal && catVal !== "All" && !(Array.isArray(catVal) && (catVal.length === 0 || catVal.includes("All")))) {
+            const cats = Array.isArray(catVal) ? catVal : [catVal];
+            const allowed = new Set();
+            cats.forEach(c => {
+                Object.entries(BRAND_CATEGORY_MAP).forEach(([b, catList]) => {
+                    if (catList.includes(c)) allowed.add(b);
+                });
+            });
+            brandsFromCategory = allBrands.filter(b => allowed.has(b));
+        }
+
+        const isAllBrand = !brand || brand === "All" || (Array.isArray(brand) && (brand.includes("All") || brand.length === 0));
+        let resolvedBrands = isAllBrand ? allBrands : (Array.isArray(brand) ? brand : [brand]);
+
+        if (brandsFromCategory) {
+            resolvedBrands = resolvedBrands.filter(b => brandsFromCategory.includes(b));
+        }
+        return resolvedBrands.length > 0 ? resolvedBrands : allBrands;
+    };
+
     useEffect(() => {
-        setRules(generateRulesForBrand(globalSelectedBrand));
+        const activeBrands = resolveBrandsFromFilters(globalSelectedBrand, globalSelectedCategory);
+        setRules(generateRulesForBrand(activeBrands));
         setSelectedRules([]);
-    }, [globalSelectedBrand, timeStart, timeEnd]);
+    }, [globalSelectedBrand, globalSelectedCategory, timeStart, timeEnd]);
 
     const templateList = [
         { title: "Pause High ACOS", desc: "Automatically pause campaigns when ACOS exceeds 40%", icon: <Pause size={18} />, color: "#f43f5e", bg: "#fff1f2", border: "#ffe4e6" },

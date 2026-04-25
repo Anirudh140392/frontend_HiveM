@@ -6,6 +6,7 @@ export const FilterContext = createContext({
     platforms: [],
     categories: [],
     brands: [],
+    companies: [],
     channels: [],
     locations: []
 });
@@ -16,9 +17,9 @@ export const initialContextLoaded = (ctx) => ctx.datesFetched && ctx.platformsFe
 
 // Static fallback data (used if API is unreachable)
 const FALLBACK_PLATFORMS = ["Blinkit", "Zepto", "Instamart"];
-const FALLBACK_CATEGORIES = ["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC", "Snacks"];
+const FALLBACK_CATEGORIES = ["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband", "Wearables", "Accessories"];
 const FALLBACK_LOCATIONS = [];
-const FALLBACK_BRANDS = ["Cadbury", "Ferrero", "Haldiram's", "Nestle"];
+const FALLBACK_BRANDS = ["Audio", "Accessories", "Wearables"];
 const FALLBACK_CHANNELS = ["Ecom"];
 
 export const FilterProvider = ({ children }) => {
@@ -33,8 +34,12 @@ export const FilterProvider = ({ children }) => {
     const [platforms, setPlatforms] = useState(["Blinkit", "Zepto", "Instamart"]);
     const [platform, setPlatform] = useState("All");
 
+    // Company state
+    const [companies, setCompanies] = useState(["Boat"]);
+    const [selectedCompany, setSelectedCompany] = useState("All");
+
     // Brand state
-    const [brands, setBrands] = useState(["Cadbury", "Ferrero", "Haldiram's", "Nestle"]);
+    const [brands, setBrands] = useState(["Audio", "Accessories", "Wearables"]);
     const [selectedBrand, setSelectedBrand] = useState("All");
 
     // Location state
@@ -58,8 +63,8 @@ export const FilterProvider = ({ children }) => {
     const [selectedKeywordType, setSelectedKeywordType] = useState(["All"]);
 
     // Category state
-    const [categories, setCategories] = useState(["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC", "Snacks"]);
-    const [visibilityCategories, setVisibilityCategories] = useState(["Chocolates (Gifting)", "Chocolates (Non Gifting)", "GMFC"]);
+    const [categories, setCategories] = useState(["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband", "Wearables", "Accessories"]);
+    const [visibilityCategories, setVisibilityCategories] = useState(["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband", "Wearables", "Accessories"]);
     const [selectedCategory, setSelectedCategory] = useState("All");
 
     // Product Category state
@@ -117,6 +122,10 @@ export const FilterProvider = ({ children }) => {
             setBrands,
             selectedBrand,
             setSelectedBrand,
+            companies,
+            setCompanies,
+            selectedCompany,
+            setSelectedCompany,
             keywords,
             setKeywords,
             selectedKeyword,

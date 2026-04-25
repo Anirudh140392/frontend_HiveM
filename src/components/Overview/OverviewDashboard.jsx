@@ -98,7 +98,7 @@ const OverviewDashboard = () => {
 
         const channelMult = isAll(selectedChannel, 1) ? 1.2 : 0.8;
         const platformMult = isAll(selectedPlatform, 3) ? 1.1 : (Array.isArray(selectedPlatform) ? (0.4 + (selectedPlatform.length * 0.2)) : 0.7);
-        const brandMult = isAll(globalSelectedBrand, 4) ? 1.0 : (Array.isArray(globalSelectedBrand) ? (0.4 + (globalSelectedBrand.length * 0.15)) : 0.5);
+        const brandMult = isAll(globalSelectedBrand, 3) ? 1.0 : (Array.isArray(globalSelectedBrand) ? (0.5 + (globalSelectedBrand.length * 0.15)) : 0.6);
         
         // Date range multiplier
         const days = timeEnd && timeStart ? timeEnd.diff(timeStart, 'days') + 1 : 7;

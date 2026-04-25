@@ -30,9 +30,33 @@ axiosInstance.interceptors.request.use(async (config) => {
   } else if (url.includes("/availability-analysis/city-kpi")) {
     data.data = AVAILABILITY_DATA.cityKpi;
   } else if (url.includes("/availability-analysis/osa-detail")) {
-    data.data = AVAILABILITY_DATA.osaDetail;
+    let filteredOsa = AVAILABILITY_DATA.osaDetail;
+    const { brand, category } = config.params || {};
+    if (brand && brand !== 'All') {
+      const selectedBrands = Array.isArray(brand) ? brand : brand.split(',');
+      filteredOsa = filteredOsa.filter(item => 
+        selectedBrands.some(b => item.brand.toLowerCase().includes(b.toLowerCase()) || item.name.toLowerCase().includes(b.toLowerCase()))
+      );
+    }
+    if (category && category !== 'All') {
+      const selectedCats = Array.isArray(category) ? category : category.split(',');
+      filteredOsa = filteredOsa.filter(item => 
+        selectedCats.some(c => (item.format || '').toLowerCase().includes(c.toLowerCase()))
+      );
+    }
+    data.data = filteredOsa;
   } else if (url.includes("/visibility-analysis")) {
-    data.data = VISIBILITY_DATA;
+    let filteredVis = { ...VISIBILITY_DATA };
+    const { brand, category } = config.params || {};
+    if (brand && brand !== 'All') {
+      const selectedBrands = Array.isArray(brand) ? brand : brand.split(',');
+      if (filteredVis.terms) {
+        filteredVis.terms = filteredVis.terms.filter(term => 
+          selectedBrands.some(b => (term.brandBreakdown || []).some(bb => bb.brand.toLowerCase().includes(b.toLowerCase())))
+        );
+      }
+    }
+    data.data = filteredVis;
   } else if (url.includes("/pricing-analysis/ecp-weekday-weekend")) {
     data.data = PRICING_DATA.ecpWeekdayWeekend;
     data.summary = PRICING_DATA.ecpWeekdayWeekendSummary;
@@ -43,7 +67,15 @@ axiosInstance.interceptors.request.use(async (config) => {
   } else if (url.includes("/pricing-analysis")) {
     data.data = PRICING_DATA;
   } else if (url.includes("/market-share/sub-category-kpi")) {
-    data = { success: true, ...MARKET_SHARE_DATA.subCategoryKpi };
+    let filteredBrands = MARKET_SHARE_DATA.subCategoryKpi.brands;
+    const { brand } = config.params || {};
+    if (brand && brand !== 'All') {
+      const selectedBrands = Array.isArray(brand) ? brand : brand.split(',');
+      filteredBrands = filteredBrands.filter(b => 
+        selectedBrands.some(sb => b.brand.toLowerCase().includes(sb.toLowerCase()))
+      );
+    }
+    data = { success: true, ...MARKET_SHARE_DATA.subCategoryKpi, brands: filteredBrands };
   } else if (url.includes("/market-share/drilldown")) {
     data = { success: true, drilldownData: MARKET_SHARE_DATA.drilldownData };
   } else if (url.includes("/watchtower/platform-overview")) {

@@ -38,6 +38,12 @@ const mockCategories = [
     { id: 'family-pack', name: 'Family Pack' },
 ]
 
+const BRAND_CATEGORY_MAP = {
+  "Audio": ["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband"],
+  "Accessories": ["Accessories"],
+  "Wearables": ["Wearables"]
+};
+
 const mockSkus = [
     { id: 'amul-tricone', name: 'Amul Tricone 120ml' },
     { id: 'md-cup', name: 'Mother Dairy Vanilla Cup' },
@@ -400,7 +406,20 @@ export default function AdvancedFilterModal({ isOpen, onClose, filters, onApply,
                                             <MultiSelectDropdown
                                                 label="Brand"
                                                 icon={Tag}
-                                                options={brands && brands.length ? brands : mockBrands}
+                                                options={(() => {
+                                                    const baseBrands = brands && brands.length ? brands : mockBrands;
+                                                    if (localFilters.categories.length > 0) {
+                                                        const allowedBrands = new Set();
+                                                        localFilters.categories.forEach(catId => {
+                                                            const catName = (categories || []).find(c => c.id === catId)?.name || catId;
+                                                            Object.entries(BRAND_CATEGORY_MAP).forEach(([b, cats]) => {
+                                                                if (cats.includes(catName)) allowedBrands.add(b);
+                                                            });
+                                                        });
+                                                        return baseBrands.filter(b => allowedBrands.has(b.name));
+                                                    }
+                                                    return baseBrands;
+                                                })()}
                                                 selected={localFilters.brands}
                                                 onChange={(val) => updateFilter('brands', val)}
                                                 placeholder="All Brands"
@@ -410,7 +429,18 @@ export default function AdvancedFilterModal({ isOpen, onClose, filters, onApply,
                                             <MultiSelectDropdown
                                                 label="Category"
                                                 icon={Package}
-                                                options={categories && categories.length ? categories : mockCategories}
+                                                options={(() => {
+                                                    const baseCats = categories && categories.length ? categories : mockCategories;
+                                                    if (localFilters.brands.length > 0) {
+                                                        const allowedCats = new Set();
+                                                        localFilters.brands.forEach(brandId => {
+                                                            const brandName = (brands || []).find(b => b.id === brandId)?.name || brandId;
+                                                            (BRAND_CATEGORY_MAP[brandName] || []).forEach(c => allowedCats.add(c));
+                                                        });
+                                                        return baseCats.filter(c => allowedCats.has(c.name));
+                                                    }
+                                                    return baseCats;
+                                                })()}
                                                 selected={localFilters.categories}
                                                 onChange={(val) => updateFilter('categories', val)}
                                                 placeholder="All Categories"

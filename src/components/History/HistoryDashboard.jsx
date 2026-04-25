@@ -46,6 +46,7 @@ import { FilterContext } from '../../utils/FilterContext';
 const HistoryDashboard = () => {
     const { 
         selectedBrand: globalSelectedBrand,
+        selectedCategory: globalSelectedCategory,
         platform: globalSelectedPlatform,
         timeStart,
         timeEnd
@@ -56,10 +57,9 @@ const HistoryDashboard = () => {
     const [typeFilter, setTypeFilter] = useState('All Types');
     const [debugItem, setDebugItem] = useState(null);
 
-    const generateHistoryForBrand = (brand) => {
-        const brandsList = ["Cadbury", "Ferrero", "Haldiram's", "Nestle"];
-        const isAll = brand === "All" || (Array.isArray(brand) && (brand.includes("All") || brand.length === 0 || brand.length === 4));
-        
+    const generateHistoryForBrand = (activeBrands) => {
+        const allBrands = ["Audio", "Accessories", "Wearables"];
+        const brandsToUse = Array.isArray(activeBrands) ? activeBrands : (activeBrands === "All" ? allBrands : [activeBrands]);
         const types = ["STATUS", "BUDGET", "BID", "ALERT", "KEYWORD", "TARGETING"];
         const statuses = ["success", "pending", "failed", "skipped"];
         const icons = {
@@ -85,8 +85,7 @@ const HistoryDashboard = () => {
         return Array.from({ length: Math.min(20, days * 2) }, (_, i) => {
             const type = types[i % types.length];
             const actionDate = baseDate ? baseDate.clone().subtract(Math.floor(i / 2), 'days').subtract(i % 24, 'hours') : null;
-            
-            const brandToUseForThisItem = isAll ? brandsList[i % 4] : (Array.isArray(brand) ? brand[0] : brand);
+            const brandToUseForThisItem = brandsToUse[i % brandsToUse.length];
             return {
                 id: `${brandToUseForThisItem}-hist-${i + 1}`,
                 brand: brandToUseForThisItem,
@@ -94,7 +93,7 @@ const HistoryDashboard = () => {
                 status: statuses[i % statuses.length],
                 source: i % 3 === 0 ? "Manual" : "Rule",
                 platform: ["Blinkit", "Zepto", "Instamart"][i % 3],
-                title: `${brandToUseForThisItem} ${type.toLowerCase()} update`,
+                title: `boat_${brandToUseForThisItem} ${type.toLowerCase()} update`,
                 subtitle: `Process ID: ${1000 + i}`,
                 timeAgo: actionDate ? actionDate.format("DD MMM, HH:mm") : `${i + 1}h ago`,
                 icon: icons[type],
@@ -108,9 +107,36 @@ const HistoryDashboard = () => {
 
     const [historyData, setHistoryData] = useState([]);
 
+    const BRAND_CATEGORY_MAP = {
+        "Audio": ["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband"],
+        "Accessories": ["Accessories"],
+        "Wearables": ["Wearables"]
+    };
+
+    const resolveBrandsFromFilters = (brand, category) => {
+        const allBrands = ["Audio", "Accessories", "Wearables"];
+        let brandsFromCategory = null;
+        const catVal = category;
+        if (catVal && catVal !== "All" && !(Array.isArray(catVal) && (catVal.length === 0 || catVal.includes("All")))) {
+            const cats = Array.isArray(catVal) ? catVal : [catVal];
+            const allowed = new Set();
+            cats.forEach(c => {
+                Object.entries(BRAND_CATEGORY_MAP).forEach(([b, catList]) => {
+                    if (catList.includes(c)) allowed.add(b);
+                });
+            });
+            brandsFromCategory = allBrands.filter(b => allowed.has(b));
+        }
+        const isAllBrand = !brand || brand === "All" || (Array.isArray(brand) && (brand.includes("All") || brand.length === 0));
+        let resolvedBrands = isAllBrand ? allBrands : (Array.isArray(brand) ? brand : [brand]);
+        if (brandsFromCategory) resolvedBrands = resolvedBrands.filter(b => brandsFromCategory.includes(b));
+        return resolvedBrands.length > 0 ? resolvedBrands : allBrands;
+    };
+
     useEffect(() => {
-        setHistoryData(generateHistoryForBrand(globalSelectedBrand));
-    }, [globalSelectedBrand, timeStart, timeEnd]);
+        const activeBrands = resolveBrandsFromFilters(globalSelectedBrand, globalSelectedCategory);
+        setHistoryData(generateHistoryForBrand(activeBrands));
+    }, [globalSelectedBrand, globalSelectedCategory, timeStart, timeEnd]);
 
     const stats = [
         { label: "Total", value: historyData.length, icon: <ClipboardList className="w-6 h-6 text-amber-600" />, active: true },

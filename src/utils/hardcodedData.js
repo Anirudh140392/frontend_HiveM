@@ -34,14 +34,14 @@ export const AVAILABILITY_DATA = {
   },
   formatKpi: {
     rows: [
-      { kpi: "OSA", Tubs: 88.5, Cones: 72.1, Sticks: 79.4 },
-      { kpi: "DOI", Tubs: 14.2, Cones: 18.5, Sticks: 16.8 },
-      { kpi: "PSL", Tubs: 120000, Cones: 85000, Sticks: 95000 },
-      { kpi: "BUY BOX %", Tubs: 96.2, Cones: 88.4, Sticks: 92.1 },
-      { kpi: "DELIVERY TIME", Tubs: 24, Cones: 24, Sticks: 24 },
-      { kpi: "SKU COUNT", Tubs: 450, Cones: 320, Sticks: 470 }
+      { kpi: "OSA", TWS: 88.5, Headphone: 72.1, Speaker: 79.4 },
+      { kpi: "DOI", TWS: 14.2, Headphone: 18.5, Speaker: 16.8 },
+      { kpi: "PSL", TWS: 120000, Headphone: 85000, Speaker: 95000 },
+      { kpi: "BUY BOX %", TWS: 96.2, Headphone: 88.4, Speaker: 92.1 },
+      { kpi: "DELIVERY TIME", TWS: 24, Headphone: 24, Speaker: 24 },
+      { kpi: "SKU COUNT", TWS: 450, Headphone: 320, Speaker: 470 }
     ],
-    columns: ["kpi", "Tubs", "Cones", "Sticks"]
+    columns: ["kpi", "TWS", "Headphone", "Speaker"]
   },
   cityKpi: {
     rows: [
@@ -55,8 +55,14 @@ export const AVAILABILITY_DATA = {
     columns: ["kpi", "Mumbai", "Delhi", "Bangalore"]
   },
   osaDetail: [
-    { name: "Ice Cream Tub 500ml", platform: "Blinkit", sku: "SKU001", brand: "Hiveminds", format: "Tubs", avgSelected: 85, status: "Healthy", values: Array(31).fill(85) },
-    { name: "Chocolate Cone", platform: "Instamart", sku: "SKU002", brand: "Hiveminds", format: "Cones", avgSelected: 72, status: "Watch", values: Array(31).fill(72) }
+    { name: "Airdopes 131", platform: "Blinkit", sku: "SKU001", brand: "Audio", format: "TWS", avgSelected: 85, status: "Healthy", values: Array(31).fill(85) },
+    { name: "Rockerz 450", platform: "Instamart", sku: "SKU002", brand: "Audio", format: "Headphone", avgSelected: 72, status: "Watch", values: Array(31).fill(72) },
+    { name: "Bassheads 100", platform: "Zepto", sku: "SKU003", brand: "Audio", format: "Wired Earphone", avgSelected: 92, status: "Healthy", values: Array(31).fill(92) },
+    { name: "Stone 1200", platform: "Blinkit", sku: "SKU004", brand: "Audio", format: "Speaker", avgSelected: 65, status: "Action", values: Array(31).fill(65) },
+    { name: "Aavante Bar", platform: "Instamart", sku: "SKU005", brand: "Audio", format: "Soundbar", avgSelected: 88, status: "Healthy", values: Array(31).fill(88) },
+    { name: "Rockerz 255", platform: "Zepto", sku: "SKU006", brand: "Audio", format: "Neckband", avgSelected: 78, status: "Watch", values: Array(31).fill(78) },
+    { name: "Storm Call", platform: "Blinkit", sku: "SKU007", brand: "Wearables", format: "Wearables", avgSelected: 82, status: "Healthy", values: Array(31).fill(82) },
+    { name: "Fast Charger", platform: "Instamart", sku: "SKU008", brand: "Accessories", format: "Accessories", avgSelected: 95, status: "Healthy", values: Array(31).fill(95) }
   ],
   kpiTrends: {
     timeSeries: Array.from({ length: 30 }, (_, i) => ({
@@ -75,40 +81,24 @@ export const MARKET_SHARE_DATA = {
     trend: [10, 20, 30, 40, 50, 60, 73.8]
   },
   marketLeader: {
-    brand: "Amul",
+    brand: "Audio",
     sales: 77460000,
     prevSales: 40530000,
     delta: 91.1,
     trend: [5, 15, 25, 45, 65, 75, 91.1]
   },
-  hivemindsWrigley: {
+  AudioBoatAccessories: {
     sales: 6900000,
     prevSales: 4880000,
     delta: 38.1,
     trend: [2, 5, 10, 20, 30, 35, 38.1]
   },
   subCategoryKpi: {
-    subCategories: ["Candies", "Gums", "Filled Bars", "Gift Packs", "Tubs", "Cones"],
-    selectedSubCategory: ["Candies"],
+    subCategories: ["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband", "Wearables", "Accessories"],
+    selectedSubCategory: ["TWS"],
     brands: [
       {
-        brand: "Amul",
-        metrics: {
-          marketShare: { val: 24.5, delta: 3.2, status: "Healthy" },
-          overallSov: { val: 18.2, delta: 1.5, status: "Healthy" },
-          paidSov: { val: 7.4, delta: -0.8, status: "Watch" }
-        }
-      },
-      {
-        brand: "Mother Dairy",
-        metrics: {
-          marketShare: { val: 18.2, delta: -2.1, status: "Watch" },
-          overallSov: { val: 12.4, delta: -1.2, status: "Watch" },
-          paidSov: { val: 5.8, delta: -0.5, status: "Action" }
-        }
-      },
-      {
-        brand: "Hiveminds",
+        brand: "Audio",
         metrics: {
           marketShare: { val: 32.1, delta: 5.4, status: "Healthy" },
           overallSov: { val: 24.5, delta: 4.2, status: "Healthy" },
@@ -116,27 +106,27 @@ export const MARKET_SHARE_DATA = {
         }
       },
       {
-        brand: "Kwality Walls",
+        brand: "Wearables",
         metrics: {
-          marketShare: { val: 15.8, delta: -4.5, status: "Action" },
-          overallSov: { val: 10.2, delta: -3.2, status: "Action" },
-          paidSov: { val: 5.6, delta: -1.3, status: "Action" }
+          marketShare: { val: 18.4, delta: 2.1, status: "Healthy" },
+          overallSov: { val: 14.2, delta: 1.8, status: "Healthy" },
+          paidSov: { val: 6.2, delta: 0.5, status: "Watch" }
         }
       },
       {
-        brand: "Havmor",
+        brand: "Accessories",
         metrics: {
-          marketShare: { val: 12.4, delta: 0.8, status: "Watch" },
-          overallSov: { val: 9.5, delta: 0.2, status: "Watch" },
-          paidSov: { val: 4.2, delta: 0.5, status: "Healthy" }
+          marketShare: { val: 12.8, delta: -1.5, status: "Watch" },
+          overallSov: { val: 9.4, delta: -0.8, status: "Watch" },
+          paidSov: { val: 4.8, delta: -0.3, status: "Action" }
         }
       }
     ]
   },
   drilldownData: [
     {
-      id: "brand-hiveminds",
-      label: "Hiveminds",
+      id: "brand-Audio",
+      label: "Audio",
       metrics: { share: 32.1, mrp: 450 },
       children: [
         {
@@ -152,7 +142,7 @@ export const MARKET_SHARE_DATA = {
     },
     {
       id: "brand-amul",
-      label: "Amul",
+      label: "Audio",
       metrics: { share: 24.5, mrp: 380 },
       children: []
     },
@@ -199,8 +189,14 @@ export const PRICING_DATA = {
     { city: "Bangalore", ecp: 380 }
   ],
   discountByCategory: [
-    { category: "Tubs", Blinkit: 15, Instamart: 14, Zepto: 16 },
-    { category: "Cones", Blinkit: 10, Instamart: 12, Zepto: 11 }
+    { category: "TWS", Blinkit: 15, Instamart: 14, Zepto: 16 },
+    { category: "Headphone", Blinkit: 10, Instamart: 12, Zepto: 11 },
+    { category: "Wired Earphone", Blinkit: 8, Instamart: 9, Zepto: 8 },
+    { category: "Speaker", Blinkit: 12, Instamart: 11, Zepto: 13 },
+    { category: "Soundbar", Blinkit: 9, Instamart: 10, Zepto: 9 },
+    { category: "Neckband", Blinkit: 11, Instamart: 13, Zepto: 12 },
+    { category: "Wearables", Blinkit: 7, Instamart: 8, Zepto: 7 },
+    { category: "Accessories", Blinkit: 5, Instamart: 6, Zepto: 5 }
   ],
   ecpWeekdayWeekend: [
     { brand: "Our Brand", weekday: 350, weekend: 340 },
@@ -236,11 +232,11 @@ export const PRICING_INSIGHTS_DATA = {
   pd_my: [
     {
       id: 1,
-      brand: "Hiveminds",
+      brand: "Audio",
       title: "Vanilla Tub 500ml",
       badge: "Price Drop",
       platform: "Blinkit",
-      cat: "Tubs",
+      cat: "TWS",
       size: "500ml",
       delta: -12.5,
       cities: [
@@ -252,11 +248,11 @@ export const PRICING_INSIGHTS_DATA = {
     },
     {
       id: 2,
-      brand: "Hiveminds",
-      title: "Chocolate Cone 120ml",
+      brand: "Audio",
+      title: "Rockerz 450 120ml",
       badge: "Price Drop",
       platform: "Instamart",
-      cat: "Cones",
+      cat: "Headphone",
       size: "120ml",
       delta: -8.2,
       cities: [
@@ -267,11 +263,11 @@ export const PRICING_INSIGHTS_DATA = {
     },
     {
       id: 6,
-      brand: "Hiveminds",
+      brand: "Audio",
       title: "Mango Bar 80ml",
       badge: "Price Drop",
       platform: "Zepto",
-      cat: "Sticks",
+      cat: "Speaker",
       size: "80ml",
       delta: -15.4,
       cities: [
@@ -281,7 +277,7 @@ export const PRICING_INSIGHTS_DATA = {
     },
     {
       id: 7,
-      brand: "Hiveminds",
+      brand: "Audio",
       title: "Pistachio Cup 100ml",
       badge: "Price Drop",
       platform: "Blinkit",
@@ -297,11 +293,11 @@ export const PRICING_INSIGHTS_DATA = {
   pi_my: [
     {
       id: 3,
-      brand: "Hiveminds",
+      brand: "Audio",
       title: "Butterscotch Tub 1L",
       badge: "Price Increase",
       platform: "Zepto",
-      cat: "Tubs",
+      cat: "TWS",
       size: "1L",
       delta: 5.4,
       cities: [
@@ -312,11 +308,11 @@ export const PRICING_INSIGHTS_DATA = {
     },
     {
       id: 8,
-      brand: "Hiveminds",
+      brand: "Audio",
       title: "Kesar Pista 500ml",
       badge: "Price Increase",
       platform: "Instamart",
-      cat: "Tubs",
+      cat: "TWS",
       size: "500ml",
       delta: 4.2,
       cities: [
@@ -325,11 +321,11 @@ export const PRICING_INSIGHTS_DATA = {
     },
     {
       id: 11,
-      brand: "Hiveminds",
+      brand: "Audio",
       title: "Vanilla Stick 65ml",
       badge: "Price Increase",
       platform: "Blinkit",
-      cat: "Sticks",
+      cat: "Speaker",
       size: "65ml",
       delta: 3.5,
       cities: [
@@ -340,11 +336,11 @@ export const PRICING_INSIGHTS_DATA = {
   pd_comp: [
     {
       id: 4,
-      brand: "Amul",
+      brand: "Audio",
       title: "Tricone Butterscotch",
       badge: "Price Drop",
       platform: "Blinkit",
-      cat: "Cones",
+      cat: "Headphone",
       size: "120ml",
       delta: -15.0,
       cities: [
@@ -359,7 +355,7 @@ export const PRICING_INSIGHTS_DATA = {
       title: "Cornetto Choco",
       badge: "Price Drop",
       platform: "Instamart",
-      cat: "Cones",
+      cat: "Headphone",
       size: "120ml",
       delta: -12.2,
       cities: [
@@ -387,7 +383,7 @@ export const PRICING_INSIGHTS_DATA = {
       title: "Classic Vanilla 700ml",
       badge: "Price Increase",
       platform: "Instamart",
-      cat: "Tubs",
+      cat: "TWS",
       size: "700ml",
       delta: 10.2,
       cities: [
@@ -401,7 +397,7 @@ export const PRICING_INSIGHTS_DATA = {
       title: "Lonavala Special",
       badge: "Price Increase",
       platform: "Zepto",
-      cat: "Tubs",
+      cat: "TWS",
       size: "1L",
       delta: 8.5,
       cities: [
@@ -410,11 +406,11 @@ export const PRICING_INSIGHTS_DATA = {
     },
     {
       id: 13,
-      brand: "Amul",
-      title: "Real Milk Ice Cream",
+      brand: "Audio",
+      title: "Real Milk Earbuds",
       badge: "Price Increase",
       platform: "Blinkit",
-      cat: "Tubs",
+      cat: "TWS",
       size: "500ml",
       delta: 6.2,
       cities: [
@@ -455,7 +451,7 @@ export const WATCHTOWER_DATA = {
       ]
     }
   ],
-  products: ["Vanilla Tub 500ml", "Chocolate Cone 120ml", "Mango Bar 80ml"]
+  products: ["Vanilla Tub 500ml", "Rockerz 450 120ml", "Mango Bar 80ml"]
 };
 
 export const VISIBILITY_DATA = {
@@ -552,36 +548,51 @@ export const VISIBILITY_DATA = {
       ]
     },
     formatData: {
-      columns: ["kpi", "Tubs", "Cones", "Sticks"],
+      columns: ["kpi", "TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband", "Wearables", "Accessories"],
       rows: [
-        { 
-          kpi: "VISIBILITY SHARE", 
-          Tubs: 22.4, Cones: 15.6, Sticks: 18.9,
-          trend: { Tubs: 3.9, Cones: 1.4, Sticks: -0.6 },
-          series: { 
-            Tubs: [18, 19, 21, 22.4], 
-            Cones: [14, 14.5, 15, 15.6], 
-            Sticks: [19.5, 19.3, 19.1, 18.9] 
+        {
+          kpi: "VISIBILITY SHARE",
+          TWS: 22.4, Headphone: 15.6, "Wired Earphone": 19.8, Speaker: 18.9, Soundbar: 12.4, Neckband: 17.2, Wearables: 21.5, Accessories: 10.8,
+          trend: { TWS: 3.9, Headphone: 1.4, "Wired Earphone": 2.1, Speaker: -0.6, Soundbar: 0.8, Neckband: 1.5, Wearables: 2.8, Accessories: -0.4 },
+          series: {
+            TWS: [18, 19, 21, 22.4],
+            Headphone: [14, 14.5, 15, 15.6],
+            "Wired Earphone": [17, 18, 19, 19.8],
+            Speaker: [19.5, 19.3, 19.1, 18.9],
+            Soundbar: [11, 11.5, 12, 12.4],
+            Neckband: [15, 16, 16.5, 17.2],
+            Wearables: [18, 19.5, 20.5, 21.5],
+            Accessories: [11, 10.8, 10.9, 10.8]
           }
         },
-        { 
-          kpi: "AD SHARE", 
-          Tubs: 14.2, Cones: 12.8, Sticks: 15.4,
-          trend: { Tubs: -1.2, Cones: 0.5, Sticks: 0.8 },
-          series: { 
-            Tubs: [16, 15, 14.5, 14.2], 
-            Cones: [12, 12.2, 12.5, 12.8], 
-            Sticks: [14, 14.5, 15, 15.4] 
+        {
+          kpi: "AD SHARE",
+          TWS: 14.2, Headphone: 12.8, "Wired Earphone": 10.5, Speaker: 15.4, Soundbar: 8.2, Neckband: 11.6, Wearables: 13.2, Accessories: 6.4,
+          trend: { TWS: -1.2, Headphone: 0.5, "Wired Earphone": 0.8, Speaker: 0.8, Soundbar: -0.5, Neckband: 1.0, Wearables: 1.5, Accessories: -0.2 },
+          series: {
+            TWS: [16, 15, 14.5, 14.2],
+            Headphone: [12, 12.2, 12.5, 12.8],
+            "Wired Earphone": [9.8, 10, 10.2, 10.5],
+            Speaker: [14, 14.5, 15, 15.4],
+            Soundbar: [8.8, 8.5, 8.4, 8.2],
+            Neckband: [10.5, 11, 11.2, 11.6],
+            Wearables: [11.5, 12, 12.5, 13.2],
+            Accessories: [6.6, 6.5, 6.4, 6.4]
           }
         },
-        { 
-          kpi: "ORGANIC SHARE", 
-          Tubs: 28.5, Cones: 22.1, Sticks: 25.4,
-          trend: { Tubs: 2.1, Cones: 1.8, Sticks: 1.2 },
-          series: { 
-            Tubs: [25, 26, 27, 28.5], 
-            Cones: [20, 21, 21.5, 22.1], 
-            Sticks: [24, 24.5, 25, 25.4] 
+        {
+          kpi: "ORGANIC SHARE",
+          TWS: 28.5, Headphone: 22.1, "Wired Earphone": 24.8, Speaker: 25.4, Soundbar: 18.2, Neckband: 21.5, Wearables: 26.2, Accessories: 14.5,
+          trend: { TWS: 2.1, Headphone: 1.8, "Wired Earphone": 1.4, Speaker: 1.2, Soundbar: 0.9, Neckband: 1.5, Wearables: 2.4, Accessories: -0.3 },
+          series: {
+            TWS: [25, 26, 27, 28.5],
+            Headphone: [20, 21, 21.5, 22.1],
+            "Wired Earphone": [22, 23, 24, 24.8],
+            Speaker: [24, 24.5, 25, 25.4],
+            Soundbar: [17, 17.5, 18, 18.2],
+            Neckband: [20, 20.5, 21, 21.5],
+            Wearables: [23, 24, 25, 26.2],
+            Accessories: [15, 14.8, 14.6, 14.5]
           }
         }
       ]
@@ -625,7 +636,7 @@ export const VISIBILITY_DATA = {
   summary: {
     totalKeywords: 150,
     totalSearchVolume: 450000,
-    leadingBrand: "Amul",
+    leadingBrand: "Audio",
     overallSOS: 22.5,
     organicSOS: 15.2,
     paidSOS: 7.3,
@@ -637,16 +648,16 @@ export const VISIBILITY_DATA = {
   },
   terms: [
     { 
-      name: "ice cream", leadingBrand: "Amul", overallSOS: 25.4, organicSOS: 18.2, paidSOS: 7.2, volShare: 12.5,
+      name: "earbuds", leadingBrand: "Audio", overallSOS: 25.4, organicSOS: 18.2, paidSOS: 7.2, volShare: 12.5,
       imageUrl: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=100&h=100&fit=crop",
       locations: [
         { city: "Mumbai", overallSOS: 26.5, organicSOS: 19.2, paidSOS: 7.3 },
         { city: "Delhi", overallSOS: 24.2, organicSOS: 17.5, paidSOS: 6.7 }
       ],
       brandBreakdown: [
-        { brand: "Amul", share: 45, organic: 30, paid: 15 },
+        { brand: "Audio", share: 45, organic: 30, paid: 15 },
         { brand: "Mother Dairy", share: 25, organic: 20, paid: 5 },
-        { brand: "Hiveminds", share: 15, organic: 10, paid: 5 },
+        { brand: "Audio", share: 15, organic: 10, paid: 5 },
         { brand: "Others", share: 15, organic: 10, paid: 5 }
       ]
     },
@@ -658,17 +669,17 @@ export const VISIBILITY_DATA = {
       ],
       brandBreakdown: [
         { brand: "Mother Dairy", share: 40, organic: 30, paid: 10 },
-        { brand: "Amul", share: 30, organic: 25, paid: 5 },
-        { brand: "Hiveminds", share: 20, organic: 15, paid: 5 },
+        { brand: "Audio", share: 30, organic: 25, paid: 5 },
+        { brand: "Audio", share: 20, organic: 15, paid: 5 },
         { brand: "Others", share: 10, organic: 8, paid: 2 }
       ]
     },
     { 
-      name: "vanilla cone", leadingBrand: "Hiveminds", overallSOS: 32.1, organicSOS: 24.5, paidSOS: 7.6, volShare: 15.2,
+      name: "vanilla cone", leadingBrand: "Audio", overallSOS: 32.1, organicSOS: 24.5, paidSOS: 7.6, volShare: 15.2,
       imageUrl: "https://images.unsplash.com/photo-1505394033343-4edafaff5c3b?w=100&h=100&fit=crop",
       brandBreakdown: [
-        { brand: "Hiveminds", share: 50, organic: 40, paid: 10 },
-        { brand: "Amul", share: 20, organic: 15, paid: 5 },
+        { brand: "Audio", share: 50, organic: 40, paid: 10 },
+        { brand: "Audio", share: 20, organic: 15, paid: 5 },
         { brand: "Mother Dairy", share: 15, organic: 10, paid: 5 },
         { brand: "Others", share: 15, organic: 10, paid: 5 }
       ]
@@ -678,18 +689,18 @@ export const VISIBILITY_DATA = {
       imageUrl: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=100&h=100&fit=crop",
       brandBreakdown: [
         { brand: "Kwality Walls", share: 35, organic: 25, paid: 10 },
-        { brand: "Amul", share: 30, organic: 20, paid: 10 },
-        { brand: "Hiveminds", share: 20, organic: 15, paid: 5 },
+        { brand: "Audio", share: 30, organic: 20, paid: 10 },
+        { brand: "Audio", share: 20, organic: 15, paid: 5 },
         { brand: "Others", share: 15, organic: 10, paid: 5 }
       ]
     },
     { 
-      name: "pistachio cup", leadingBrand: "Amul", overallSOS: 28.3, organicSOS: 20.1, paidSOS: 8.2, volShare: 10.5,
+      name: "pistachio cup", leadingBrand: "Audio", overallSOS: 28.3, organicSOS: 20.1, paidSOS: 8.2, volShare: 10.5,
       imageUrl: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=100&h=100&fit=crop",
       brandBreakdown: [
-        { brand: "Amul", share: 42, organic: 30, paid: 12 },
+        { brand: "Audio", share: 42, organic: 30, paid: 12 },
         { brand: "Mother Dairy", share: 28, organic: 20, paid: 8 },
-        { brand: "Hiveminds", share: 18, organic: 12, paid: 6 },
+        { brand: "Audio", share: 18, organic: 12, paid: 6 },
         { brand: "Others", share: 12, organic: 8, paid: 4 }
       ]
     }
@@ -703,15 +714,15 @@ export const VISIBILITY_DATA = {
         ]
       },
       { 
-        brand: "Hiveminds", platform: "Instamart", overall: 18.5, dOverall: 3.1, organic: 14.2, dOrganic: 2.4, paid: 4.3, dPaid: 0.7,
+        brand: "Audio", platform: "Instamart", overall: 18.5, dOverall: 3.1, organic: 14.2, dOrganic: 2.4, paid: 4.3, dPaid: 0.7,
         keywords: [
-          { kw: "ice cream", overall: 20.1, dO: 2.5, organic: 16.2, dOr: 1.8, paid: 3.9, dP: 0.7 }
+          { kw: "earbuds", overall: 20.1, dO: 2.5, organic: 16.2, dOr: 1.8, paid: 3.9, dP: 0.7 }
         ]
       }
     ],
     drain: [
       { 
-        brand: "Amul", platform: "Zepto", overall: 15.6, dOverall: -4.5, organic: 12.2, dOrganic: -3.2, paid: 3.4, dPaid: -1.3,
+        brand: "Audio", platform: "Zepto", overall: 15.6, dOverall: -4.5, organic: 12.2, dOrganic: -3.2, paid: 3.4, dPaid: -1.3,
         keywords: [
           { kw: "chocolate cone", overall: 8.4, dO: -2.1, organic: 6.2, dOr: -1.5, paid: 2.2, dP: -0.6, locations: [{ loc: "Delhi", overall: 10, dO: -3, organic: 8, dOr: -2, paid: 2, dP: -1 }] }
         ]

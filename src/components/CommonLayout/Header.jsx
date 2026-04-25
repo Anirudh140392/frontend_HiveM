@@ -29,7 +29,7 @@ import { AppThemeContext } from "../../utils/ThemeContext";
 import { FilterContext } from "../../utils/FilterContext";
 import DateRangeComparePicker from "./DateRangeComparePicker";
 
-import { ChevronDown, ChevronUp, Search, SlidersHorizontal, X, Layers, Monitor, LayoutGrid, Tag, MapPin, Hash, Type, Info } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, SlidersHorizontal, X, Layers, Monitor, LayoutGrid, Tag, MapPin, Hash, Type, Info, Building } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import CustomHeaderDropdown from "./CustomHeaderDropdown";
 import axiosInstance from "../../api/axiosInstance";
@@ -38,11 +38,26 @@ import axiosInstance from "../../api/axiosInstance";
    WATCH TOWER FILTER MODAL — sidebar tabs + checkbox panel
    ═══════════════════════════════════════════════════════════════════ */
 const FILTER_TABS = [
+  { key: "company", label: "Company", icon: Building },
   { key: "channel", label: "Channel", icon: Layers },
   { key: "platform", label: "Platform", icon: Monitor },
   { key: "category", label: "Category", icon: LayoutGrid },
   { key: "brand", label: "Brand", icon: Tag },
 ];
+
+const BRAND_CATEGORY_MAP = {
+  "Audio": ["TWS", "Headphone", "Wired Earphone", "Speaker", "Soundbar", "Neckband"],
+  "Accessories": ["Accessories"],
+  "Wearables": ["Wearables"]
+};
+
+const CATEGORY_BRAND_MAP = {};
+Object.entries(BRAND_CATEGORY_MAP).forEach(([brand, cats]) => {
+  cats.forEach(cat => {
+    if (!CATEGORY_BRAND_MAP[cat]) CATEGORY_BRAND_MAP[cat] = [];
+    CATEGORY_BRAND_MAP[cat].push(brand);
+  });
+});
 
 function WatchTowerFilterModal({
   open, onClose,
@@ -50,6 +65,7 @@ function WatchTowerFilterModal({
   platforms, platform, setPlatform,
   categories, selectedCategory, setSelectedCategory,
   brands, selectedBrand, setSelectedBrand,
+  companies, selectedCompany, setSelectedCompany,
 }) {
   const [activeTab, setActiveTab] = React.useState("channel");
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -59,6 +75,7 @@ function WatchTowerFilterModal({
   const [draftPlatform, setDraftPlatform] = React.useState(platform);
   const [draftCategory, setDraftCategory] = React.useState(selectedCategory);
   const [draftBrand, setDraftBrand] = React.useState(selectedBrand);
+  const [draftCompany, setDraftCompany] = React.useState(selectedCompany);
 
   // ─── Local option lists (cascaded from draft selections) ───
   const [localPlatforms, setLocalPlatforms] = React.useState(platforms);
@@ -72,33 +89,54 @@ function WatchTowerFilterModal({
       setDraftPlatform(platform);
       setDraftCategory(selectedCategory);
       setDraftBrand(selectedBrand);
+      setDraftCompany(selectedCompany);
       setLocalPlatforms(platforms);
       setLocalCategories(categories);
       setLocalBrands(brands);
-      setActiveTab("channel");
+      setActiveTab("company");
       setSearchTerm("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // --- API cascading disabled for frontend-only mode ---
+  // ─── API cascading disabled for frontend-only mode ───
+  // Instead, we use local cascading based on BRAND_CATEGORY_MAP
   React.useEffect(() => {
-    if (open) {
-      setDraftChannel(selectedChannel);
-      setDraftPlatform(platform);
-      setDraftCategory(selectedCategory);
-      setDraftBrand(selectedBrand);
-      setLocalPlatforms(platforms);
-      setLocalCategories(categories);
-      setLocalBrands(brands);
+    if (!open) return;
+
+    let nextPlatforms = platforms;
+    let nextCategories = categories;
+    let nextBrands = brands;
+
+    // Filter categories based on draftBrand
+    if (draftBrand !== "All" && Array.isArray(draftBrand) && draftBrand.length > 0 && !draftBrand.includes("All")) {
+      const allowedCats = new Set();
+      draftBrand.forEach(b => {
+        (BRAND_CATEGORY_MAP[b] || []).forEach(c => allowedCats.add(c));
+      });
+      nextCategories = categories.filter(c => allowedCats.has(c));
     }
-  }, [open, selectedChannel, platform, selectedCategory, selectedBrand, platforms, categories, brands]);
+
+    // Filter brands based on draftCategory
+    if (draftCategory !== "All" && Array.isArray(draftCategory) && draftCategory.length > 0 && !draftCategory.includes("All")) {
+      const allowedBrands = new Set();
+      draftCategory.forEach(c => {
+        (CATEGORY_BRAND_MAP[c] || []).forEach(b => allowedBrands.add(b));
+      });
+      nextBrands = brands.filter(b => allowedBrands.has(b));
+    }
+
+    setLocalPlatforms(nextPlatforms);
+    setLocalCategories(nextCategories);
+    setLocalBrands(nextBrands);
+  }, [open, draftBrand, draftCategory, platforms, categories, brands]);
 
   // Reset search when tab changes
   React.useEffect(() => { setSearchTerm(""); }, [activeTab]);
 
   // map tab key → { options (local), draftValue, setDraft }
   const tabConfig = {
+    company: { options: companies, value: draftCompany, onChange: setDraftCompany },
     channel: { options: channels, value: draftChannel, onChange: setDraftChannel },
     platform: { options: localPlatforms, value: draftPlatform, onChange: setDraftPlatform },
     category: { options: localCategories, value: draftCategory, onChange: setDraftCategory },
@@ -153,6 +191,7 @@ function WatchTowerFilterModal({
     setPlatform(draftPlatform);
     setSelectedCategory(draftCategory);
     setSelectedBrand(draftBrand);
+    setSelectedCompany(draftCompany);
     onClose();
   };
 
@@ -167,6 +206,7 @@ function WatchTowerFilterModal({
     setDraftPlatform("All");
     setDraftCategory("All");
     setDraftBrand("All");
+    setDraftCompany("All");
   };
 
   // total active filter count across all tabs
@@ -563,6 +603,7 @@ function MarketShareFilterModal({
   channels, selectedChannel, setSelectedChannel,
   platforms, platform, setPlatform,
   categories, selectedCategory, setSelectedCategory,
+  companies, selectedCompany, setSelectedCompany,
 }) {
   const [activeTab, setActiveTab] = React.useState("channel");
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -570,20 +611,23 @@ function MarketShareFilterModal({
   const [draftChannel, setDraftChannel] = React.useState(selectedChannel);
   const [draftPlatform, setDraftPlatform] = React.useState(platform);
   const [draftCategory, setDraftCategory] = React.useState(selectedCategory);
+  const [draftCompany, setDraftCompany] = React.useState(selectedCompany);
 
   React.useEffect(() => {
     if (open) {
       setDraftChannel(selectedChannel);
       setDraftPlatform(platform);
       setDraftCategory(selectedCategory);
-      setActiveTab("channel");
+      setDraftCompany(selectedCompany);
+      setActiveTab("company");
       setSearchTerm("");
     }
-  }, [open, selectedChannel, platform, selectedCategory]);
+  }, [open, selectedChannel, platform, selectedCategory, selectedCompany]);
 
   React.useEffect(() => { setSearchTerm(""); }, [activeTab]);
 
   const tabConfig = {
+    company: { options: companies, value: draftCompany, onChange: setDraftCompany },
     channel: { options: channels, value: draftChannel, onChange: setDraftChannel },
     platform: { options: platforms, value: draftPlatform, onChange: setDraftPlatform },
     category: { options: categories, value: draftCategory, onChange: setDraftCategory },
@@ -632,6 +676,7 @@ function MarketShareFilterModal({
     setSelectedChannel(draftChannel);
     setPlatform(draftPlatform);
     setSelectedCategory(draftCategory);
+    setSelectedCompany(draftCompany);
     onClose();
   };
 
@@ -643,6 +688,7 @@ function MarketShareFilterModal({
     setDraftChannel("All");
     setDraftPlatform("All");
     setDraftCategory("All");
+    setDraftCompany("All");
   };
 
   const totalActiveCount = MS_FILTER_TABS.reduce((sum, t) => sum + countFor(t.key), 0);
@@ -1028,6 +1074,7 @@ function MarketShareFilterModal({
    AVAILABILITY ANALYSIS FILTER MODAL — Channel, Platform, Category, Location
    ═══════════════════════════════════════════════════════════════════ */
 const AVAIL_FILTER_TABS = [
+  { key: "company", label: "Company", icon: Building },
   { key: "channel", label: "Channel", icon: Layers },
   { key: "platform", label: "Platform", icon: Monitor },
   { key: "category", label: "Category", icon: LayoutGrid },
@@ -1042,6 +1089,7 @@ function AvailabilityFilterModal({
   categories = [], selectedCategory, setSelectedCategory,
   brands = [], selectedBrand, setSelectedBrand,
   locations = [], selectedLocation, setSelectedLocation,
+  companies, selectedCompany, setSelectedCompany,
 }) {
   const [activeTab, setActiveTab] = React.useState("channel");
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -1051,6 +1099,7 @@ function AvailabilityFilterModal({
   const [draftCategory, setDraftCategory] = React.useState(selectedCategory);
   const [draftBrand, setDraftBrand] = React.useState(selectedBrand);
   const [draftLocation, setDraftLocation] = React.useState(selectedLocation);
+  const [draftCompany, setDraftCompany] = React.useState(selectedCompany);
 
   const [localPlatforms, setLocalPlatforms] = React.useState(platforms);
   const [localCategories, setLocalCategories] = React.useState(categories);
@@ -1064,11 +1113,12 @@ function AvailabilityFilterModal({
       setDraftCategory(selectedCategory);
       setDraftBrand(selectedBrand);
       setDraftLocation(selectedLocation);
+      setDraftCompany(selectedCompany);
       setLocalPlatforms(platforms);
       setLocalCategories(categories);
       setLocalBrands(brands);
       setLocalLocations(locations);
-      setActiveTab("channel");
+      setActiveTab("company");
       setSearchTerm("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1191,6 +1241,7 @@ function AvailabilityFilterModal({
   React.useEffect(() => { setSearchTerm(""); }, [activeTab]);
 
   const tabConfig = {
+    company: { options: companies, value: draftCompany, onChange: setDraftCompany },
     channel: { options: channels, value: draftChannel, onChange: setDraftChannel },
     platform: { options: localPlatforms, value: draftPlatform, onChange: setDraftPlatform },
     category: { options: localCategories, value: draftCategory, onChange: setDraftCategory },
@@ -1243,6 +1294,7 @@ function AvailabilityFilterModal({
     setSelectedCategory(draftCategory);
     setSelectedBrand(draftBrand);
     setSelectedLocation(draftLocation);
+    setSelectedCompany(draftCompany);
     onClose();
   };
 
@@ -1254,6 +1306,7 @@ function AvailabilityFilterModal({
     setDraftCategory("All");
     setDraftBrand("All");
     setDraftLocation("All");
+    setDraftCompany("All");
   };
 
   const totalActiveCount = AVAIL_FILTER_TABS.reduce((sum, t) => sum + countFor(t.key), 0);
@@ -1630,6 +1683,7 @@ function AvailabilityFilterModal({
    VISIBILITY ANALYSIS FILTER MODAL — Channel, Platform, Category, Keyword Type, Keyword
    ═══════════════════════════════════════════════════════════════════ */
 const VIS_FILTER_TABS = [
+  { key: "company", label: "Company", icon: Building },
   { key: "platform", label: "Platform", icon: Monitor },
   { key: "category", label: "Category", icon: LayoutGrid },
   { key: "brand", label: "Brand", icon: Tag },
@@ -1647,6 +1701,7 @@ function VisibilityFilterModal({
   locations = [], selectedLocation, setSelectedLocation,
   keywordTypes = [], selectedKeywordType, setSelectedKeywordType,
   keywords = [], selectedKeyword, setSelectedKeyword,
+  companies, selectedCompany, setSelectedCompany,
 }) {
   const [activeTab, setActiveTab] = React.useState("platform");
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -1657,6 +1712,7 @@ function VisibilityFilterModal({
   const [draftLocation, setDraftLocation] = React.useState(selectedLocation);
   const [draftKeywordType, setDraftKeywordType] = React.useState(selectedKeywordType);
   const [draftKeyword, setDraftKeyword] = React.useState(selectedKeyword);
+  const [draftCompany, setDraftCompany] = React.useState(selectedCompany);
 
   const [localPlatforms, setLocalPlatforms] = React.useState(platforms);
   const [localCategories, setLocalCategories] = React.useState(categories);
@@ -1673,13 +1729,14 @@ function VisibilityFilterModal({
       setDraftLocation(selectedLocation);
       setDraftKeywordType(selectedKeywordType);
       setDraftKeyword(selectedKeyword);
+      setDraftCompany(selectedCompany);
       setLocalPlatforms(platforms);
       setLocalCategories(categories);
       setLocalBrands(brands);
       setLocalLocations(locations);
       setLocalKeywordTypes(keywordTypes);
       setLocalKeywords(keywords);
-      setActiveTab("platform");
+      setActiveTab("company");
       setSearchTerm("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1787,6 +1844,7 @@ function VisibilityFilterModal({
   React.useEffect(() => { setSearchTerm(""); }, [activeTab]);
 
   const tabConfig = {
+    company: { options: companies, value: draftCompany, onChange: setDraftCompany },
     platform: { options: localPlatforms, value: draftPlatform, onChange: setDraftPlatform },
     category: { options: localCategories, value: draftCategory, onChange: setDraftCategory },
     brand: { options: localBrands, value: draftBrand, onChange: setDraftBrand },
@@ -1841,6 +1899,7 @@ function VisibilityFilterModal({
     setSelectedLocation(draftLocation);
     setSelectedKeywordType(draftKeywordType);
     setSelectedKeyword(draftKeyword);
+    setSelectedCompany(draftCompany);
     onClose();
   };
 
@@ -1853,6 +1912,7 @@ function VisibilityFilterModal({
     setDraftLocation("All");
     setDraftKeywordType(["All"]);
     setDraftKeyword(["All"]);
+    setDraftCompany("All");
   };
 
   const totalActiveCount = VIS_FILTER_TABS.reduce((sum, t) => sum + countFor(t.key), 0);
@@ -1979,6 +2039,7 @@ function VisibilityFilterModal({
    PRICING ANALYSIS FILTER MODAL — Channel, Platform, Category, Brand, Location
    ═══════════════════════════════════════════════════════════════════ */
 const PRICING_FILTER_TABS = [
+  { key: "company", label: "Company", icon: Building },
   { key: "channel", label: "Channel", icon: Layers },
   { key: "platform", label: "Platform", icon: Monitor },
   { key: "category", label: "Category", icon: LayoutGrid },
@@ -2003,6 +2064,7 @@ function PricingFilterModal({
   const [draftCategory, setDraftCategory] = React.useState(selectedCategory);
   const [draftBrand, setDraftBrand] = React.useState(selectedBrand);
   const [draftLocation, setDraftLocation] = React.useState(selectedLocation);
+  const [draftCompany, setDraftCompany] = React.useState(selectedCompany);
 
   // ─── Local option lists ───
   const [localPlatforms, setLocalPlatforms] = React.useState(platforms);
@@ -2016,12 +2078,13 @@ function PricingFilterModal({
       setDraftCategory(selectedCategory);
       setDraftBrand(selectedBrand);
       setDraftLocation(selectedLocation);
+      setDraftCompany(selectedCompany);
 
       setLocalPlatforms(platforms);
       setLocalCategories(categories);
       setLocalBrands(brands);
 
-      setActiveTab("channel");
+      setActiveTab("company");
       setSearchTerm("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2091,6 +2154,7 @@ function PricingFilterModal({
   React.useEffect(() => { setSearchTerm(""); }, [activeTab]);
 
   const tabConfig = {
+    company: { options: companies, value: draftCompany, onChange: setDraftCompany },
     channel: { options: channels, value: draftChannel, onChange: setDraftChannel },
     platform: { options: localPlatforms, value: draftPlatform, onChange: setDraftPlatform },
     category: { options: localCategories, value: draftCategory, onChange: setDraftCategory },
@@ -2143,6 +2207,7 @@ function PricingFilterModal({
     setSelectedCategory(draftCategory);
     setSelectedBrand(draftBrand);
     setSelectedLocation(draftLocation);
+    setSelectedCompany(draftCompany);
     onClose();
   };
 
@@ -2154,6 +2219,7 @@ function PricingFilterModal({
     setDraftCategory("All");
     setDraftBrand("All");
     setDraftLocation("All");
+    setDraftCompany("All");
   };
 
   const totalActiveCount = PRICING_FILTER_TABS.reduce((sum, t) => sum + countFor(t.key), 0);
@@ -2241,6 +2307,7 @@ function PricingFilterModal({
    PERFORMANCE MARKETING FILTER MODAL — Channel, Platform, Category, Brand, Location
    ═══════════════════════════════════════════════════════════════════ */
 const PERFORMANCE_FILTER_TABS = [
+  { key: "company", label: "Company", icon: Building },
   { key: "channel", label: "Channel", icon: Layers },
   { key: "platform", label: "Platform", icon: Monitor },
   { key: "category", label: "Category", icon: LayoutGrid },
@@ -2255,6 +2322,7 @@ function PerformanceFilterModal({
   categories = [], selectedCategory, setSelectedCategory,
   brands = [], selectedBrand, setSelectedBrand,
   locations = [], selectedLocation, setSelectedLocation,
+  companies, selectedCompany, setSelectedCompany,
 }) {
   const [activeTab, setActiveTab] = React.useState("channel");
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -2264,6 +2332,7 @@ function PerformanceFilterModal({
   const [draftCategory, setDraftCategory] = React.useState(selectedCategory);
   const [draftBrand, setDraftBrand] = React.useState(selectedBrand);
   const [draftLocation, setDraftLocation] = React.useState(selectedLocation);
+  const [draftCompany, setDraftCompany] = React.useState(selectedCompany);
 
   const [localPlatforms, setLocalPlatforms] = React.useState(platforms);
   const [localCategories, setLocalCategories] = React.useState(categories);
@@ -2276,12 +2345,13 @@ function PerformanceFilterModal({
       setDraftCategory(selectedCategory);
       setDraftBrand(selectedBrand);
       setDraftLocation(selectedLocation);
+      setDraftCompany(selectedCompany);
 
       setLocalPlatforms(platforms);
       setLocalCategories(categories);
       setLocalBrands(brands);
 
-      setActiveTab("channel");
+      setActiveTab("company");
       setSearchTerm("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2351,6 +2421,7 @@ function PerformanceFilterModal({
   React.useEffect(() => { setSearchTerm(""); }, [activeTab]);
 
   const tabConfig = {
+    company: { options: companies, value: draftCompany, onChange: setDraftCompany },
     channel: { options: channels, value: draftChannel, onChange: setDraftChannel },
     platform: { options: localPlatforms, value: draftPlatform, onChange: setDraftPlatform },
     category: { options: localCategories, value: draftCategory, onChange: setDraftCategory },
@@ -2403,6 +2474,7 @@ function PerformanceFilterModal({
     setSelectedCategory(draftCategory);
     setSelectedBrand(draftBrand);
     setSelectedLocation(draftLocation);
+    setSelectedCompany(draftCompany);
     onClose();
   };
 
@@ -2414,6 +2486,7 @@ function PerformanceFilterModal({
     setDraftCategory("All");
     setDraftBrand("All");
     setDraftLocation("All");
+    setDraftCompany("All");
   };
 
   const totalActiveCount = PERFORMANCE_FILTER_TABS.reduce((sum, t) => sum + countFor(t.key), 0);
@@ -2501,6 +2574,7 @@ function PerformanceFilterModal({
    CONTENT ANALYSIS FILTER MODAL — Channel, Platform, Category, Brand, Location
    ═══════════════════════════════════════════════════════════════════ */
 const CONTENT_FILTER_TABS = [
+  { key: "company", label: "Company", icon: Building },
   { key: "channel", label: "Channel", icon: Layers },
   { key: "platform", label: "Platform", icon: Monitor },
   { key: "category", label: "Category", icon: LayoutGrid },
@@ -2515,6 +2589,7 @@ function ContentFilterModal({
   categories, selectedCategory, setSelectedCategory,
   brands, selectedBrand, setSelectedBrand,
   locations, selectedLocation, setSelectedLocation,
+  companies, selectedCompany, setSelectedCompany,
 }) {
   const [activeTab, setActiveTab] = React.useState("channel");
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -2524,6 +2599,7 @@ function ContentFilterModal({
   const [draftCategory, setDraftCategory] = React.useState(selectedCategory);
   const [draftBrand, setDraftBrand] = React.useState(selectedBrand);
   const [draftLocation, setDraftLocation] = React.useState(selectedLocation);
+  const [draftCompany, setDraftCompany] = React.useState(selectedCompany);
 
   const [localPlatforms, setLocalPlatforms] = React.useState(platforms);
   const [localCategories, setLocalCategories] = React.useState(categories);
@@ -2536,12 +2612,13 @@ function ContentFilterModal({
       setDraftCategory(selectedCategory);
       setDraftBrand(selectedBrand);
       setDraftLocation(selectedLocation);
+      setDraftCompany(selectedCompany);
 
       setLocalPlatforms(platforms);
       setLocalCategories(categories);
       setLocalBrands(brands);
 
-      setActiveTab("channel");
+      setActiveTab("company");
       setSearchTerm("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2611,6 +2688,7 @@ function ContentFilterModal({
   React.useEffect(() => { setSearchTerm(""); }, [activeTab]);
 
   const tabConfig = {
+    company: { options: companies, value: draftCompany, onChange: setDraftCompany },
     channel: { options: channels, value: draftChannel, onChange: setDraftChannel },
     platform: { options: localPlatforms, value: draftPlatform, onChange: setDraftPlatform },
     category: { options: localCategories, value: draftCategory, onChange: setDraftCategory },
@@ -2663,6 +2741,7 @@ function ContentFilterModal({
     setSelectedCategory(draftCategory);
     setSelectedBrand(draftBrand);
     setSelectedLocation(draftLocation);
+    setSelectedCompany(draftCompany);
     onClose();
   };
 
@@ -2674,6 +2753,7 @@ function ContentFilterModal({
     setDraftCategory("All");
     setDraftBrand("All");
     setDraftLocation("All");
+    setDraftCompany("All");
   };
 
   const totalActiveCount = CONTENT_FILTER_TABS.reduce((sum, t) => sum + countFor(t.key), 0);
@@ -2758,6 +2838,7 @@ function ContentFilterModal({
 }
 
 const INVENTORY_FILTER_TABS = [
+  { key: "company", label: "Company", icon: Building },
   { key: "channel", label: "Channel", icon: Layers },
   { key: "platform", label: "Platform", icon: Monitor },
   { key: "category", label: "Category", icon: LayoutGrid },
@@ -2772,6 +2853,7 @@ function InventoryFilterModal({
   categories, selectedCategory, setSelectedCategory,
   brands, selectedBrand, setSelectedBrand,
   locations, selectedLocation, setSelectedLocation,
+  companies, selectedCompany, setSelectedCompany,
 }) {
   const [activeTab, setActiveTab] = React.useState("channel");
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -3061,6 +3143,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
     brands,
     selectedBrand,
     setSelectedBrand,
+    companies,
+    selectedCompany,
+    setSelectedCompany,
     keywords,
     selectedKeyword,
     setSelectedKeyword,
@@ -3409,6 +3494,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       brands={brands}
                       selectedBrand={selectedBrand}
                       setSelectedBrand={setSelectedBrand}
+                      companies={companies}
+                      selectedCompany={selectedCompany}
+                      setSelectedCompany={setSelectedCompany}
                     />
                   )}
 
@@ -3426,6 +3514,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       categories={categories}
                       selectedCategory={selectedCategory}
                       setSelectedCategory={setSelectedCategory}
+                      companies={companies}
+                      selectedCompany={selectedCompany}
+                      setSelectedCompany={setSelectedCompany}
                     />
                   )}
 
@@ -3449,6 +3540,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       brands={brands}
                       selectedBrand={selectedBrand}
                       setSelectedBrand={setSelectedBrand}
+                      companies={companies}
+                      selectedCompany={selectedCompany}
+                      setSelectedCompany={setSelectedCompany}
                     />
                   )}
 
@@ -3476,6 +3570,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       keywords={keywords}
                       selectedKeyword={selectedKeyword}
                       setSelectedKeyword={setSelectedKeyword}
+                      companies={companies}
+                      selectedCompany={selectedCompany}
+                      setSelectedCompany={setSelectedCompany}
                     />
                   )}
 
@@ -3499,6 +3596,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       locations={locations}
                       selectedLocation={selectedLocation}
                       setSelectedLocation={setSelectedLocation}
+                      companies={companies}
+                      selectedCompany={selectedCompany}
+                      setSelectedCompany={setSelectedCompany}
                     />
                   )}
 
@@ -3522,6 +3622,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       locations={locations}
                       selectedLocation={selectedLocation}
                       setSelectedLocation={setSelectedLocation}
+                      companies={companies}
+                      selectedCompany={selectedCompany}
+                      setSelectedCompany={setSelectedCompany}
                     />
                   )}
 
@@ -3545,6 +3648,9 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       locations={locations}
                       selectedLocation={selectedLocation}
                       setSelectedLocation={setSelectedLocation}
+                      companies={companies}
+                      selectedCompany={selectedCompany}
+                      setSelectedCompany={setSelectedCompany}
                     />
                   )}
 
@@ -3574,6 +3680,16 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
               ) : (
                 /* ============ OTHER PAGES: ORIGINAL DROPDOWNS ============ */
                 <>
+                  {/* COMPANY SELECTION */}
+                  <CustomHeaderDropdown
+                    label="COMPANY"
+                    options={companies}
+                    value={selectedCompany}
+                    onChange={(newValue) => setSelectedCompany(newValue)}
+                    width={{ xs: "calc(50% - 6px)", sm: 115 }}
+                    multiSelect={true}
+                  />
+
                   {/* CHANNEL SELECTION */}
                   <CustomHeaderDropdown
                     label="CHANNEL"
@@ -3600,6 +3716,16 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                     options={location.pathname.includes("visibility") ? visibilityCategories : categories}
                     value={selectedCategory}
                     onChange={(newValue) => setSelectedCategory(newValue)}
+                    width={{ xs: "calc(50% - 6px)", sm: 115 }}
+                    multiSelect={true}
+                  />
+
+                  {/* BRAND SELECTION */}
+                  <CustomHeaderDropdown
+                    label="BRAND"
+                    options={brands}
+                    value={selectedBrand}
+                    onChange={(newValue) => setSelectedBrand(newValue)}
                     width={{ xs: "calc(50% - 6px)", sm: 115 }}
                     multiSelect={true}
                   />

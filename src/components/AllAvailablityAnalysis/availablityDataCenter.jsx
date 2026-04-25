@@ -49,19 +49,15 @@ const ENTITY_DATA = {
   dec: { offtakes: 5.2, spend: 0.88, roas: 5.9, categorySize: 20.5, conversion: 3.5, availability: 83.2, sos: 34.8, marketShare: 29.5, inorgSales: 15.5, dspSales: 9.2, promoMyBrand: 25.5, promoCompete: 21.2, cpm: 138, cpc: 13.5, osa: 83.2, doi: 36, fillrate: 85.8, assortment: 162, psl: 1.55, promo: 8.5, market: 29.5, inorg: 15.5 },
   jan: { offtakes: 3.2, spend: 0.52, roas: 6.2, categorySize: 12.8, conversion: 2.2, availability: 77.5, sos: 25.2, marketShare: 22.1, inorgSales: 10.8, dspSales: 6.2, promoMyBrand: 16.8, promoCompete: 13.5, cpm: 168, cpc: 18.5, osa: 77.5, doi: 46, fillrate: 81.2, assortment: 135, psl: 1.08, promo: 5.5, market: 22.1, inorg: 10.8 },
 
-  // ── ICE CREAM CATEGORIES ──────────────────────────────────
-  cassata: { offtakes: 2.8, spend: 0.42, roas: 6.7, categorySize: 10.5, conversion: 2.8, availability: 81.2, sos: 28.5, marketShare: 24.2, inorgSales: 12.5, dspSales: 7.2, promoMyBrand: 18.5, promoCompete: 15.2, cpm: 145, cpc: 15.2, osa: 81.2, doi: 38, fillrate: 84.5, assortment: 24, psl: 0.85, promo: 6.2, market: 24.2, inorg: 12.5 },
-  "core tub": { offtakes: 3.5, spend: 0.58, roas: 6.0, categorySize: 14.2, conversion: 3.1, availability: 82.5, sos: 30.2, marketShare: 26.5, inorgSales: 13.8, dspSales: 8.2, promoMyBrand: 20.5, promoCompete: 17.2, cpm: 138, cpc: 14.5, osa: 82.5, doi: 36, fillrate: 85.2, assortment: 18, psl: 0.98, promo: 7.0, market: 26.5, inorg: 13.8 },
-  cup: { offtakes: 1.8, spend: 0.28, roas: 6.4, categorySize: 7.2, conversion: 2.2, availability: 78.5, sos: 22.5, marketShare: 18.8, inorgSales: 9.5, dspSales: 5.5, promoMyBrand: 14.2, promoCompete: 11.8, cpm: 158, cpc: 17.2, osa: 88.5, doi: 42, fillrate: 92.8, assortment: 12, psl: 0.62, promo: 4.8, market: 18.8, inorg: 9.5 },
-  "kw sticks": { offtakes: 1.5, spend: 0.22, roas: 6.8, categorySize: 5.8, conversion: 1.8, availability: 76.2, sos: 19.8, marketShare: 15.5, inorgSales: 7.8, dspSales: 4.5, promoMyBrand: 12.2, promoCompete: 9.8, cpm: 168, cpc: 19.5, osa: 86.2, doi: 45, fillrate: 91.2, assortment: 8, psl: 0.48, promo: 3.8, market: 15.5, inorg: 7.8 },
-  sandwich: { offtakes: 2.2, spend: 0.35, roas: 6.3, categorySize: 8.8, conversion: 2.5, availability: 80.2, sos: 25.5, marketShare: 21.2, inorgSales: 10.8, dspSales: 6.2, promoMyBrand: 16.5, promoCompete: 13.8, cpm: 148, cpc: 16.2, osa: 90.2, doi: 40, fillrate: 93.5, assortment: 15, psl: 0.72, promo: 5.5, market: 21.2, inorg: 10.8 },
-  "family pack": { offtakes: 2.5, spend: 0.38, roas: 6.6, categorySize: 9.5, conversion: 2.4, availability: 79.8, sos: 24.8, marketShare: 20.5, inorgSales: 10.2, dspSales: 5.8, promoMyBrand: 15.8, promoCompete: 13.2, cpm: 152, cpc: 16.8, osa: 89.8, doi: 41, fillrate: 93.2, assortment: 14, psl: 0.78, promo: 5.2, market: 20.5, inorg: 10.2 },
-  chocobar: { offtakes: 1.2, spend: 0.18, roas: 6.7, categorySize: 4.5, conversion: 1.5, availability: 75.5, sos: 17.2, marketShare: 13.5, inorgSales: 6.8, dspSales: 3.8, promoMyBrand: 10.2, promoCompete: 8.5, cpm: 175, cpc: 20.5, osa: 85.5, doi: 48, fillrate: 89.8, assortment: 6, psl: 0.38, promo: 3.2, market: 13.5, inorg: 6.8 },
-  kulfi: { offtakes: 1.0, spend: 0.15, roas: 6.7, categorySize: 3.8, conversion: 1.2, availability: 73.2, sos: 14.5, marketShare: 11.2, inorgSales: 5.5, dspSales: 3.2, promoMyBrand: 8.5, promoCompete: 7.2, cpm: 185, cpc: 22.5, osa: 83.2, doi: 52, fillrate: 88.5, assortment: 5, psl: 0.32, promo: 2.8, market: 11.2, inorg: 5.5 },
-  "jelly cups": { offtakes: 0.8, spend: 0.12, roas: 6.7, categorySize: 3.2, conversion: 1.0, availability: 71.5, sos: 12.2, marketShare: 9.5, inorgSales: 4.5, dspSales: 2.5, promoMyBrand: 7.2, promoCompete: 5.8, cpm: 195, cpc: 24.5, osa: 81.5, doi: 55, fillrate: 86.5, assortment: 4, psl: 0.25, promo: 2.2, market: 9.5, inorg: 4.5 },
-  "brownie tub": { offtakes: 0.6, spend: 0.10, roas: 6.0, categorySize: 2.5, conversion: 0.8, availability: 69.8, sos: 10.5, marketShare: 7.8, inorgSales: 3.8, dspSales: 2.2, promoMyBrand: 5.8, promoCompete: 4.8, cpm: 208, cpc: 26.5, osa: 79.8, doi: 58, fillrate: 85.2, assortment: 3, psl: 0.20, promo: 1.8, market: 7.8, inorg: 3.8 },
-  exotics: { offtakes: 0.5, spend: 0.08, roas: 6.3, categorySize: 2.2, conversion: 0.7, availability: 68.5, sos: 8.5, marketShare: 6.2, inorgSales: 3.2, dspSales: 1.8, promoMyBrand: 4.8, promoCompete: 3.8, cpm: 218, cpc: 28.5, osa: 78.5, doi: 60, fillrate: 84.2, assortment: 3, psl: 0.18, promo: 1.5, market: 6.2, inorg: 3.2 },
-  others: { offtakes: 0.4, spend: 0.05, roas: 5.5, categorySize: 1.8, conversion: 0.5, availability: 65.2, sos: 6.2, marketShare: 4.5, inorgSales: 2.5, dspSales: 1.2, promoMyBrand: 3.5, promoCompete: 2.5, cpm: 235, cpc: 32.5, osa: 75.2, doi: 65, fillrate: 82.5, assortment: 2, psl: 0.12, promo: 1.0, market: 4.5, inorg: 2.5 },
+  // ── AUDIO / ELECTRONICS CATEGORIES ───────────────────────
+  tws: { offtakes: 5.2, spend: 0.88, roas: 5.9, categorySize: 20.5, conversion: 3.5, availability: 83.2, sos: 34.8, marketShare: 29.5, inorgSales: 15.5, dspSales: 9.2, promoMyBrand: 25.5, promoCompete: 21.2, cpm: 138, cpc: 13.5, osa: 83.2, doi: 36, fillrate: 85.8, assortment: 162, psl: 1.55, promo: 8.5, market: 29.5, inorg: 15.5 },
+  headphone: { offtakes: 3.8, spend: 0.65, roas: 5.8, categorySize: 15.2, conversion: 2.7, availability: 79.8, sos: 28.5, marketShare: 24.8, inorgSales: 12.2, dspSales: 7.5, promoMyBrand: 19.2, promoCompete: 15.8, cpm: 155, cpc: 16.2, osa: 79.8, doi: 42, fillrate: 83.5, assortment: 145, psl: 1.22, promo: 6.2, market: 24.8, inorg: 12.2 },
+  "wired earphone": { offtakes: 2.5, spend: 0.38, roas: 6.6, categorySize: 9.8, conversion: 1.8, availability: 81.2, sos: 22.4, marketShare: 15.2, inorgSales: 8.5, dspSales: 4.8, promoMyBrand: 12.5, promoCompete: 10.8, cpm: 172, cpc: 19.2, osa: 81.2, doi: 48, fillrate: 82.2, assortment: 118, psl: 0.85, promo: 4.5, market: 15.2, inorg: 8.5 },
+  speaker: { offtakes: 1.8, spend: 0.32, roas: 5.6, categorySize: 7.5, conversion: 1.5, availability: 77.8, sos: 18.2, marketShare: 12.5, inorgSales: 7.2, dspSales: 4.2, promoMyBrand: 10.2, promoCompete: 8.5, cpm: 195, cpc: 22.5, osa: 77.8, doi: 52, fillrate: 79.8, assortment: 98, psl: 0.72, promo: 3.8, market: 12.5, inorg: 7.2 },
+  soundbar: { offtakes: 1.2, spend: 0.22, roas: 5.5, categorySize: 5.8, conversion: 1.2, availability: 76.5, sos: 14.5, marketShare: 9.8, inorgSales: 5.8, dspSales: 3.5, promoMyBrand: 8.2, promoCompete: 6.8, cpm: 215, psl: 0.58, promo: 3.2, market: 9.8, inorg: 5.8, osa: 76.5, doi: 56, fillrate: 78.5, assortment: 82 },
+  neckband: { offtakes: 0.9, spend: 0.18, roas: 5.0, categorySize: 4.2, conversion: 0.9, availability: 75.8, sos: 11.2, marketShare: 7.5, inorgSales: 4.5, dspSales: 2.8, promoMyBrand: 6.5, promoCompete: 5.2, cpm: 235, psl: 0.45, promo: 2.5, market: 7.5, inorg: 4.5, osa: 75.8, doi: 62, fillrate: 77.8, assortment: 68 },
+  wearables: { offtakes: 3.5, spend: 0.58, roas: 6.0, categorySize: 14.2, conversion: 2.5, availability: 82.5, sos: 30.2, marketShare: 26.5, inorgSales: 13.8, dspSales: 8.2, promoMyBrand: 20.5, promoCompete: 17.2, cpm: 138, cpc: 14.5, osa: 82.5, doi: 36, fillrate: 85.2, assortment: 18, psl: 0.98, promo: 7.0, market: 26.5, inorg: 13.8 },
+  accessories: { offtakes: 2.8, spend: 0.42, roas: 6.7, categorySize: 10.5, conversion: 2.8, availability: 91.2, sos: 28.5, marketShare: 24.2, inorgSales: 12.5, dspSales: 7.2, promoMyBrand: 18.5, promoCompete: 15.2, cpm: 145, cpc: 15.2, osa: 91.2, doi: 38, fillrate: 94.5, assortment: 24, psl: 0.85, promo: 6.2, market: 24.2, inorg: 12.5 },
 
   // ── SKUs (Kwality Walls product SKUs) ─────────────────────
   sku1: { offtakes: 1.8, spend: 0.28, roas: 6.4, categorySize: 6.8, conversion: 2.5, availability: 82.8, sos: 28.5, marketShare: 22.4, inorgSales: 11.2, dspSales: 6.5, promoMyBrand: 18.5, promoCompete: 15.2, cpm: 148, cpc: 14.2, osa: 82.8, doi: 38, fillrate: 85.2, assortment: 1, psl: 0.42, promo: 5.8, market: 22.4, inorg: 11.2 },
@@ -112,7 +108,7 @@ function getLogicalKpiValue(kpi, filters = {}) {
   };
 
   const getCategoryList = (val) => {
-    const allCats = ["cassata", "core tub", "cup", "sandwich"];
+    const allCats = ["tws", "headphone", "wired earphone", "speaker", "soundbar", "neckband", "wearables", "accessories"];
     if (!val || val === "All" || val === "None" || (Array.isArray(val) && val.length === 0)) {
       return allCats;
     }
@@ -596,8 +592,8 @@ const FORMAT_MATRIX_ABSOLUTE = {
   PlatformColumns: ["Blinkit", "Instamart", "Zepto", "Flipkart", "Amazon"],
 
   formatColumns: [
-    "Cassata", "Core Tub", "Cornetto", "Magnum",
-    "Premium Tub", "KW Sticks", "Sandwich"
+    "TWS", "Headphone", "Wired Earphone", "Speaker",
+    "Soundbar", "Neckband", "Wearables", "Accessories"
   ],
 
   CityColumns: [
@@ -641,26 +637,23 @@ const FORMAT_MATRIX_ABSOLUTE = {
     {
       kpi: "Osa",
       values: {
-        Cassata: 7, "Core Tub": 81, Cornetto: 90, Magnum: 91,
-        "KW Sticks": 97, "Premium Tub": 85, Sandwich: 82
+        TWS: 88, Headphone: 82, "Wired Earphone": 79, Speaker: 75, Soundbar: 72, Neckband: 77, Wearables: 85, Accessories: 93
       },
-      trend: generateTrendMulti(75)
+      trend: generateTrendMulti(80)
     },
     {
       kpi: "Doi",
       values: {
-        Cassata: 13, "Core Tub": 87, Cornetto: 98, Magnum: 100,
-        "KW Sticks": 100, "Premium Tub": 78, Sandwich: 95
+        TWS: 36, Headphone: 42, "Wired Earphone": 45, Speaker: 52, Soundbar: 56, Neckband: 48, Wearables: 38, Accessories: 30
       },
-      trend: generateTrendMulti(85)
+      trend: generateTrendMulti(43)
     },
     {
       kpi: "Fillrate",
       values: {
-        Cassata: 17, "Core Tub": 99, Cornetto: 99, Magnum: 100,
-        "KW Sticks": 100, "Premium Tub": 99, Sandwich: 100
+        TWS: 92, Headphone: 86, "Wired Earphone": 83, Speaker: 80, Soundbar: 78, Neckband: 82, Wearables: 90, Accessories: 96
       },
-      trend: generateTrendMulti(95)
+      trend: generateTrendMulti(87)
     }
   ],
 
@@ -711,8 +704,8 @@ const FORMAT_MATRIX_Visibility = {
   PlatformColumns: ["Blinkit", "Instamart", "Zepto", "Flipkart", "Amazon"],
 
   formatColumns: [
-    "Cassata", "Core Tub", "Cornetto", "Magnum",
-    "Premium Tub", "KW Sticks", "Sandwich"
+    "TWS", "Headphone", "Wired Earphone", "Speaker",
+    "Soundbar", "Neckband", "Wearables", "Accessories"
   ],
 
   CityColumns: [
