@@ -100,11 +100,18 @@ const OverviewDashboard = () => {
         const platformMult = isAll(selectedPlatform, 3) ? 1.1 : (Array.isArray(selectedPlatform) ? (0.4 + (selectedPlatform.length * 0.2)) : 0.7);
         const brandMult = isAll(globalSelectedBrand, 3) ? 1.0 : (Array.isArray(globalSelectedBrand) ? (0.5 + (globalSelectedBrand.length * 0.15)) : 0.6);
         
+        // Category multiplier — scales volume/currency KPIs with number of selected categories
+        const totalCategories = 8; // TWS, Headphone, Wired Earphone, Speaker, Soundbar, Neckband, Wearables, Accessories
+        const catCount = isAll(selectedCategory, totalCategories)
+            ? totalCategories
+            : (Array.isArray(selectedCategory) ? selectedCategory.length : (selectedCategory ? 1 : totalCategories));
+        const categoryMult = catCount / totalCategories;
+
         // Date range multiplier
         const days = timeEnd && timeStart ? timeEnd.diff(timeStart, 'days') + 1 : 7;
         const dateMult = days / 7; // Normalize to a week
 
-        const combinedMult = channelMult * platformMult * brandMult * dateMult;
+        const combinedMult = channelMult * platformMult * brandMult * categoryMult * dateMult;
 
         return {
             topCards: [
@@ -149,12 +156,40 @@ const OverviewDashboard = () => {
             impressionsData: Array.from({ length: 6 }, (_, i) => ({
                 date: timeStart ? timeStart.clone().add(Math.floor(days * i / 5), 'days').format('DD MMM') : `${14 + i} Apr`,
                 value: (170 + Math.random() * 30) * (combinedMult / 5)
-            }))
+            })),
+            combinedMult,
+            dateMult
         };
     }, [selectedChannel, selectedPlatform, globalSelectedBrand, selectedCategory, timeStart, timeEnd]);
 
-    const { topCards, adTypeData, spendSalesData, impressionsData } = dashboardData;
+    const { topCards, adTypeData, spendSalesData, impressionsData, combinedMult, dateMult } = dashboardData;
     const adTypeMetrics = adTypeData[activeTab] || adTypeData[0];
+
+    const scaledGoals = React.useMemo(() => {
+        const scaleValue = (valStr, metric) => {
+            if (!valStr || typeof valStr !== 'string') return valStr;
+            const match = valStr.match(/^([^\d]*)([\d.]+)([a-zA-Z%]*)$/);
+            if (!match) return valStr;
+            const prefix = match[1];
+            let num = parseFloat(match[2]);
+            const suffix = match[3];
+            
+            if (metric === 'ROAS' || metric.includes('%') || suffix === 'x' || suffix === '%') {
+                num = num * (1 + (combinedMult * 0.05 / dateMult)); 
+            } else {
+                num = num * combinedMult; 
+            }
+            
+            const fixedNum = num >= 100 ? Math.round(num) : num.toFixed(1);
+            return `${prefix}${fixedNum}${suffix}`.replace('.0', '');
+        };
+
+        return goals.map(g => ({
+            ...g,
+            target: scaleValue(g.target, g.metric),
+            current: scaleValue(g.current, g.metric)
+        }));
+    }, [goals, combinedMult, dateMult]);
 
     return (
         <Box sx={{
@@ -630,8 +665,8 @@ const OverviewDashboard = () => {
                             </Box>
                             
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                {goals.filter(g => goalFilter === 'all' || g.status !== 'Achieved').length > 0 ? (
-                                    goals
+                                {scaledGoals.filter(g => goalFilter === 'all' || g.status !== 'Achieved').length > 0 ? (
+                                    scaledGoals
                                         .filter(g => goalFilter === 'all' || g.status !== 'Achieved')
                                         .map((goal, idx) => (
                                         <Box 
