@@ -20,6 +20,7 @@ import {
 import {
   ArrowBack as ArrowBackIcon,
   Menu as MenuIcon,
+  HelpOutline as HelpIcon,
 } from "@mui/icons-material";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -3832,7 +3833,7 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                       />
                     )}
                   </Box>
-                  <Tooltip title="Help & Guide">
+                  <Tooltip title="Help Center">
                     <Button
                       onClick={() => helpDrawerOpen ? closeHelp() : openHelpWithMenu(title)}
                       sx={{
@@ -3857,13 +3858,7 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                         }
                       }}
                     >
-                      <Typography sx={{ 
-                        fontWeight: 700, 
-                        fontSize: '1.2rem', 
-                        lineHeight: 1
-                      }}>
-                        ?
-                      </Typography>
+                      <HelpIcon sx={{ fontSize: '1.4rem' }} />
                     </Button>
                   </Tooltip>
                 </Box>
