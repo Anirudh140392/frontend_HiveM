@@ -27,6 +27,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AppThemeContext } from "../../utils/ThemeContext";
 import { FilterContext } from "../../utils/FilterContext";
+import { useHelp } from "../../utils/HelpContext";
 import DateRangeComparePicker from "./DateRangeComparePicker";
 
 import { ChevronDown, ChevronUp, Search, SlidersHorizontal, X, Layers, Monitor, LayoutGrid, Tag, MapPin, Hash, Type, Info, Building } from "lucide-react";
@@ -3177,6 +3178,8 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
     setVisibilityMode,
   } = React.useContext(FilterContext);
 
+  const { helpDrawerOpen, openHelpWithMenu, closeHelp } = useHelp();
+
   const location = useLocation();
 
   // 🌗 Dark/Light Mode
@@ -3768,7 +3771,7 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
               )}
 
               {/* TIME PERIOD & COMPARE WITH INTEGRATED */}
-              <Box sx={{ width: { xs: "100%", sm: 200 }, flexShrink: 0 }}>
+              <Box sx={{ width: { xs: "100%", sm: 260 }, flexShrink: 0 }}>
                 <Typography
                   sx={{
                     fontSize: "0.65rem",
@@ -3783,49 +3786,87 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                 >
                   TIME PERIOD
                 </Typography>
-                {!datesFetched ? (
-                  <Skeleton
-                    variant="rounded"
-                    width="100%"
-                    height={36}
-                    sx={{
-                      borderRadius: "10px",
-                      bgcolor: "rgba(0,0,0,0.05)"
-                    }}
-                  />
-                ) : (
-                  <DateRangeComparePicker
-                    timeStart={timeStart}
-                    timeEnd={timeEnd}
-                    compareStart={compareStart}
-                    compareEnd={compareEnd}
-                    maxDate={maxDate}
-                    onApply={(start, end, cStart, cEnd, compareOn, label) => {
-                      setTimeStart(start);
-                      setTimeEnd(end);
+                <Box sx={{ display: 'flex', alignItems: 'stretch', gap: 1 }}>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    {!datesFetched ? (
+                      <Skeleton
+                        variant="rounded"
+                        width="100%"
+                        height={36}
+                        sx={{
+                          borderRadius: "10px",
+                          bgcolor: "rgba(0,0,0,0.05)"
+                        }}
+                      />
+                    ) : (
+                      <DateRangeComparePicker
+                        timeStart={timeStart}
+                        timeEnd={timeEnd}
+                        compareStart={compareStart}
+                        compareEnd={compareEnd}
+                        maxDate={maxDate}
+                        onApply={(start, end, cStart, cEnd, compareOn, label) => {
+                          setTimeStart(start);
+                          setTimeEnd(end);
 
-                      // Format label for KPI cards
-                      let formattedLabel = "VS PREV. PERIOD";
-                      if (label) {
-                        const up = label.toUpperCase();
-                        if (up === "TODAY") formattedLabel = "VS YESTERDAY";
-                        else if (up === "YESTERDAY") formattedLabel = "VS DAY BEFORE";
-                        else if (up === "THIS MONTH") formattedLabel = "VS PREV. MONTH";
-                        else if (up.includes("LAST")) formattedLabel = up.replace("LAST", "VS PREV.");
-                        else formattedLabel = `VS ${up}`;
-                      }
-                      setComparisonLabel(formattedLabel);
+                          // Format label for KPI cards
+                          let formattedLabel = "VS PREV. PERIOD";
+                          if (label) {
+                            const up = label.toUpperCase();
+                            if (up === "TODAY") formattedLabel = "VS YESTERDAY";
+                            else if (up === "YESTERDAY") formattedLabel = "VS DAY BEFORE";
+                            else if (up === "THIS MONTH") formattedLabel = "VS PREV. MONTH";
+                            else if (up.includes("LAST")) formattedLabel = up.replace("LAST", "VS PREV.");
+                            else formattedLabel = `VS ${up}`;
+                          }
+                          setComparisonLabel(formattedLabel);
 
-                      if (compareOn) {
-                        setCompareStart(cStart);
-                        setCompareEnd(cEnd);
-                      } else {
-                        setCompareStart(null);
-                        setCompareEnd(null);
-                      }
-                    }}
-                  />
-                )}
+                          if (compareOn) {
+                            setCompareStart(cStart);
+                            setCompareEnd(cEnd);
+                          } else {
+                            setCompareStart(null);
+                            setCompareEnd(null);
+                          }
+                        }}
+                      />
+                    )}
+                  </Box>
+                  <Tooltip title="Help & Guide">
+                    <Button
+                      onClick={() => helpDrawerOpen ? closeHelp() : openHelpWithMenu(title)}
+                      sx={{
+                        minWidth: '40px',
+                        width: '40px',
+                        p: 0,
+                        borderRadius: '8px',
+                        alignSelf: 'stretch',
+                        bgcolor: '#ffffff',
+                        border: '1px solid #bfdbfe',
+                        color: '#2563eb',
+                        animation: 'blowGlow 2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                        '@keyframes blowGlow': {
+                          '0%': { boxShadow: '0 0 0 0 rgba(37, 99, 235, 0.4)' },
+                          '70%': { boxShadow: '0 0 0 10px rgba(37, 99, 235, 0)' },
+                          '100%': { boxShadow: '0 0 0 0 rgba(37, 99, 235, 0)' }
+                        },
+                        '&:hover': {
+                          bgcolor: '#eff6ff',
+                          borderColor: '#3b82f6',
+                          color: '#1d4ed8',
+                        }
+                      }}
+                    >
+                      <Typography sx={{ 
+                        fontWeight: 700, 
+                        fontSize: '1.2rem', 
+                        lineHeight: 1
+                      }}>
+                        ?
+                      </Typography>
+                    </Button>
+                  </Tooltip>
+                </Box>
               </Box>
             </Box>
           )}
