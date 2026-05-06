@@ -3186,6 +3186,34 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
   // 🌗 Dark/Light Mode
 
   const isGeoPage = location.pathname === "/geo-intelligence";
+  const [showPortal, setShowPortal] = React.useState(() => {
+    return !sessionStorage.getItem("portalSeen");
+  });
+  const [logoFlicker, setLogoFlicker] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!showPortal) return;
+
+    // Sequence: Flicker 1 -> Flicker 2 -> Blast Open
+    const flicker1 = setTimeout(() => setLogoFlicker(true), 600);
+    const flicker2 = setTimeout(() => setLogoFlicker(false), 800);
+    const flicker3 = setTimeout(() => setLogoFlicker(true), 1300);
+    const flicker4 = setTimeout(() => setLogoFlicker(false), 1500);
+    
+    // Comet Warp Portal opens
+    const blastOpen = setTimeout(() => {
+      setShowPortal(false);
+      sessionStorage.setItem("portalSeen", "true");
+    }, 2400);
+    
+    return () => {
+      clearTimeout(flicker1);
+      clearTimeout(flicker2);
+      clearTimeout(flicker3);
+      clearTimeout(flicker4);
+      clearTimeout(blastOpen);
+    };
+  }, [showPortal]);
 
   if (isGeoPage) {
     return (
@@ -3214,17 +3242,99 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
   }
 
   return (
-    <Box
+    <>
+      <AnimatePresence>
+        {showPortal && (
+          <Box
+            component={motion.div}
+            initial={{ opacity: 1 }}
+            exit={{ 
+              scale: 6, 
+              opacity: 0,
+              filter: 'blur(30px)',
+              transition: { duration: 0.9, ease: [0.7, 0, 0.84, 0] }
+            }}
+            sx={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: '#0f172a',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden'
+            }}
+          >
+            {/* COMET SIGHT RADIAL CORE */}
+            <Box
+              component={motion.div}
+              animate={{ 
+                scale: [1, 1.4, 1],
+                opacity: [0.2, 0.5, 0.2],
+                rotate: 360
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              sx={{
+                position: 'absolute',
+                width: '800px',
+                height: '800px',
+                background: 'radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, rgba(124, 58, 237, 0.1) 40%, transparent 70%)',
+                filter: 'blur(60px)',
+                borderRadius: '50%'
+              }}
+            />
+
+            <Box
+              component={motion.div}
+              animate={logoFlicker ? { opacity: 0.05, filter: 'blur(4px)' } : { opacity: 1, filter: 'blur(0px)' }}
+              sx={{ position: 'relative', textAlign: 'center' }}
+            >
+              <Typography
+                variant="h1"
+                sx={{
+                  color: '#ffffff',
+                  fontWeight: 950,
+                  fontSize: '5rem',
+                  letterSpacing: '0.2em',
+                  textShadow: '0 0 30px rgba(255,255,255,0.4)',
+                  fontFamily: '"Orbitron", sans-serif',
+                  background: 'linear-gradient(180deg, #ffffff 30%, #94a3b8 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                DEMO
+              </Typography>
+              <Box 
+                sx={{ 
+                  height: 2, 
+                  width: '100%', 
+                  background: 'linear-gradient(90deg, transparent, #2563eb, transparent)', 
+                  mt: 2,
+                  boxShadow: '0 0 20px #2563eb'
+                }} 
+              />
+            </Box>
+          </Box>
+        )}
+      </AnimatePresence>
+
+      <Box
+        component={motion.div}
+        initial={{ opacity: 0, y: -30 }}
+        animate={!showPortal ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
       sx={{
-        bgcolor: (theme) => theme.palette.background.paper,
-        borderBottom: "1px solid",
-        borderColor: "#e5e7eb",
-        px: { xs: 2, sm: 3 },
-        py: 0.8,
+        background: "rgba(255, 255, 255, 0.8)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        borderBottom: "1px solid rgba(229, 231, 235, 0.5)",
+        px: { xs: 2, sm: 4 },
+        py: 1.2,
         position: "sticky",
         top: 0,
         zIndex: 1200,
-        transition: "all 0.3s ease",
+        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+        boxShadow: "0 4px 30px rgba(0, 0, 0, 0.03)",
       }}
     >
       {/* ---------------- FIRST ROW ---------------- */}
@@ -3238,43 +3348,51 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
           pb: 0.5,
         }}
       >
-        {/* LEFT SIDE */}
+        {/* LEFT SIDE: Futuristic Brand Container */}
         <Box sx={{
           display: "flex",
           alignItems: "center",
-          gap: 1,
+          gap: 2,
           width: { xs: "100%", md: "auto" },
           justifyContent: { xs: "space-between", md: "flex-start" }
         }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton
-              onClick={onMenuClick}
-              sx={{ display: { xs: "block", sm: "none" }, p: 0.5 }}
-            >
-              <MenuIcon />
-            </IconButton>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
               {!hideFilters && location.pathname !== "/scheduled-reports" && (
                 <IconButton
                   size="small"
                   onClick={() => setIsExpanded(!isExpanded)}
                   sx={{
-                    bgcolor: "#f1f5f9",
-                    "&:hover": { bgcolor: "#e2e8f0" },
+                    width: 32,
+                    height: 32,
+                    bgcolor: "rgba(241, 245, 249, 0.8)",
+                    backdropFilter: "blur(4px)",
+                    borderRadius: "10px",
+                    "&:hover": {
+                      bgcolor: "rgba(226, 232, 240, 1)",
+                      transform: "translateY(-2px)"
+                    },
                     transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s ease",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 >
-                  <ChevronDown size={18} />
+                  <ChevronDown size={18} color="#475569" />
                 </IconButton>
               )}
 
               {title && (
-                <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", ml: 0.5 }}>
                   <Typography
-                    fontWeight="600"
-                    sx={{ whiteSpace: "nowrap", lineHeight: 1.2, fontSize: { xs: "0.9rem", sm: "1.0rem" } }}
+                    fontWeight="800"
+                    sx={{
+                      whiteSpace: "nowrap",
+                      lineHeight: 1,
+                      fontSize: { xs: "1rem", sm: "1.2rem" },
+                      color: "#0f172a",
+                      letterSpacing: "-0.03em",
+                      textTransform: "capitalize"
+                    }}
                   >
                     {title}
                   </Typography>
@@ -3414,26 +3532,30 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                         else if (title === "Inventory Analysis") setInventoryFilterModalOpen(true);
                       }}
                       variant="contained"
-                      startIcon={<SlidersHorizontal size={14} strokeWidth={2.5} />}
+                      startIcon={<SlidersHorizontal size={16} strokeWidth={2.5} />}
                       sx={{
-                        height: "36px",
+                        height: "40px",
                         textTransform: "none",
-                        borderRadius: "10px",
-                        background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)",
+                        borderRadius: "12px",
+                        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
                         color: "white",
-                        fontWeight: 600,
-                        fontSize: "0.82rem",
+                        fontWeight: 700,
+                        fontSize: "0.85rem",
                         fontFamily: "'Inter', 'Roboto', sans-serif",
-                        px: 2.2,
-                        gap: 0.5,
-                        letterSpacing: "0.01em",
-                        boxShadow: "0 2px 8px rgba(37,99,235,0.25), 0 1px 3px rgba(0,0,0,0.08)",
-                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        px: 2.5,
+                        gap: 0.8,
+                        letterSpacing: "0.02em",
+                        boxShadow: "0 10px 20px rgba(15, 23, 42, 0.15)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                         "&:hover": {
-                          background: "linear-gradient(135deg, #172e4f 0%, #1d4ed8 100%)",
-                          boxShadow: "0 4px 14px rgba(37,99,235,0.35), 0 2px 6px rgba(0,0,0,0.1)",
-                          transform: "translateY(-1px)",
+                          background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
+                          boxShadow: "0 15px 25px rgba(15, 23, 42, 0.2)",
+                          transform: "translateY(-3px)",
                         },
+                        "&:active": {
+                          transform: "translateY(0)",
+                        }
                       }}
                     >
                       Filters
@@ -3837,28 +3959,87 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                     <Button
                       onClick={() => helpDrawerOpen ? closeHelp() : openHelpWithMenu(title)}
                       sx={{
-                        minWidth: '40px',
-                        width: '40px',
+                        minWidth: '44px',
+                        width: '44px',
+                        height: '44px',
                         p: 0,
-                        borderRadius: '8px',
-                        alignSelf: 'stretch',
-                        bgcolor: '#ffffff',
-                        border: '1px solid #bfdbfe',
+                        borderRadius: '14px',
+                        alignSelf: 'center',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
                         color: '#2563eb',
-                        animation: 'blowGlow 2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-                        '@keyframes blowGlow': {
-                          '0%': { boxShadow: '0 0 0 0 rgba(37, 99, 235, 0.4)' },
-                          '70%': { boxShadow: '0 0 0 10px rgba(37, 99, 235, 0)' },
-                          '100%': { boxShadow: '0 0 0 0 rgba(37, 99, 235, 0)' }
+                        border: 'none',
+                        zIndex: 1,
+                        boxShadow: '0 4px 15px rgba(37, 99, 235, 0.1)',
+                        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+
+                        // AURORA BORDER EFFECT
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          inset: '-2px',
+                          background: 'linear-gradient(90deg, #2563eb, #7c3aed, #db2777, #2563eb)',
+                          backgroundSize: '300% 100%',
+                          borderRadius: '15px',
+                          zIndex: -1,
+                          animation: 'auroraFlow 4s linear infinite',
                         },
+
+                        // INTERNAL GLOSS LAYER
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          inset: '1px',
+                          background: '#ffffff',
+                          borderRadius: '13px',
+                          zIndex: -1,
+                        },
+
+                        '@keyframes auroraFlow': {
+                          '0%': { backgroundPosition: '0% 0%' },
+                          '100%': { backgroundPosition: '100% 0%' }
+                        },
+
+                        // FLOATING LIGHT BEAM
+                        '& .beam': {
+                          position: 'absolute',
+                          top: '-150%',
+                          left: '-150%',
+                          width: '400%',
+                          height: '400%',
+                          background: 'conic-gradient(from 0deg, transparent, rgba(37, 99, 235, 0.15), transparent 40deg)',
+                          animation: 'beamRotate 6s linear infinite',
+                          pointerEvents: 'none',
+                          zIndex: 0,
+                        },
+
+                        '@keyframes beamRotate': {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' }
+                        },
+
                         '&:hover': {
-                          bgcolor: '#eff6ff',
-                          borderColor: '#3b82f6',
+                          transform: 'scale(1.1) translateY(-3px)',
+                          boxShadow: '0 15px 30px rgba(37, 99, 235, 0.25), 0 0 20px rgba(124, 58, 237, 0.2)',
                           color: '#1d4ed8',
+                          '&::before': {
+                            animationDuration: '1.5s',
+                            filter: 'brightness(1.2) contrast(1.1)',
+                          },
+                          '& .beam': {
+                            animationDuration: '2s',
+                            opacity: 0.8,
+                          }
+                        },
+
+                        '&:active': {
+                          transform: 'scale(0.95)',
                         }
                       }}
                     >
-                      <HelpIcon sx={{ fontSize: '1.4rem' }} />
+                      <Box className="beam" />
+                      <HelpIcon sx={{ fontSize: '1.6rem', position: 'relative', zIndex: 2 }} />
                     </Button>
                   </Tooltip>
                 </Box>
@@ -3923,7 +4104,8 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
 
       {/* 🌗 THEME TOGGLE */}
       {/* 🌗 THEME TOGGLE REMOVED - Static Light Mode Enforced */}
-    </Box>
+      </Box>
+    </>
   );
 };
 

@@ -734,40 +734,80 @@ const HelpDrawer = ({ userDbName }) => {
             >
               MODULES
             </Typography>
-        </Box>
-        <List sx={{ px: 1 }}>
-          {(activeTab === 0 ? filteredMenuItems : faqCategories).map((item) => {
-            const isSelected = activeTab === 0 ? activeMenu === item.label : activeFaqMenu === item.label;
-            return (
-              <ListItemButton
-                key={item.label}
-                selected={isSelected}
-                onClick={() => activeTab === 0 ? setActiveMenu(item.label) : setActiveFaqMenu(item.label)}
-                sx={{
-                  borderRadius: "8px",
-                  mb: 0.5,
-                  py: 1,
-                  "&.Mui-selected": {
-                    bgcolor: "rgba(37, 99, 235, 0.08)",
-                    color: "#2563eb",
-                    "& .MuiListItemIcon-root": { color: "#2563eb" },
-                    "&:hover": { bgcolor: "rgba(37, 99, 235, 0.12)" },
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 36, color: "#64748b" }}>{item.icon}</ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{
-                    fontSize: "0.825rem",
-                    fontWeight: isSelected ? 600 : 500,
+          </Box>
+          <List sx={{ px: 1 }}>
+            {(activeTab === 0 ? filteredMenuItems : faqCategories).map((item) => {
+              const isSelected = activeTab === 0 ? activeMenu === item.label : activeFaqMenu === item.label;
+              return (
+                <ListItemButton
+                  key={item.label}
+                  selected={isSelected}
+                  onClick={() => activeTab === 0 ? setActiveMenu(item.label) : setActiveFaqMenu(item.label)}
+                  sx={{
+                    borderRadius: "12px",
+                    mb: 1,
+                    py: 1.2,
+                    px: 2,
+                    position: 'relative',
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    border: '1px solid transparent',
+
+                    "&.Mui-selected": {
+                      bgcolor: "rgba(37, 99, 235, 0.05)",
+                      color: "#2563eb",
+                      borderColor: 'rgba(37, 99, 235, 0.1)',
+                      boxShadow: '0 4px 15px rgba(37, 99, 235, 0.05)',
+                      "& .MuiListItemIcon-root": {
+                        color: "#2563eb",
+                        filter: 'drop-shadow(0 0 8px rgba(37, 99, 235, 0.3))'
+                      },
+                      "&::after": {
+                        content: '""',
+                        position: 'absolute',
+                        left: 0,
+                        top: '20%',
+                        height: '60%',
+                        width: '3px',
+                        bgcolor: '#2563eb',
+                        borderRadius: '0 4px 4px 0',
+                        boxShadow: '0 0 10px #2563eb',
+                      },
+                      "&:hover": {
+                        bgcolor: "rgba(37, 99, 235, 0.08)",
+                        transform: 'translateX(4px)'
+                      },
+                    },
+                    "&:hover:not(.Mui-selected)": {
+                      bgcolor: "rgba(241, 245, 249, 0.8)",
+                      transform: 'translateX(4px)',
+                      "& .MuiListItemIcon-root": {
+                        color: "#1e293b",
+                        transform: 'rotate(-10deg) scale(1.1)'
+                      },
+                    }
                   }}
-                />
-              </ListItemButton>
-            );
-          })}
-        </List>
-      </Box>
+                >
+                  <ListItemIcon sx={{
+                    minWidth: 32,
+                    color: isSelected ? "#2563eb" : "#94a3b8",
+                    transition: 'all 0.3s ease'
+                  }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontSize: "0.85rem",
+                      fontWeight: isSelected ? 700 : 500,
+                      letterSpacing: isSelected ? '0.01em' : '0',
+                      transition: 'all 0.3s ease'
+                    }}
+                  />
+                </ListItemButton>
+              );
+            })}
+          </List>
+        </Box>
 
         {/* Content Tabs & View */}
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column", bgcolor: "#f8fafc" }}>
