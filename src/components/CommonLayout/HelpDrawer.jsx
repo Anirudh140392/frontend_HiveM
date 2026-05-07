@@ -508,6 +508,63 @@ const HelpDrawer = ({ userDbName }) => {
     },
   ];
 
+  const marketIntelligenceGlossary = [
+    {
+      kpi: "Market Share %",
+      definition: "The percentage of total category sales value captured by your brand.",
+      usage: "Monitor competitive dominance and growth relative to the market.",
+      interpretation: "Growth in market share indicates a winning strategy even if total sales are flat.",
+      pitfalls: "Focusing on share without profitability; data lag in category-wide estimates.",
+      example: "Brand share increased from 12% to 15% this quarter.",
+      logic: "(Brand Sales ÷ Total Category Sales) × 100",
+    },
+    {
+      kpi: "Category Size",
+      definition: "The total estimated sales revenue of all products within your primary category.",
+      usage: "Understand the total addressable market (TAM).",
+      interpretation: "Expansion in category size indicates rising consumer interest or new entrants.",
+      pitfalls: "Overestimating market size by including unrelated sub-categories.",
+      example: "The 'Skincare' category size is estimated at ₹500 Cr annually.",
+      logic: "Sum of all brand sales in the category",
+    },
+    {
+      kpi: "Price Index",
+      definition: "A comparison of your brand's average selling price (ASP) against the category average.",
+      usage: "Evaluate price competitiveness.",
+      interpretation: "Index > 100 means you are priced at a premium; < 100 means you are a value player.",
+      pitfalls: "Ignoring quality differences when comparing prices.",
+      example: "Price index of 110 suggests a 10% premium over category average.",
+      logic: "(Brand ASP ÷ Category ASP) × 100",
+    },
+    {
+      kpi: "Share of Search (SOS)",
+      definition: "The percentage of top search results occupied by your brand across relevant keywords.",
+      usage: "Measure digital shelf dominance and discoverability.",
+      interpretation: "High SOS correlates strongly with market share growth.",
+      pitfalls: "High SOS on low-volume keywords doesn't drive significant impact.",
+      example: "Brand holds 40% SOS for 'running shoes' category.",
+      logic: "(Brand Appearances in Top N results ÷ N) × 100",
+    },
+    {
+      kpi: "Competitor Stock-out Rate",
+      definition: "The frequency with which key competitors are unavailable (OOS) across platforms.",
+      usage: "Identify tactical opportunities to capture competitor demand.",
+      interpretation: "High competitor OOS is a prime time to increase ad spend on their keywords.",
+      pitfalls: "Inaccurate OOS tracking due to regional variations.",
+      example: "Competitor A is OOS in 30% of metro cities.",
+      logic: "(OOS Instances ÷ Total Tracked Instances) × 100",
+    },
+    {
+      kpi: "Brand Sentiment Index",
+      definition: "A metric derived from customer reviews and ratings compared to category benchmarks.",
+      usage: "Assess product satisfaction and brand health.",
+      interpretation: "A score higher than category average indicates strong product-market fit.",
+      pitfalls: "Small sample sizes for new products can skew results.",
+      example: "Brand rating 4.5 vs Category average 4.1.",
+      logic: "Weighted average of review ratings vs Category Avg",
+    }
+  ];
+
   const GlossarySection = ({ title, text, icon, bgColor, borderColor, textColor }) => {
     if (!text) return null;
     return (
@@ -539,6 +596,7 @@ const HelpDrawer = ({ userDbName }) => {
     { label: "Overview", icon: <DashboardIcon sx={{ fontSize: "1.1rem" }} /> },
     { label: "Rules", icon: <ScheduleIcon sx={{ fontSize: "1rem" }} /> },
     { label: "History", icon: <DescriptionIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "Market Intelligence", icon: <PublicIcon sx={{ fontSize: "1rem" }} /> },
   ];
 
   const faqCategories = [
@@ -608,6 +666,8 @@ const HelpDrawer = ({ userDbName }) => {
     switch (activeMenu) {
       case "Overview":
         return businessOverviewGlossary;
+      case "Market Intelligence":
+        return marketIntelligenceGlossary;
       case "Availability Analysis":
         return availabilityAnalysisGlossary;
       case "Market Share":
@@ -848,7 +908,7 @@ const HelpDrawer = ({ userDbName }) => {
             <Box>
               <Box sx={{ display: 'grid', gap: 2 }}>
                 {activeTab === 0 && (
-                  ["Overview", "Availability Analysis", "Market Share", "Visibility Analysis", "Pricing Analysis", "Rules", "History"].includes(activeMenu) ? (
+                  ["Overview", "Market Intelligence", "Availability Analysis", "Market Share", "Visibility Analysis", "Pricing Analysis", "Rules", "History"].includes(activeMenu) ? (
                     filteredGlossary.map((item) => {
                       const isExpanded = expandedKpi === item.kpi;
                       return (
