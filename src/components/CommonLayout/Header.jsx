@@ -3199,13 +3199,13 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
     const flicker2 = setTimeout(() => setLogoFlicker(false), 800);
     const flicker3 = setTimeout(() => setLogoFlicker(true), 1300);
     const flicker4 = setTimeout(() => setLogoFlicker(false), 1500);
-    
+
     // Comet Warp Portal opens
     const blastOpen = setTimeout(() => {
       setShowPortal(false);
       sessionStorage.setItem("portalSeen", "true");
     }, 2400);
-    
+
     return () => {
       clearTimeout(flicker1);
       clearTimeout(flicker2);
@@ -3248,8 +3248,8 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
           <Box
             component={motion.div}
             initial={{ opacity: 1 }}
-            exit={{ 
-              scale: 6, 
+            exit={{
+              scale: 6,
               opacity: 0,
               filter: 'blur(30px)',
               transition: { duration: 0.9, ease: [0.7, 0, 0.84, 0] }
@@ -3258,7 +3258,8 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
               position: 'fixed',
               inset: 0,
               zIndex: 9999,
-              background: '#0f172a',
+              background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(20px) saturate(180%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -3268,7 +3269,7 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
             {/* COMET SIGHT RADIAL CORE */}
             <Box
               component={motion.div}
-              animate={{ 
+              animate={{
                 scale: [1, 1.4, 1],
                 opacity: [0.2, 0.5, 0.2],
                 rotate: 360
@@ -3289,30 +3290,25 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
               animate={logoFlicker ? { opacity: 0.05, filter: 'blur(4px)' } : { opacity: 1, filter: 'blur(0px)' }}
               sx={{ position: 'relative', textAlign: 'center' }}
             >
-              <Typography
-                variant="h1"
+              <Box
+                component="img"
+                src="/sidebar_logo.png"
+                alt="Trailytics Logo"
                 sx={{
-                  color: '#ffffff',
-                  fontWeight: 950,
-                  fontSize: '5rem',
-                  letterSpacing: '0.2em',
-                  textShadow: '0 0 30px rgba(255,255,255,0.4)',
-                  fontFamily: '"Orbitron", sans-serif',
-                  background: 'linear-gradient(180deg, #ffffff 30%, #94a3b8 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  height: '80px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))',
                 }}
-              >
-                DEMO
-              </Typography>
-              <Box 
-                sx={{ 
-                  height: 2, 
-                  width: '100%', 
-                  background: 'linear-gradient(90deg, transparent, #2563eb, transparent)', 
+              />
+              <Box
+                sx={{
+                  height: 2,
+                  width: '100%',
+                  background: 'linear-gradient(90deg, transparent, #2563eb, transparent)',
                   mt: 2,
                   boxShadow: '0 0 20px #2563eb'
-                }} 
+                }}
               />
             </Box>
           </Box>
@@ -3324,182 +3320,732 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
         initial={{ opacity: 0, y: -30 }}
         animate={!showPortal ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
-      sx={{
-        background: "rgba(255, 255, 255, 0.8)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        borderBottom: "1px solid rgba(229, 231, 235, 0.5)",
-        px: { xs: 2, sm: 4 },
-        py: 1.2,
-        position: "sticky",
-        top: 0,
-        zIndex: 1200,
-        transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-        boxShadow: "0 4px 30px rgba(0, 0, 0, 0.03)",
-      }}
-    >
-      {/* ---------------- FIRST ROW ---------------- */}
-      <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexWrap: { xs: "wrap", md: "nowrap" },
-          gap: 1.5,
-          alignItems: { xs: "flex-start", md: "center" },
-          pb: 0.5,
+          background: "rgba(255, 255, 255, 0.8)",
+          backdropFilter: "blur(24px) saturate(180%)",
+          borderBottom: "1px solid rgba(229, 231, 235, 0.5)",
+          px: { xs: 2, sm: 4 },
+          py: 1.2,
+          position: "sticky",
+          top: 0,
+          zIndex: 1200,
+          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.03)",
         }}
       >
-        {/* LEFT SIDE: Futuristic Brand Container */}
-        <Box sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          width: { xs: "100%", md: "auto" },
-          justifyContent: { xs: "space-between", md: "flex-start" }
-        }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-
+        {/* ---------------- FIRST ROW ---------------- */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: { xs: "wrap", md: "nowrap" },
+            gap: 1.5,
+            alignItems: { xs: "flex-start", md: "center" },
+            pb: 0.5,
+          }}
+        >
+          {/* LEFT SIDE: Futuristic Brand Container */}
+          <Box sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            width: { xs: "100%", md: "auto" },
+            justifyContent: { xs: "space-between", md: "flex-start" }
+          }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              {!hideFilters && location.pathname !== "/scheduled-reports" && (
-                <IconButton
-                  size="small"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    bgcolor: "rgba(241, 245, 249, 0.8)",
-                    backdropFilter: "blur(4px)",
-                    borderRadius: "10px",
-                    "&:hover": {
-                      bgcolor: "rgba(226, 232, 240, 1)",
-                      transform: "translateY(-2px)"
-                    },
-                    transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
-                >
-                  <ChevronDown size={18} color="#475569" />
-                </IconButton>
-              )}
 
-              {title && (
-                <Box sx={{ display: "flex", flexDirection: "column", ml: 0.5 }}>
-                  <Typography
-                    fontWeight="800"
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                {!hideFilters && location.pathname !== "/scheduled-reports" && (
+                  <IconButton
+                    size="small"
+                    onClick={() => setIsExpanded(!isExpanded)}
                     sx={{
-                      whiteSpace: "nowrap",
-                      lineHeight: 1,
-                      fontSize: { xs: "1rem", sm: "1.2rem" },
-                      color: "#0f172a",
-                      letterSpacing: "-0.03em",
-                      textTransform: "capitalize"
+                      width: 32,
+                      height: 32,
+                      bgcolor: "rgba(241, 245, 249, 0.8)",
+                      backdropFilter: "blur(4px)",
+                      borderRadius: "10px",
+                      "&:hover": {
+                        bgcolor: "rgba(226, 232, 240, 1)",
+                        transform: "translateY(-2px)"
+                      },
+                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
                   >
-                    {title}
-                  </Typography>
-                  {title === "Availability Analysis" || title === "Visibility Analysis" ? (
-                    <>
-                      <Box sx={{ display: 'flex', mt: 0.5, bgcolor: '#f1f5f9', borderRadius: '8px', p: '3px', width: 'fit-content', border: '1px solid #e2e8f0' }}>
-                        {channels?.filter(c => c !== 'All').map((c) => (
-                          <Box
-                            key={c}
-                            onClick={() => setSelectedChannel(c)}
-                            sx={{
-                              px: 1.5, py: 0.3,
-                              fontSize: '0.65rem',
-                              fontWeight: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? 700 : 500,
-                              color: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? '#2563eb' : '#64748b',
-                              bgcolor: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? '#ffffff' : 'transparent',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              boxShadow: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                              transition: 'all 0.2s',
-                              fontFamily: "'Inter', 'Roboto', sans-serif"
-                            }}
-                          >
-                            {c}
-                          </Box>
-                        ))}
-                      </Box>
+                    <ChevronDown size={18} color="#475569" />
+                  </IconButton>
+                )}
 
-                      {/* SOS / BSR Toggle below Channel Switch */}
-                      {title === "Visibility Analysis" && (['ecommerce', 'e-commerce', 'ecom'].includes(selectedChannel?.toLowerCase())) && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                          <Box sx={{ display: 'flex', bgcolor: '#f1f5f9', borderRadius: '8px', p: '3px', width: 'fit-content', border: '1px solid #e2e8f0' }}>
+                {title && (
+                  <Box sx={{ display: "flex", flexDirection: "column", ml: 0.5 }}>
+                    <Typography
+                      fontWeight="800"
+                      sx={{
+                        whiteSpace: "nowrap",
+                        lineHeight: 1,
+                        fontSize: { xs: "1rem", sm: "1.2rem" },
+                        color: "#0f172a",
+                        letterSpacing: "-0.03em",
+                        textTransform: "capitalize"
+                      }}
+                    >
+                      {title}
+                    </Typography>
+                    {title === "Availability Analysis" || title === "Visibility Analysis" ? (
+                      <>
+                        <Box sx={{ display: 'flex', mt: 0.5, bgcolor: '#f1f5f9', borderRadius: '8px', p: '3px', width: 'fit-content', border: '1px solid #e2e8f0' }}>
+                          {channels?.filter(c => c !== 'All').map((c) => (
                             <Box
-                              onClick={() => setVisibilityMode('sos')}
+                              key={c}
+                              onClick={() => setSelectedChannel(c)}
                               sx={{
-                                px: 1.2, py: 0.2,
-                                fontSize: '0.6rem',
-                                fontWeight: visibilityMode === 'sos' ? 700 : 500,
-                                color: visibilityMode === 'sos' ? '#ffffff' : '#64748b',
-                                bgcolor: visibilityMode === 'sos' ? '#6366f1' : 'transparent',
+                                px: 1.5, py: 0.3,
+                                fontSize: '0.65rem',
+                                fontWeight: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? 700 : 500,
+                                color: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? '#2563eb' : '#64748b',
+                                bgcolor: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? '#ffffff' : 'transparent',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
+                                boxShadow: selectedChannel === c || (Array.isArray(selectedChannel) && selectedChannel.includes(c)) ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                                 transition: 'all 0.2s',
                                 fontFamily: "'Inter', 'Roboto', sans-serif"
                               }}
                             >
-                              Share of Shelf
+                              {c}
                             </Box>
-                            <Box
-                              onClick={() => setVisibilityMode('bsr')}
-                              sx={{
-                                px: 1.2, py: 0.2,
-                                fontSize: '0.6rem',
-                                fontWeight: visibilityMode === 'bsr' ? 700 : 500,
-                                color: visibilityMode === 'bsr' ? '#ffffff' : '#64748b',
-                                bgcolor: visibilityMode === 'bsr' ? '#6366f1' : 'transparent',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                fontFamily: "'Inter', 'Roboto', sans-serif"
-                              }}
-                            >
-                              BSR
-                            </Box>
-                          </Box>
-
-                          <Tooltip title="BSR page contains only Amazon platform data" arrow placement="top">
-                            <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', opacity: 0.6, '&:hover': { opacity: 1 } }}>
-                              <Info size={14} />
-                            </Box>
-                          </Tooltip>
+                          ))}
                         </Box>
-                      )}
-                    </>
-                  ) : title !== "Performance Marketing" && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                      <Box
-                        sx={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: "50%",
-                          bgcolor: "#22C55E",
-                          flexShrink: 0
-                        }}
-                      />
-                      <Typography
-                        sx={{
-                          fontSize: "0.65rem",
-                          fontWeight: 600,
-                          color: "#64748b",
-                          maxWidth: { xs: "150px", sm: "none" },
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap"
-                        }}
-                      >
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-              )}
+
+                        {/* SOS / BSR Toggle below Channel Switch */}
+                        {title === "Visibility Analysis" && (['ecommerce', 'e-commerce', 'ecom'].includes(selectedChannel?.toLowerCase())) && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                            <Box sx={{ display: 'flex', bgcolor: '#f1f5f9', borderRadius: '8px', p: '3px', width: 'fit-content', border: '1px solid #e2e8f0' }}>
+                              <Box
+                                onClick={() => setVisibilityMode('sos')}
+                                sx={{
+                                  px: 1.2, py: 0.2,
+                                  fontSize: '0.6rem',
+                                  fontWeight: visibilityMode === 'sos' ? 700 : 500,
+                                  color: visibilityMode === 'sos' ? '#ffffff' : '#64748b',
+                                  bgcolor: visibilityMode === 'sos' ? '#6366f1' : 'transparent',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s',
+                                  fontFamily: "'Inter', 'Roboto', sans-serif"
+                                }}
+                              >
+                                Share of Shelf
+                              </Box>
+                              <Box
+                                onClick={() => setVisibilityMode('bsr')}
+                                sx={{
+                                  px: 1.2, py: 0.2,
+                                  fontSize: '0.6rem',
+                                  fontWeight: visibilityMode === 'bsr' ? 700 : 500,
+                                  color: visibilityMode === 'bsr' ? '#ffffff' : '#64748b',
+                                  bgcolor: visibilityMode === 'bsr' ? '#6366f1' : 'transparent',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s',
+                                  fontFamily: "'Inter', 'Roboto', sans-serif"
+                                }}
+                              >
+                                BSR
+                              </Box>
+                            </Box>
+
+                            <Tooltip title="BSR page contains only Amazon platform data" arrow placement="top">
+                              <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', opacity: 0.6, '&:hover': { opacity: 1 } }}>
+                                <Info size={14} />
+                              </Box>
+                            </Tooltip>
+                          </Box>
+                        )}
+                      </>
+                    ) : title !== "Performance Marketing" && (
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                        <Box
+                          sx={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: "50%",
+                            bgcolor: "#22C55E",
+                            flexShrink: 0
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontSize: "0.65rem",
+                            fontWeight: 600,
+                            color: "#64748b",
+                            maxWidth: { xs: "150px", sm: "none" },
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap"
+                          }}
+                        >
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                )}
+              </Box>
             </Box>
+
           </Box>
 
+          {/* FILTERS CONTAINER */}
+          <AnimatePresence>
+            {!hideFilters && isExpanded && location.pathname !== "/scheduled-reports" && (
+              <Box
+                component={motion.div}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                sx={{
+                  display: "flex",
+                  gap: 1.5,
+                  flexWrap: { xs: "wrap", md: "nowrap" },
+                  width: { xs: "100%", md: "auto" },
+                  overflow: "visible",
+                }}
+              >
+
+                {/* ============ WATCH TOWER / MARKET SHARE / PRICING ANALYSIS / INVENTORY ANALYSIS: SINGLE FILTER BUTTON ============ */}
+                {(title === "Business Overview" || title === "Overview" || title === "Automation Rules" || title === "Action History" || title === "Market Share" || title === "Availability Analysis" || title === "Visibility Analysis" || title === "Pricing Analysis" || title === "Performance Marketing" || title === "Content Analysis" || title === "Inventory Analysis") ? (
+                  <>
+                    <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+                      <Button
+                        onClick={() => {
+                          if (title === "Business Overview" || title === "Overview" || title === "Automation Rules" || title === "Action History") setFilterModalOpen(true);
+                          else if (title === "Market Share") setMarketShareFilterModalOpen(true);
+                          else if (title === "Availability Analysis") setAvailFilterModalOpen(true);
+                          else if (title === "Visibility Analysis") setVisibilityFilterModalOpen(true);
+                          else if (title === "Pricing Analysis") setPricingFilterModalOpen(true);
+                          else if (title === "Performance Marketing") setPerformanceFilterModalOpen(true);
+                          else if (title === "Content Analysis") setContentFilterModalOpen(true);
+                          else if (title === "Inventory Analysis") setInventoryFilterModalOpen(true);
+                        }}
+                        variant="contained"
+                        startIcon={<SlidersHorizontal size={16} strokeWidth={2.5} />}
+                        sx={{
+                          height: "40px",
+                          textTransform: "none",
+                          borderRadius: "12px",
+                          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+                          color: "white",
+                          fontWeight: 700,
+                          fontSize: "0.85rem",
+                          fontFamily: "'Inter', 'Roboto', sans-serif",
+                          px: 2.5,
+                          gap: 0.8,
+                          letterSpacing: "0.02em",
+                          boxShadow: "0 10px 20px rgba(15, 23, 42, 0.15)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                          "&:hover": {
+                            background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
+                            boxShadow: "0 15px 25px rgba(15, 23, 42, 0.2)",
+                            transform: "translateY(-3px)",
+                          },
+                          "&:active": {
+                            transform: "translateY(0)",
+                          }
+                        }}
+                      >
+                        Filters
+                        {(() => {
+                          let count = 0;
+                          if (selectedChannel !== "All" && !(Array.isArray(selectedChannel) && selectedChannel.length === channels.length)) count++;
+                          if (platform !== "All" && !(Array.isArray(platform) && platform.length === platforms.length)) count++;
+                          if (selectedCategory !== "All" && !(Array.isArray(selectedCategory) && selectedCategory.length === categories.length)) count++;
+                          if (title === "Availability Analysis") {
+                            if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.includes("All"))) count++;
+                            if (selectedLocation !== "All" && !(Array.isArray(selectedLocation) && selectedLocation.length === locations.length)) count++;
+                          } else if (title === "Visibility Analysis") {
+                            if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.includes("All"))) count++;
+                            if (selectedKeywordType !== "All" && !(Array.isArray(selectedKeywordType) && selectedKeywordType.includes("All"))) count++;
+                            if (selectedKeyword !== "All" && !(Array.isArray(selectedKeyword) && selectedKeyword.includes("All"))) count++;
+                          } else if (title === "Pricing Analysis" || title === "Performance Marketing" || title === "Content Analysis" || title === "Inventory Analysis") {
+                            if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.includes("All"))) count++;
+                            if (selectedLocation !== "All" && !(Array.isArray(selectedLocation) && selectedLocation.length === locations.length)) count++;
+                          } else if (title !== "Market Share") {
+                            if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.length === brands.length)) count++;
+                          }
+                          return count > 0 ? (
+                            <Box
+                              component="span"
+                              sx={{
+                                ml: 0.5,
+                                bgcolor: "rgba(255,255,255,0.25)",
+                                backdropFilter: "blur(4px)",
+                                color: "white",
+                                borderRadius: "6px",
+                                minWidth: 20,
+                                height: 20,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "0.68rem",
+                                fontWeight: 700,
+                                border: "1px solid rgba(255,255,255,0.3)",
+                              }}
+                            >
+                              {count}
+                            </Box>
+                          ) : null;
+                        })()}
+                      </Button>
+                    </Box>
+
+                    {/* WATCH TOWER FILTER MODAL */}
+                    {(title === "Business Overview" || title === "Overview" || title === "Automation Rules" || title === "Action History") && (
+                      <WatchTowerFilterModal
+                        open={filterModalOpen}
+                        onClose={() => setFilterModalOpen(false)}
+                        channels={channels}
+                        selectedChannel={selectedChannel}
+                        setSelectedChannel={setSelectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        brands={brands}
+                        selectedBrand={selectedBrand}
+                        setSelectedBrand={setSelectedBrand}
+                        companies={companies}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                      />
+                    )}
+
+                    {/* MARKET SHARE FILTER MODAL */}
+                    {title === "Market Share" && (
+                      <MarketShareFilterModal
+                        open={marketShareFilterModalOpen}
+                        onClose={() => setMarketShareFilterModalOpen(false)}
+                        channels={channels}
+                        selectedChannel={selectedChannel}
+                        setSelectedChannel={setSelectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        companies={companies}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                      />
+                    )}
+
+                    {/* AVAILABILITY ANALYSIS FILTER MODAL */}
+                    {title === "Availability Analysis" && (
+                      <AvailabilityFilterModal
+                        open={availFilterModalOpen}
+                        onClose={() => setAvailFilterModalOpen(false)}
+                        channels={channels}
+                        selectedChannel={selectedChannel}
+                        setSelectedChannel={setSelectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        locations={locations}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                        brands={brands}
+                        selectedBrand={selectedBrand}
+                        setSelectedBrand={setSelectedBrand}
+                        companies={companies}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                      />
+                    )}
+
+                    {/* VISIBILITY ANALYSIS FILTER MODAL */}
+                    {title === "Visibility Analysis" && (
+                      <VisibilityFilterModal
+                        open={visibilityFilterModalOpen}
+                        onClose={() => setVisibilityFilterModalOpen(false)}
+                        selectedChannel={selectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={visibilityCategories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        brands={brands}
+                        selectedBrand={selectedBrand}
+                        setSelectedBrand={setSelectedBrand}
+                        locations={locations}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                        keywordTypes={keywordTypes}
+                        selectedKeywordType={selectedKeywordType}
+                        setSelectedKeywordType={setSelectedKeywordType}
+                        keywords={keywords}
+                        selectedKeyword={selectedKeyword}
+                        setSelectedKeyword={setSelectedKeyword}
+                        companies={companies}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                      />
+                    )}
+
+                    {/* PRICING ANALYSIS FILTER MODAL */}
+                    {title === "Pricing Analysis" && (
+                      <PricingFilterModal
+                        open={pricingFilterModalOpen}
+                        onClose={() => setPricingFilterModalOpen(false)}
+                        channels={channels}
+                        selectedChannel={selectedChannel}
+                        setSelectedChannel={setSelectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        brands={brands}
+                        selectedBrand={selectedBrand}
+                        setSelectedBrand={setSelectedBrand}
+                        locations={locations}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                        companies={companies}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                      />
+                    )}
+
+                    {/* PERFORMANCE MARKETING FILTER MODAL */}
+                    {title === "Performance Marketing" && (
+                      <PerformanceFilterModal
+                        open={performanceFilterModalOpen}
+                        onClose={() => setPerformanceFilterModalOpen(false)}
+                        channels={channels}
+                        selectedChannel={selectedChannel}
+                        setSelectedChannel={setSelectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        brands={brands}
+                        selectedBrand={selectedBrand}
+                        setSelectedBrand={setSelectedBrand}
+                        locations={locations}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                        companies={companies}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                      />
+                    )}
+
+                    {/* CONTENT ANALYSIS FILTER MODAL */}
+                    {title === "Content Analysis" && (
+                      <ContentFilterModal
+                        open={contentFilterModalOpen}
+                        onClose={() => setContentFilterModalOpen(false)}
+                        channels={channels}
+                        selectedChannel={selectedChannel}
+                        setSelectedChannel={setSelectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        brands={brands}
+                        selectedBrand={selectedBrand}
+                        setSelectedBrand={setSelectedBrand}
+                        locations={locations}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                        companies={companies}
+                        selectedCompany={selectedCompany}
+                        setSelectedCompany={setSelectedCompany}
+                      />
+                    )}
+
+                    {/* INVENTORY ANALYSIS FILTER MODAL */}
+                    {title === "Inventory Analysis" && (
+                      <InventoryFilterModal
+                        open={inventoryFilterModalOpen}
+                        onClose={() => setInventoryFilterModalOpen(false)}
+                        channels={channels}
+                        selectedChannel={selectedChannel}
+                        setSelectedChannel={setSelectedChannel}
+                        platforms={platforms}
+                        platform={platform}
+                        setPlatform={setPlatform}
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        brands={brands}
+                        selectedBrand={selectedBrand}
+                        setSelectedBrand={setSelectedBrand}
+                        locations={locations}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                      />
+                    )}
+                  </>
+                ) : (
+                  /* ============ OTHER PAGES: ORIGINAL DROPDOWNS ============ */
+                  <>
+                    {/* COMPANY SELECTION */}
+                    <CustomHeaderDropdown
+                      label="COMPANY"
+                      options={companies}
+                      value={selectedCompany}
+                      onChange={(newValue) => setSelectedCompany(newValue)}
+                      width={{ xs: "calc(50% - 6px)", sm: 115 }}
+                      multiSelect={true}
+                    />
+
+                    {/* CHANNEL SELECTION */}
+                    <CustomHeaderDropdown
+                      label="CHANNEL"
+                      options={channels}
+                      value={selectedChannel}
+                      onChange={(newValue) => setSelectedChannel(newValue)}
+                      width={{ xs: "calc(50% - 6px)", sm: 130 }}
+                      multiSelect={true}
+                    />
+
+                    {/* PLATFORM SELECTION */}
+                    <CustomHeaderDropdown
+                      label="PLATFORM"
+                      options={platforms}
+                      value={platform}
+                      onChange={(newValue) => setPlatform(newValue)}
+                      width={{ xs: "calc(50% - 6px)", sm: 115 }}
+                      multiSelect={true}
+                    />
+
+                    {/* CATEGORY SELECTION */}
+                    <CustomHeaderDropdown
+                      label="CATEGORY"
+                      options={location.pathname.includes("visibility") ? visibilityCategories : categories}
+                      value={selectedCategory}
+                      onChange={(newValue) => setSelectedCategory(newValue)}
+                      width={{ xs: "calc(50% - 6px)", sm: 115 }}
+                      multiSelect={true}
+                    />
+
+                    {/* BRAND SELECTION */}
+                    <CustomHeaderDropdown
+                      label="BRAND"
+                      options={brands}
+                      value={selectedBrand}
+                      onChange={(newValue) => setSelectedBrand(newValue)}
+                      width={{ xs: "calc(50% - 6px)", sm: 115 }}
+                      multiSelect={true}
+                    />
+
+                    {title !== "Business Overview" &&
+                      !location.pathname.includes("market-share") &&
+                      !location.pathname.includes("content-score") && (
+                        <CustomHeaderDropdown
+                          label="LOCATION"
+                          options={locations}
+                          value={selectedLocation}
+                          onChange={(newValue) => setSelectedLocation(newValue)}
+                          width={{ xs: "calc(50% - 6px)", sm: 115 }}
+                          multiSelect={true}
+                        />
+                      )}
+
+                    {location.pathname.includes("visibility") && (
+                      <CustomHeaderDropdown
+                        label="KEYWORD TYPE"
+                        options={keywordTypes}
+                        value={selectedKeywordType}
+                        onChange={setSelectedKeywordType}
+                        width={{ xs: "calc(100%)", sm: 140 }}
+                        multiSelect={true}
+                      />
+                    )}
+
+                    {location.pathname.includes("visibility") && (
+                      <CustomHeaderDropdown
+                        label="KEYWORD"
+                        options={keywords}
+                        value={selectedKeyword}
+                        onChange={setSelectedKeyword}
+                        width={{ xs: "calc(100%)", sm: 130 }}
+                        multiSelect={true}
+                      />
+                    )}
+                  </>
+                )}
+
+                {/* TIME PERIOD & COMPARE WITH INTEGRATED */}
+                <Box sx={{ width: { xs: "100%", sm: 260 }, flexShrink: 0 }}>
+                  <Typography
+                    sx={{
+                      fontSize: "0.65rem",
+                      fontWeight: 600,
+                      mb: 0.4,
+                      opacity: 0.8,
+                      textTransform: "uppercase",
+                      letterSpacing: '0.05em',
+                      fontFamily: 'Roboto, sans-serif',
+                      color: '#64748b'
+                    }}
+                  >
+                    TIME PERIOD
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'stretch', gap: 1 }}>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      {!datesFetched ? (
+                        <Skeleton
+                          variant="rounded"
+                          width="100%"
+                          height={36}
+                          sx={{
+                            borderRadius: "10px",
+                            bgcolor: "rgba(0,0,0,0.05)"
+                          }}
+                        />
+                      ) : (
+                        <DateRangeComparePicker
+                          timeStart={timeStart}
+                          timeEnd={timeEnd}
+                          compareStart={compareStart}
+                          compareEnd={compareEnd}
+                          maxDate={maxDate}
+                          onApply={(start, end, cStart, cEnd, compareOn, label) => {
+                            setTimeStart(start);
+                            setTimeEnd(end);
+
+                            // Format label for KPI cards
+                            let formattedLabel = "VS PREV. PERIOD";
+                            if (label) {
+                              const up = label.toUpperCase();
+                              if (up === "TODAY") formattedLabel = "VS YESTERDAY";
+                              else if (up === "YESTERDAY") formattedLabel = "VS DAY BEFORE";
+                              else if (up === "THIS MONTH") formattedLabel = "VS PREV. MONTH";
+                              else if (up.includes("LAST")) formattedLabel = up.replace("LAST", "VS PREV.");
+                              else formattedLabel = `VS ${up}`;
+                            }
+                            setComparisonLabel(formattedLabel);
+
+                            if (compareOn) {
+                              setCompareStart(cStart);
+                              setCompareEnd(cEnd);
+                            } else {
+                              setCompareStart(null);
+                              setCompareEnd(null);
+                            }
+                          }}
+                        />
+                      )}
+                    </Box>
+                    <Tooltip title="Help Center">
+                      <Button
+                        onClick={() => helpDrawerOpen ? closeHelp() : openHelpWithMenu(title)}
+                        sx={{
+                          minWidth: '44px',
+                          width: '44px',
+                          height: '44px',
+                          p: 0,
+                          borderRadius: '14px',
+                          alignSelf: 'center',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                          color: '#2563eb',
+                          border: 'none',
+                          zIndex: 1,
+                          boxShadow: '0 4px 15px rgba(37, 99, 235, 0.1)',
+                          transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+
+                          // AURORA BORDER EFFECT
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            inset: '-2px',
+                            background: 'linear-gradient(90deg, #2563eb, #7c3aed, #db2777, #2563eb)',
+                            backgroundSize: '300% 100%',
+                            borderRadius: '15px',
+                            zIndex: -1,
+                            animation: 'auroraFlow 4s linear infinite',
+                          },
+
+                          // INTERNAL GLOSS LAYER
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            inset: '1px',
+                            background: '#ffffff',
+                            borderRadius: '13px',
+                            zIndex: -1,
+                          },
+
+                          '@keyframes auroraFlow': {
+                            '0%': { backgroundPosition: '0% 0%' },
+                            '100%': { backgroundPosition: '100% 0%' }
+                          },
+
+                          // FLOATING LIGHT BEAM
+                          '& .beam': {
+                            position: 'absolute',
+                            top: '-150%',
+                            left: '-150%',
+                            width: '400%',
+                            height: '400%',
+                            background: 'conic-gradient(from 0deg, transparent, rgba(37, 99, 235, 0.15), transparent 40deg)',
+                            animation: 'beamRotate 6s linear infinite',
+                            pointerEvents: 'none',
+                            zIndex: 0,
+                          },
+
+                          '@keyframes beamRotate': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                          },
+
+                          '&:hover': {
+                            transform: 'scale(1.1) translateY(-3px)',
+                            boxShadow: '0 15px 30px rgba(37, 99, 235, 0.25), 0 0 20px rgba(124, 58, 237, 0.2)',
+                            color: '#1d4ed8',
+                            '&::before': {
+                              animationDuration: '1.5s',
+                              filter: 'brightness(1.2) contrast(1.1)',
+                            },
+                            '& .beam': {
+                              animationDuration: '2s',
+                              opacity: 0.8,
+                            }
+                          },
+
+                          '&:active': {
+                            transform: 'scale(0.95)',
+                          }
+                        }}
+                      >
+                        <Box className="beam" />
+                        <HelpIcon sx={{ fontSize: '1.6rem', position: 'relative', zIndex: 2 }} />
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              </Box>
+            )}
+          </AnimatePresence>
         </Box>
 
-        {/* FILTERS CONTAINER */}
+        {/* ---------------- SECOND ROW ---------------- */}
         <AnimatePresence>
           {!hideFilters && isExpanded && location.pathname !== "/scheduled-reports" && (
             <Box
@@ -3509,565 +4055,15 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
               exit={{ opacity: 0, height: 0 }}
               sx={{
                 display: "flex",
-                gap: 1.5,
-                flexWrap: { xs: "wrap", md: "nowrap" },
-                width: { xs: "100%", md: "auto" },
+                gap: 2,
+                justifyContent: "flex-end",
+                flexWrap: "wrap",
+                mt: 2,
+                alignItems: "center",
                 overflow: "visible",
               }}
             >
-
-              {/* ============ WATCH TOWER / MARKET SHARE / PRICING ANALYSIS / INVENTORY ANALYSIS: SINGLE FILTER BUTTON ============ */}
-              {(title === "Business Overview" || title === "Overview" || title === "Automation Rules" || title === "Action History" || title === "Market Share" || title === "Availability Analysis" || title === "Visibility Analysis" || title === "Pricing Analysis" || title === "Performance Marketing" || title === "Content Analysis" || title === "Inventory Analysis") ? (
-                <>
-                  <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-                    <Button
-                      onClick={() => {
-                        if (title === "Business Overview" || title === "Overview" || title === "Automation Rules" || title === "Action History") setFilterModalOpen(true);
-                        else if (title === "Market Share") setMarketShareFilterModalOpen(true);
-                        else if (title === "Availability Analysis") setAvailFilterModalOpen(true);
-                        else if (title === "Visibility Analysis") setVisibilityFilterModalOpen(true);
-                        else if (title === "Pricing Analysis") setPricingFilterModalOpen(true);
-                        else if (title === "Performance Marketing") setPerformanceFilterModalOpen(true);
-                        else if (title === "Content Analysis") setContentFilterModalOpen(true);
-                        else if (title === "Inventory Analysis") setInventoryFilterModalOpen(true);
-                      }}
-                      variant="contained"
-                      startIcon={<SlidersHorizontal size={16} strokeWidth={2.5} />}
-                      sx={{
-                        height: "40px",
-                        textTransform: "none",
-                        borderRadius: "12px",
-                        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-                        color: "white",
-                        fontWeight: 700,
-                        fontSize: "0.85rem",
-                        fontFamily: "'Inter', 'Roboto', sans-serif",
-                        px: 2.5,
-                        gap: 0.8,
-                        letterSpacing: "0.02em",
-                        boxShadow: "0 10px 20px rgba(15, 23, 42, 0.15)",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                        "&:hover": {
-                          background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
-                          boxShadow: "0 15px 25px rgba(15, 23, 42, 0.2)",
-                          transform: "translateY(-3px)",
-                        },
-                        "&:active": {
-                          transform: "translateY(0)",
-                        }
-                      }}
-                    >
-                      Filters
-                      {(() => {
-                        let count = 0;
-                        if (selectedChannel !== "All" && !(Array.isArray(selectedChannel) && selectedChannel.length === channels.length)) count++;
-                        if (platform !== "All" && !(Array.isArray(platform) && platform.length === platforms.length)) count++;
-                        if (selectedCategory !== "All" && !(Array.isArray(selectedCategory) && selectedCategory.length === categories.length)) count++;
-                        if (title === "Availability Analysis") {
-                          if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.includes("All"))) count++;
-                          if (selectedLocation !== "All" && !(Array.isArray(selectedLocation) && selectedLocation.length === locations.length)) count++;
-                        } else if (title === "Visibility Analysis") {
-                          if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.includes("All"))) count++;
-                          if (selectedKeywordType !== "All" && !(Array.isArray(selectedKeywordType) && selectedKeywordType.includes("All"))) count++;
-                          if (selectedKeyword !== "All" && !(Array.isArray(selectedKeyword) && selectedKeyword.includes("All"))) count++;
-                        } else if (title === "Pricing Analysis" || title === "Performance Marketing" || title === "Content Analysis" || title === "Inventory Analysis") {
-                          if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.includes("All"))) count++;
-                          if (selectedLocation !== "All" && !(Array.isArray(selectedLocation) && selectedLocation.length === locations.length)) count++;
-                        } else if (title !== "Market Share") {
-                          if (selectedBrand !== "All" && !(Array.isArray(selectedBrand) && selectedBrand.length === brands.length)) count++;
-                        }
-                        return count > 0 ? (
-                          <Box
-                            component="span"
-                            sx={{
-                              ml: 0.5,
-                              bgcolor: "rgba(255,255,255,0.25)",
-                              backdropFilter: "blur(4px)",
-                              color: "white",
-                              borderRadius: "6px",
-                              minWidth: 20,
-                              height: 20,
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "0.68rem",
-                              fontWeight: 700,
-                              border: "1px solid rgba(255,255,255,0.3)",
-                            }}
-                          >
-                            {count}
-                          </Box>
-                        ) : null;
-                      })()}
-                    </Button>
-                  </Box>
-
-                  {/* WATCH TOWER FILTER MODAL */}
-                  {(title === "Business Overview" || title === "Overview" || title === "Automation Rules" || title === "Action History") && (
-                    <WatchTowerFilterModal
-                      open={filterModalOpen}
-                      onClose={() => setFilterModalOpen(false)}
-                      channels={channels}
-                      selectedChannel={selectedChannel}
-                      setSelectedChannel={setSelectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      brands={brands}
-                      selectedBrand={selectedBrand}
-                      setSelectedBrand={setSelectedBrand}
-                      companies={companies}
-                      selectedCompany={selectedCompany}
-                      setSelectedCompany={setSelectedCompany}
-                    />
-                  )}
-
-                  {/* MARKET SHARE FILTER MODAL */}
-                  {title === "Market Share" && (
-                    <MarketShareFilterModal
-                      open={marketShareFilterModalOpen}
-                      onClose={() => setMarketShareFilterModalOpen(false)}
-                      channels={channels}
-                      selectedChannel={selectedChannel}
-                      setSelectedChannel={setSelectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      companies={companies}
-                      selectedCompany={selectedCompany}
-                      setSelectedCompany={setSelectedCompany}
-                    />
-                  )}
-
-                  {/* AVAILABILITY ANALYSIS FILTER MODAL */}
-                  {title === "Availability Analysis" && (
-                    <AvailabilityFilterModal
-                      open={availFilterModalOpen}
-                      onClose={() => setAvailFilterModalOpen(false)}
-                      channels={channels}
-                      selectedChannel={selectedChannel}
-                      setSelectedChannel={setSelectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      locations={locations}
-                      selectedLocation={selectedLocation}
-                      setSelectedLocation={setSelectedLocation}
-                      brands={brands}
-                      selectedBrand={selectedBrand}
-                      setSelectedBrand={setSelectedBrand}
-                      companies={companies}
-                      selectedCompany={selectedCompany}
-                      setSelectedCompany={setSelectedCompany}
-                    />
-                  )}
-
-                  {/* VISIBILITY ANALYSIS FILTER MODAL */}
-                  {title === "Visibility Analysis" && (
-                    <VisibilityFilterModal
-                      open={visibilityFilterModalOpen}
-                      onClose={() => setVisibilityFilterModalOpen(false)}
-                      selectedChannel={selectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={visibilityCategories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      brands={brands}
-                      selectedBrand={selectedBrand}
-                      setSelectedBrand={setSelectedBrand}
-                      locations={locations}
-                      selectedLocation={selectedLocation}
-                      setSelectedLocation={setSelectedLocation}
-                      keywordTypes={keywordTypes}
-                      selectedKeywordType={selectedKeywordType}
-                      setSelectedKeywordType={setSelectedKeywordType}
-                      keywords={keywords}
-                      selectedKeyword={selectedKeyword}
-                      setSelectedKeyword={setSelectedKeyword}
-                      companies={companies}
-                      selectedCompany={selectedCompany}
-                      setSelectedCompany={setSelectedCompany}
-                    />
-                  )}
-
-                  {/* PRICING ANALYSIS FILTER MODAL */}
-                  {title === "Pricing Analysis" && (
-                    <PricingFilterModal
-                      open={pricingFilterModalOpen}
-                      onClose={() => setPricingFilterModalOpen(false)}
-                      channels={channels}
-                      selectedChannel={selectedChannel}
-                      setSelectedChannel={setSelectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      brands={brands}
-                      selectedBrand={selectedBrand}
-                      setSelectedBrand={setSelectedBrand}
-                      locations={locations}
-                      selectedLocation={selectedLocation}
-                      setSelectedLocation={setSelectedLocation}
-                      companies={companies}
-                      selectedCompany={selectedCompany}
-                      setSelectedCompany={setSelectedCompany}
-                    />
-                  )}
-
-                  {/* PERFORMANCE MARKETING FILTER MODAL */}
-                  {title === "Performance Marketing" && (
-                    <PerformanceFilterModal
-                      open={performanceFilterModalOpen}
-                      onClose={() => setPerformanceFilterModalOpen(false)}
-                      channels={channels}
-                      selectedChannel={selectedChannel}
-                      setSelectedChannel={setSelectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      brands={brands}
-                      selectedBrand={selectedBrand}
-                      setSelectedBrand={setSelectedBrand}
-                      locations={locations}
-                      selectedLocation={selectedLocation}
-                      setSelectedLocation={setSelectedLocation}
-                      companies={companies}
-                      selectedCompany={selectedCompany}
-                      setSelectedCompany={setSelectedCompany}
-                    />
-                  )}
-
-                  {/* CONTENT ANALYSIS FILTER MODAL */}
-                  {title === "Content Analysis" && (
-                    <ContentFilterModal
-                      open={contentFilterModalOpen}
-                      onClose={() => setContentFilterModalOpen(false)}
-                      channels={channels}
-                      selectedChannel={selectedChannel}
-                      setSelectedChannel={setSelectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      brands={brands}
-                      selectedBrand={selectedBrand}
-                      setSelectedBrand={setSelectedBrand}
-                      locations={locations}
-                      selectedLocation={selectedLocation}
-                      setSelectedLocation={setSelectedLocation}
-                      companies={companies}
-                      selectedCompany={selectedCompany}
-                      setSelectedCompany={setSelectedCompany}
-                    />
-                  )}
-
-                  {/* INVENTORY ANALYSIS FILTER MODAL */}
-                  {title === "Inventory Analysis" && (
-                    <InventoryFilterModal
-                      open={inventoryFilterModalOpen}
-                      onClose={() => setInventoryFilterModalOpen(false)}
-                      channels={channels}
-                      selectedChannel={selectedChannel}
-                      setSelectedChannel={setSelectedChannel}
-                      platforms={platforms}
-                      platform={platform}
-                      setPlatform={setPlatform}
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      brands={brands}
-                      selectedBrand={selectedBrand}
-                      setSelectedBrand={setSelectedBrand}
-                      locations={locations}
-                      selectedLocation={selectedLocation}
-                      setSelectedLocation={setSelectedLocation}
-                    />
-                  )}
-                </>
-              ) : (
-                /* ============ OTHER PAGES: ORIGINAL DROPDOWNS ============ */
-                <>
-                  {/* COMPANY SELECTION */}
-                  <CustomHeaderDropdown
-                    label="COMPANY"
-                    options={companies}
-                    value={selectedCompany}
-                    onChange={(newValue) => setSelectedCompany(newValue)}
-                    width={{ xs: "calc(50% - 6px)", sm: 115 }}
-                    multiSelect={true}
-                  />
-
-                  {/* CHANNEL SELECTION */}
-                  <CustomHeaderDropdown
-                    label="CHANNEL"
-                    options={channels}
-                    value={selectedChannel}
-                    onChange={(newValue) => setSelectedChannel(newValue)}
-                    width={{ xs: "calc(50% - 6px)", sm: 130 }}
-                    multiSelect={true}
-                  />
-
-                  {/* PLATFORM SELECTION */}
-                  <CustomHeaderDropdown
-                    label="PLATFORM"
-                    options={platforms}
-                    value={platform}
-                    onChange={(newValue) => setPlatform(newValue)}
-                    width={{ xs: "calc(50% - 6px)", sm: 115 }}
-                    multiSelect={true}
-                  />
-
-                  {/* CATEGORY SELECTION */}
-                  <CustomHeaderDropdown
-                    label="CATEGORY"
-                    options={location.pathname.includes("visibility") ? visibilityCategories : categories}
-                    value={selectedCategory}
-                    onChange={(newValue) => setSelectedCategory(newValue)}
-                    width={{ xs: "calc(50% - 6px)", sm: 115 }}
-                    multiSelect={true}
-                  />
-
-                  {/* BRAND SELECTION */}
-                  <CustomHeaderDropdown
-                    label="BRAND"
-                    options={brands}
-                    value={selectedBrand}
-                    onChange={(newValue) => setSelectedBrand(newValue)}
-                    width={{ xs: "calc(50% - 6px)", sm: 115 }}
-                    multiSelect={true}
-                  />
-
-                  {title !== "Business Overview" &&
-                    !location.pathname.includes("market-share") &&
-                    !location.pathname.includes("content-score") && (
-                      <CustomHeaderDropdown
-                        label="LOCATION"
-                        options={locations}
-                        value={selectedLocation}
-                        onChange={(newValue) => setSelectedLocation(newValue)}
-                        width={{ xs: "calc(50% - 6px)", sm: 115 }}
-                        multiSelect={true}
-                      />
-                    )}
-
-                  {location.pathname.includes("visibility") && (
-                    <CustomHeaderDropdown
-                      label="KEYWORD TYPE"
-                      options={keywordTypes}
-                      value={selectedKeywordType}
-                      onChange={setSelectedKeywordType}
-                      width={{ xs: "calc(100%)", sm: 140 }}
-                      multiSelect={true}
-                    />
-                  )}
-
-                  {location.pathname.includes("visibility") && (
-                    <CustomHeaderDropdown
-                      label="KEYWORD"
-                      options={keywords}
-                      value={selectedKeyword}
-                      onChange={setSelectedKeyword}
-                      width={{ xs: "calc(100%)", sm: 130 }}
-                      multiSelect={true}
-                    />
-                  )}
-                </>
-              )}
-
-              {/* TIME PERIOD & COMPARE WITH INTEGRATED */}
-              <Box sx={{ width: { xs: "100%", sm: 260 }, flexShrink: 0 }}>
-                <Typography
-                  sx={{
-                    fontSize: "0.65rem",
-                    fontWeight: 600,
-                    mb: 0.4,
-                    opacity: 0.8,
-                    textTransform: "uppercase",
-                    letterSpacing: '0.05em',
-                    fontFamily: 'Roboto, sans-serif',
-                    color: '#64748b'
-                  }}
-                >
-                  TIME PERIOD
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'stretch', gap: 1 }}>
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    {!datesFetched ? (
-                      <Skeleton
-                        variant="rounded"
-                        width="100%"
-                        height={36}
-                        sx={{
-                          borderRadius: "10px",
-                          bgcolor: "rgba(0,0,0,0.05)"
-                        }}
-                      />
-                    ) : (
-                      <DateRangeComparePicker
-                        timeStart={timeStart}
-                        timeEnd={timeEnd}
-                        compareStart={compareStart}
-                        compareEnd={compareEnd}
-                        maxDate={maxDate}
-                        onApply={(start, end, cStart, cEnd, compareOn, label) => {
-                          setTimeStart(start);
-                          setTimeEnd(end);
-
-                          // Format label for KPI cards
-                          let formattedLabel = "VS PREV. PERIOD";
-                          if (label) {
-                            const up = label.toUpperCase();
-                            if (up === "TODAY") formattedLabel = "VS YESTERDAY";
-                            else if (up === "YESTERDAY") formattedLabel = "VS DAY BEFORE";
-                            else if (up === "THIS MONTH") formattedLabel = "VS PREV. MONTH";
-                            else if (up.includes("LAST")) formattedLabel = up.replace("LAST", "VS PREV.");
-                            else formattedLabel = `VS ${up}`;
-                          }
-                          setComparisonLabel(formattedLabel);
-
-                          if (compareOn) {
-                            setCompareStart(cStart);
-                            setCompareEnd(cEnd);
-                          } else {
-                            setCompareStart(null);
-                            setCompareEnd(null);
-                          }
-                        }}
-                      />
-                    )}
-                  </Box>
-                  <Tooltip title="Help Center">
-                    <Button
-                      onClick={() => helpDrawerOpen ? closeHelp() : openHelpWithMenu(title)}
-                      sx={{
-                        minWidth: '44px',
-                        width: '44px',
-                        height: '44px',
-                        p: 0,
-                        borderRadius: '14px',
-                        alignSelf: 'center',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                        color: '#2563eb',
-                        border: 'none',
-                        zIndex: 1,
-                        boxShadow: '0 4px 15px rgba(37, 99, 235, 0.1)',
-                        transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
-
-                        // AURORA BORDER EFFECT
-                        '&::before': {
-                          content: '""',
-                          position: 'absolute',
-                          inset: '-2px',
-                          background: 'linear-gradient(90deg, #2563eb, #7c3aed, #db2777, #2563eb)',
-                          backgroundSize: '300% 100%',
-                          borderRadius: '15px',
-                          zIndex: -1,
-                          animation: 'auroraFlow 4s linear infinite',
-                        },
-
-                        // INTERNAL GLOSS LAYER
-                        '&::after': {
-                          content: '""',
-                          position: 'absolute',
-                          inset: '1px',
-                          background: '#ffffff',
-                          borderRadius: '13px',
-                          zIndex: -1,
-                        },
-
-                        '@keyframes auroraFlow': {
-                          '0%': { backgroundPosition: '0% 0%' },
-                          '100%': { backgroundPosition: '100% 0%' }
-                        },
-
-                        // FLOATING LIGHT BEAM
-                        '& .beam': {
-                          position: 'absolute',
-                          top: '-150%',
-                          left: '-150%',
-                          width: '400%',
-                          height: '400%',
-                          background: 'conic-gradient(from 0deg, transparent, rgba(37, 99, 235, 0.15), transparent 40deg)',
-                          animation: 'beamRotate 6s linear infinite',
-                          pointerEvents: 'none',
-                          zIndex: 0,
-                        },
-
-                        '@keyframes beamRotate': {
-                          '0%': { transform: 'rotate(0deg)' },
-                          '100%': { transform: 'rotate(360deg)' }
-                        },
-
-                        '&:hover': {
-                          transform: 'scale(1.1) translateY(-3px)',
-                          boxShadow: '0 15px 30px rgba(37, 99, 235, 0.25), 0 0 20px rgba(124, 58, 237, 0.2)',
-                          color: '#1d4ed8',
-                          '&::before': {
-                            animationDuration: '1.5s',
-                            filter: 'brightness(1.2) contrast(1.1)',
-                          },
-                          '& .beam': {
-                            animationDuration: '2s',
-                            opacity: 0.8,
-                          }
-                        },
-
-                        '&:active': {
-                          transform: 'scale(0.95)',
-                        }
-                      }}
-                    >
-                      <Box className="beam" />
-                      <HelpIcon sx={{ fontSize: '1.6rem', position: 'relative', zIndex: 2 }} />
-                    </Button>
-                  </Tooltip>
-                </Box>
-              </Box>
-            </Box>
-          )}
-        </AnimatePresence>
-      </Box>
-
-      {/* ---------------- SECOND ROW ---------------- */}
-      <AnimatePresence>
-        {!hideFilters && isExpanded && location.pathname !== "/scheduled-reports" && (
-          <Box
-            component={motion.div}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            sx={{
-              display: "flex",
-              gap: 2,
-              justifyContent: "flex-end",
-              flexWrap: "wrap",
-              mt: 2,
-              alignItems: "center",
-              overflow: "visible",
-            }}
-          >
-            {/* DATE INFO
+              {/* DATE INFO
             <Button
               variant="outlined"
               sx={{
@@ -4079,8 +4075,8 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
               Data till {timeEnd.format("DD MMM YY")}
             </Button> */}
 
-            {/* PRICE MODE SWITCH */}
-            {/* <Box sx={{ display: "flex", gap: 1 }}>
+              {/* PRICE MODE SWITCH */}
+              {/* <Box sx={{ display: "flex", gap: 1 }}>
               {["MRP", "SP"].map((label) => (
                 <Button
                   key={label}
@@ -4098,12 +4094,12 @@ const Header = ({ title = "Business Overview", onMenuClick, hideFilters = false 
                 </Button>
               ))}
             </Box> */}
-          </Box>
-        )}
-      </AnimatePresence>
+            </Box>
+          )}
+        </AnimatePresence>
 
-      {/* 🌗 THEME TOGGLE */}
-      {/* 🌗 THEME TOGGLE REMOVED - Static Light Mode Enforced */}
+        {/* 🌗 THEME TOGGLE */}
+        {/* 🌗 THEME TOGGLE REMOVED - Static Light Mode Enforced */}
       </Box>
     </>
   );
