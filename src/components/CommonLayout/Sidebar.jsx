@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import eyLogo from "../../assets/sidebar_logo.png";
-const hivemindsLogo = "/Demo.png";
+import trailyticsLogo from "../../assets/trailytics_new_logo.png";
+const hivemindsLogo = trailyticsLogo;
 import mamaearthLogo from "../../assets/mamaearth.jpeg";
 import marsPetcareLogo from "../../assets/Mars_Petcare_Logo.jpg";
 import boatLogo from "../../assets/Boat.png";
