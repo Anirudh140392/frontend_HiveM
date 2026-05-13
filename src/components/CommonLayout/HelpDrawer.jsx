@@ -627,6 +627,26 @@ const HelpDrawer = ({ userDbName }) => {
       {
         q: "What is the TAT for historical data backfill?",
         a: "Standard historical data backfill takes approximately 3-5 working days depending on the data volume."
+      },
+      {
+        q: "What is the TAT for rule application from the backend?",
+        a: "Any rules that require backend implementation (not available via self-serve) have a standard turnaround time (TAT) of 2 working days."
+      },
+      {
+        q: "Why does backend application take 2 working days?",
+        a: "This window is necessary for our technical team to script the rule, validate the logic against historical data, and ensure error-free execution on the platform APIs."
+      },
+      {
+        q: "Does the 2-day TAT apply to frontend-applied rules too?",
+        a: "No. Rules created and applied directly via the AdAuto frontend interface go live and start executing within 15-30 minutes."
+      },
+      {
+        q: "What counts as a 'working day' for TAT calculation?",
+        a: "Working days are Monday through Friday, excluding public holidays. Requests submitted after 6:00 PM are logged on the next working day."
+      },
+      {
+        q: "How will I know when my backend rule has gone live?",
+        a: "You will receive an email confirmation once the backend rule is active, and it will also appear in your 'Automation History' log."
       }
     ],
     "Rules": [
@@ -637,6 +657,26 @@ const HelpDrawer = ({ userDbName }) => {
       {
         q: "Can I pause an active rule immediately?",
         a: "Yes! Any rule paused from the frontend is stopped immediately and will not execute its next scheduled run."
+      },
+      {
+        q: "What types of rules can a client create?",
+        a: "Clients can create various automation rules such as Bid Optimization, Budget Management, Keyword Harvesting, and Pause/Enable rules based on performance metrics like ACOS, ROAS, or Spend."
+      },
+      {
+        q: "How do I apply a rule to my campaign?",
+        a: "Simply navigate to the 'Automation' tab, select 'Create Rule', define your conditions and actions, and then select the specific campaigns you wish to automate."
+      },
+      {
+        q: "Can rules be applied to multiple campaigns at once?",
+        a: "Yes! You can multi-select campaigns or use filters (like Brand or Category) to apply a single rule across multiple entities simultaneously."
+      },
+      {
+        q: "Can I edit or delete a rule after it has been applied?",
+        a: "Absolutely. You can modify conditions, update actions, or delete rules at any time from the 'Active Rules' list in the dashboard."
+      },
+      {
+        q: "Is there a limit to the number of rules I can create?",
+        a: "There is no hard limit on the number of rules, but we recommend grouping similar logic into multi-campaign rules for easier management."
       }
     ],
     "Capabilities": [
