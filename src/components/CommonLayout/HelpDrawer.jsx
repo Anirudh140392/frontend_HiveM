@@ -4,6 +4,7 @@ import {
   Box,
   Typography,
   IconButton,
+  Button,
   Tabs,
   Tab,
   List,
@@ -14,6 +15,13 @@ import {
   InputAdornment,
   Divider,
   Collapse,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -37,6 +45,7 @@ import {
   EmojiObjects as ExampleIcon,
   Calculate as LogicIcon,
   Description as DescriptionIcon,
+  FileDownload as DownloadIcon,
 } from "@mui/icons-material";
 
 import { useHelp } from "../../utils/HelpContext";
@@ -47,7 +56,9 @@ const HelpDrawer = ({ userDbName }) => {
   const [activeMenu, setActiveMenu] = useState("Overview");
   const [expandedKpi, setExpandedKpi] = useState(null);
   const [activeFaqMenu, setActiveFaqMenu] = useState("TAT & Timelines");
+  const [activeSopMenu, setActiveSopMenu] = useState("General & Coverage");
   const [expandedFaq, setExpandedFaq] = useState(null);
+  const [expandedSop, setExpandedSop] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Sync with context's activeHelpMenu when opening
@@ -660,6 +671,197 @@ const HelpDrawer = ({ userDbName }) => {
     ]
   };
 
+  const sopCategories = [
+    { label: "General & Coverage", icon: <DescriptionIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "Onboarding SOP", icon: <AddIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "Execution & QC", icon: <AdsClickIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "KPI & Attribution", icon: <LogicIcon sx={{ fontSize: "1rem" }} /> },
+    { label: "SLA & Escalation", icon: <ScheduleIcon sx={{ fontSize: "1rem" }} /> }
+  ];
+
+  const sopData = {
+    "General & Coverage": [
+      {
+        title: "1. Purpose & Scope",
+        description: "The end-to-end operational framework for Trailytics × Hiveminds.",
+        details: "This Standard Operating Procedure (SOP) document defines the end-to-end operational framework for the Trailytics × Hiveminds engagement. It covers platform onboarding, campaign automation, KPI reporting, quality control, and service-level commitments across all supported quick commerce and e-commerce platforms. This document should be treated as the single source of truth for client servicing, onboarding teams, QC reviewers, and campaign managers.",
+        tableHeaders: ["Field", "Detail"],
+        tableRows: [
+          ["Document Owner", "Trailytics Platform & Operations Team"],
+          ["Version", "v1.0 — April 2026"],
+          ["Classification", "Confidential — Shared Reference Document"],
+          ["Parties", "Trailytics (Platform Provider) × Hiveminds (Client Agency)"],
+        ],
+        isTable: true
+      },
+      {
+        title: "2. Platform Coverage & Ingestion Schedule",
+        description: "Current platform scope and daily data ingestion timelines.",
+        tableHeaders: ["Platform", "Type", "Ad Products", "Data Refresh", "Ingestion (IST)", "Status"],
+        tableRows: [
+          ["Blinkit", "Quick Commerce", "Search Ads, Banner Ads", "Daily", "TBD", "Active"],
+          ["Zepto", "Quick Commerce", "Search, Banner, Cat Ads", "Daily", "TBD", "Active"],
+          ["Instamart", "Quick Commerce", "Search Ads, Banner Ads", "Daily", "TBD", "Active"],
+          ["Flipkart", "E-commerce", "Product, Brand, Video Ads", "Daily (T+1)", "TBD", "Not in Scope"],
+          ["Amazon", "E-commerce", "SP, SB, SBV, SD", "Daily (T+1)", "TBD", "Not in Scope"],
+          ["BigBasket", "Quick Commerce", "TBD", "TBD", "TBD", "Pending"],
+          ["Myntra", "E-commerce", "TBD", "TBD", "TBD", "Pending"],
+        ],
+        note: "Phase 1 covers Quick Commerce. Phase 2 will cover BigBasket and Myntra. Flipkart and Amazon are currently out of scope.",
+        isTable: true
+      },
+      {
+        title: "8. Key Terms Glossary",
+        description: "Definition of core platform and operational terms.",
+        tableHeaders: ["Term", "Category", "Definition"],
+        tableRows: [
+          ["Digital Shelf", "Platform Capability", "Online representation of a brand's products across e-commerce and quick commerce, covering visibility, availability, content quality, and competitive position"],
+          ["SOV / SOS", "Visibility Metric", "SOV (Share of Voice): overall ad impression share across a category. SOS (Share of Search): organic search result prominence for key terms"],
+          ["OSA", "Availability Metric", "On-Shelf Availability — proportion of stores/platform locations where a product is listed and purchasable. Low OSA directly impacts sales and search ranking"],
+          ["Market Share", "Category Performance", "Percentage of total category sales contributed by a brand within a specific platform or geography"],
+          ["Inorganic Sales", "Ad-Driven Revenue", "Sales generated through paid channels: sponsored placements, display ads, brand-funded promotions on quick commerce platforms"],
+          ["Offtake", "Sales Volume", "Total sales value generated by a product or brand over a specified period — the primary measure of sell-out performance"],
+          ["TAS% / Ad Sales %", "Ad Efficiency", "Percentage of total sales attributed to ad-driven conversions. Benchmark: 30–60%; alert if > 80%"],
+          ["TACOS", "Ad Efficiency", "Total ACOS — Ad spend as % of total (ad + organic) business sales. Truer measure of ad efficiency. Target: < 10%"],
+          ["Self-Serve Rules", "Automation", "Automation rules created and executed by Hiveminds directly via the AdAuto front-end interface, without Trailytics intervention"],
+          ["Backend Rules", "Automation", "Automation rules requiring Trailytics intervention due to technical complexity or data not exposed in the UI"],
+          ["P0 / P1 / P2", "Onboarding", "Priority tiers for client onboarding. P0 = critical/immediate; P1 = high priority; P2 = standard"],
+          ["SLA / TAT", "Service Levels", "Service Level Agreement / Turnaround Time — expected response and delivery timelines for each activity type"],
+        ],
+        isTable: true
+      }
+    ],
+    "Onboarding SOP": [
+      {
+        title: "3.1 Pre-Onboarding Prerequisites (Mandatory)",
+        description: "Mandatory requirements to be fulfilled before onboarding starts.",
+        tableHeaders: ["Requirement", "Detail", "Owner"],
+        tableRows: [
+          ["Platform Credentials", "Active seller accounts; credentials must not be expired", "Client / Hiveminds"],
+          ["Blinkit Access", "Seller portal + Campaign Manager access + 1 active listing", "Client"],
+          ["Zepto Access", "Brand account + Ads module activated + active SKUs", "Client"],
+          ["Instamart Access", "Portal login + Ads access + active catalog", "Client"],
+          ["BigBasket Access", "Vendor portal + Ads tab enabled + active SKUs", "Client"],
+          ["Sales Portal Access", "Read access to Sales Dashboard; SKU-level data (30d+)", "Client"],
+          ["2FA Config", "Two-Factor Authentication configured on all portals", "Client"],
+          ["Trailytics Mail ID", "Separate Mail ID for each client account shared by Trailytics", "Trailytics"],
+          ["Stakeholder Alignment", "Relevant team members (marketing/e-commerce) available", "Hiveminds"],
+        ],
+        isTable: true
+      },
+      {
+        title: "3.2 Onboarding Tiers",
+        description: "Tiered onboarding model (P0 → P1 → P2) with defined SLA targets.",
+        tableHeaders: ["Tier", "Priority", "Activities", "Timeline", "Owner"],
+        tableRows: [
+          ["P0", "Critical", "Access setup, dashboard activation, credentials", "Day 1–2", "Trailytics"],
+          ["P1", "High", "Automation rules, brand & KPI configurations", "Day 3–5", "Hiveminds + Trailytics"],
+          ["P2", "Standard", "Remaining brand configs, platform integrations", "Week 2+", "Trailytics"],
+        ],
+        note: "Final onboarding timeline depends on platform access availability.",
+        isTable: true
+      }
+    ],
+    "Execution & QC": [
+      {
+        title: "4. Automation Rules — Ownership & Execution SOP",
+        description: "Rules classification and turnaround times for implementation.",
+        tableHeaders: ["Rule Type", "Description", "Executed By", "TAT / SLA"],
+        tableRows: [
+          ["Self-Serve Rules", "Standard bid/budget rules created via AdAuto front-end", "Hiveminds team", "30 minutes"],
+          ["Backend Rules", "Complex rules requiring backend data/triggers", "Trailytics team", "2 working days"],
+        ],
+        note: "Rules TAT — Backend rules: 2 working days. Front-end rules: 30 minutes.",
+        isTable: true
+      },
+      {
+        title: "6. QC Validation SOP",
+        description: "Mandatory checks before approving client-facing reports.",
+        tableHeaders: ["#", "Check", "How to Validate", "Expected Outcome", "Platform"],
+        tableRows: [
+          ["1", "Spends total match", "Sum campaign spends vs header total", "Diff ≤ ₹1", "All"],
+          ["2", "Revenue total match", "Sum SKU revenues vs tab total", "Diff ≤ ₹1", "All"],
+          ["3", "ACOS formula check", "ACOS = (Spends ÷ Revenue) × 100", "± 0.01%", "All"],
+          ["4", "ROAS formula check", "ROAS = Revenue ÷ Spends", "± 0.01x", "All"],
+          ["5", "CTR sanity check", "(Clicks ÷ Impressions) × 100", "0.01% – 10%", "All"],
+          ["6", "CVR sanity check", "(Orders ÷ Clicks) × 100", "1% – 40%", "All"],
+          ["7", "TACOS ≤ ACOS", "Compare TACOS and ACOS columns", "TACOS ≤ ACOS", "Sales Overview"],
+          ["8", "Total Sales", "Total Sales = Ad + Organic", "Zero discrepancy", "Sales Overview"],
+          ["9", "No negative spends", "Filter spends column for < 0", "No negative values", "All"],
+          ["10", "Zero orders + high spend", "Filter Orders = 0 AND Spends > ₹500", "Flag for review", "Perf. Split"],
+          ["11", "Date range completeness", "Check day count vs expected days", "No missing dates", "Date Split"],
+          ["12", "Platform split = Grand Total", "Sum platform rows vs total row", "Exact match", "Perf. Split"],
+          ["13", "Blended ACOS check", "Verify weighted avg, NOT simple average", "Blended calculation", "Campaign Type"],
+        ],
+        isTable: true
+      }
+    ],
+    "KPI & Attribution": [
+      {
+        title: "5.1 Universal KPI Definitions",
+        description: "Definitive formulas and target ranges for performance metrics.",
+        tableHeaders: ["KPI", "Formula", "Good Range / Target", "QC / Interpretation Note"],
+        tableRows: [
+          ["CTR", "(Clicks ÷ Impressions) × 100", "0.3% – 2.0%", "Higher = more compelling creative"],
+          ["CPC", "Total Spends ÷ Total Clicks", "Category dependent", "Monitor auction volatility"],
+          ["CVR", "(Orders ÷ Clicks) × 100", "> 10%; < 5% needs review", "Review PDP quality if low"],
+          ["ACOS", "(Spends ÷ Revenue) × 100", "< 25%; target < 15%", "Blended ACOS (never simple average)"],
+          ["ROAS", "Revenue ÷ Spends", "> 4x; > 8x excellent", "Aggregate at total level"],
+          ["TACOS", "(Ad Spends ÷ Total Sales) × 100", "< 10%; TACOS ≤ ACOS", "Truer measure of ad efficiency"],
+          ["Total ROAS", "Total Sales ÷ Ad Spends", "Always ≥ Ad ROAS", "Includes organic sales in numerator"],
+          ["CPO / CPA", "Total Spends ÷ Total Orders", "< Product Margin", "Acquisition cost efficiency"],
+          ["CAC (per unit)", "Total Spends ÷ Units Sold", "< Margin per unit", "Useful for SKU-level analysis"],
+          ["CPM", "(Spends ÷ Impressions) × 1,000", "₹30 – ₹150 typical", "Lower CPM = cheaper brand reach"],
+          ["Ad Sales %", "(Ad Sales ÷ Total Sales) × 100", "30% – 60%; alert if > 80%", "Flag if 0% — likely data missing"],
+          ["Growth", "(Current – Prev) ÷ Prev × 100", "Positive = Growth", "Show 'N/A' if previous period = 0"],
+        ],
+        isTable: true
+      },
+      {
+        title: "5.2 Platform Attribution Windows",
+        description: "Platform-specific attribution logic affecting revenue reporting.",
+        tableHeaders: ["Platform", "Attribution Window", "Campaign Types", "Key QC Note"],
+        tableRows: [
+          ["Amazon", "14 days (SP); 7 days (SB/SD)", "SP, SB, SBV, SD", "Viewable impressions"],
+          ["Blinkit", "1 day (same session)", "Search, Display", "Served impressions"],
+          ["Zepto/Insta", "1 day (same session)", "Search, Banner", "Served impressions"],
+          ["Flipkart", "7 days (click); 1 day (view)", "Product, Brand", "Viewable impressions"],
+        ],
+        isTable: true
+      }
+    ],
+    "SLA & Escalation": [
+      {
+        title: "7.1 Activity-wise SLA Matrix",
+        description: "Expected response and delivery timelines across all activity types.",
+        tableHeaders: ["Activity", "Owner", "TAT / SLA", "Priority", "Escalation Path"],
+        tableRows: [
+          ["Self-serve rule setup", "Hiveminds", "Real-time (self-served)", "High", "Hiveminds internal → Trailytics bug"],
+          ["Backend rule setup", "Trailytics", "2 working days", "High", "Raise ticket with Trailytics POC"],
+          ["Data refresh", "Trailytics / Platform", "Per ingestion schedule", "Normal", "Post ingestion window check"],
+          ["Data-missing issue", "Trailytics", "Priority-based triage", "High", "Raise via support channel"],
+          ["Platform onboarding", "Trailytics", "Day 1–2 post go-live", "Critical", "Escalate to AM immediately"],
+          ["KPI report QC sign-off", "Hiveminds QC", "Before client delivery", "Critical", "QC checklist must be 100%"],
+          ["Market share reporting", "Trailytics", "Monthly (standard)", "Normal", "Bi-monthly available at cost"],
+          ["New platform integration", "Trailytics", "Scoped per request", "Low", "Depends on API availability"],
+          ["Custom auto request", "Trailytics", "Quoted per engagement", "Low", "Request to POC for scoping"],
+        ],
+        isTable: true
+      },
+      {
+        title: "7.2 Escalation Framework",
+        description: "Tiered escalation levels for issue resolution.",
+        tableHeaders: ["Level", "Trigger", "Action", "Response TAT", "Owner"],
+        tableRows: [
+          ["L1", "Routine queries, self-serve help", "Resolve via Hiveminds internal", "Same day", "HM"],
+          ["L2", "Backend rules, data discrepancies", "Raise ticket to Trailytics POC", "24–48 hours", "TL"],
+          ["L3", "P0 blockers, SLA breach, onboarding fail", "Escalate to AM + HM Lead", "< 4 hours", "Both"],
+        ],
+        isTable: true
+      }
+    ]
+  };
+
   const filteredMenuItems = menuItems;
 
   const getGlossarySource = () => {
@@ -693,6 +895,46 @@ const HelpDrawer = ({ userDbName }) => {
       (item.interpretation && item.interpretation.toLowerCase().includes(q))
     );
   });
+
+  const filteredSop = (sopData[activeSopMenu] || []).filter((item) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      item.title.toLowerCase().includes(q) ||
+      (item.description && item.description.toLowerCase().includes(q)) ||
+      (item.details && item.details.toLowerCase().includes(q))
+    );
+  });
+
+  const SopTable = ({ headers, rows }) => (
+    <TableContainer component={Paper} sx={{
+      mt: 1.5,
+      borderRadius: '10px',
+      border: '1px solid #e2e8f0',
+      boxShadow: 'none',
+      overflow: 'hidden',
+      bgcolor: '#ffffff'
+    }}>
+      <Table size="small">
+        <TableHead>
+          <TableRow sx={{ bgcolor: '#f8fafc' }}>
+            {headers.map((h, i) => (
+              <TableCell key={i} sx={{ fontWeight: 700, fontSize: '0.7rem', color: '#475569', py: 1.5, borderBottom: '2px solid #e2e8f0' }}>{h}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, i) => (
+            <TableRow key={i} sx={{ '&:last-child td': { border: 0 }, '&:hover': { bgcolor: '#f1f5f9' }, transition: 'background 0.2s ease' }}>
+              {row.map((cell, j) => (
+                <TableCell key={j} sx={{ fontSize: '0.75rem', color: '#64748b', py: 1.2 }}>{cell}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -747,6 +989,33 @@ const HelpDrawer = ({ userDbName }) => {
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {activeTab === 2 && (
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<DownloadIcon />}
+              component="a"
+              href="/Trailytics_Hiveminds_Client_SOP_SLA 1.docx"
+              download
+              sx={{
+                textTransform: "none",
+                borderRadius: "20px",
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                px: 2,
+                background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                  boxShadow: "0 6px 16px rgba(16, 185, 129, 0.3)",
+                  transform: "translateY(-1px)"
+                }
+              }}
+            >
+              Download SOP
+            </Button>
+          )}
           <TextField
             size="small"
             placeholder="Search help..."
@@ -796,13 +1065,17 @@ const HelpDrawer = ({ userDbName }) => {
             </Typography>
           </Box>
           <List sx={{ px: 1 }}>
-            {(activeTab === 0 ? filteredMenuItems : faqCategories).map((item) => {
-              const isSelected = activeTab === 0 ? activeMenu === item.label : activeFaqMenu === item.label;
+            {(activeTab === 0 ? filteredMenuItems : activeTab === 1 ? faqCategories : sopCategories).map((item) => {
+              const isSelected = activeTab === 0 ? activeMenu === item.label : activeTab === 1 ? activeFaqMenu === item.label : activeSopMenu === item.label;
               return (
                 <ListItemButton
                   key={item.label}
                   selected={isSelected}
-                  onClick={() => activeTab === 0 ? setActiveMenu(item.label) : setActiveFaqMenu(item.label)}
+                  onClick={() => {
+                    if (activeTab === 0) setActiveMenu(item.label);
+                    else if (activeTab === 1) setActiveFaqMenu(item.label);
+                    else setActiveSopMenu(item.label);
+                  }}
                   sx={{
                     borderRadius: "12px",
                     mb: 1,
@@ -892,6 +1165,17 @@ const HelpDrawer = ({ userDbName }) => {
               />
               <Tab
                 label="FAQ"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  minWidth: 100,
+                  color: "#64748b",
+                  "&.Mui-selected": { color: "#2563eb" },
+                }}
+              />
+              <Tab
+                label="SOP"
                 sx={{
                   textTransform: "none",
                   fontWeight: 600,
@@ -1086,6 +1370,94 @@ const HelpDrawer = ({ userDbName }) => {
                     <HelpIcon sx={{ fontSize: 48, color: '#e2e8f0', mb: 2 }} />
                     <Typography sx={{ color: '#64748b' }}>
                       No FAQs found for this category.
+                    </Typography>
+                  </Box>
+                )}
+
+                {activeTab === 2 && (
+                  filteredSop.map((item, idx) => {
+                    const isExpanded = expandedSop === item.title;
+                    return (
+                      <Box
+                        key={idx}
+                        sx={{
+                          bgcolor: "#ffffff",
+                          borderRadius: "12px",
+                          border: `1px solid ${isExpanded ? "#2563eb" : "#e2e8f0"}`,
+                          boxShadow: isExpanded ? "0 4px 12px rgba(37, 99, 235, 0.06)" : "0 1px 3px rgba(0,0,0,0.02)",
+                          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                          overflow: "hidden",
+                          mb: 2,
+                          "&:hover": {
+                            borderColor: "#cbd5e1",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.04)"
+                          }
+                        }}
+                      >
+                        <ListItemButton
+                          onClick={() => setExpandedSop(isExpanded ? null : item.title)}
+                          sx={{
+                            p: 2,
+                            alignItems: "flex-start",
+                            gap: 2,
+                            flexDirection: 'column'
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography
+                              className="sop-title"
+                              fontWeight="700"
+                              sx={{
+                                color: isExpanded ? "#2563eb" : "#1e293b",
+                                fontSize: "0.95rem",
+                                transition: "all 0.2s ease"
+                              }}
+                            >
+                              {item.title}
+                            </Typography>
+                            <Box sx={{ color: "#2563eb" }}>
+                              {isExpanded ? <RemoveIcon /> : <AddIcon />}
+                            </Box>
+                          </Box>
+                          {!isExpanded && item.description && (
+                            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.825rem", mt: 0.5 }}>
+                              {item.description}
+                            </Typography>
+                          )}
+                        </ListItemButton>
+
+                        <Collapse in={isExpanded}>
+                          <Box sx={{ p: 2, pt: 0 }}>
+                            {item.details && (
+                              <Typography variant="body2" sx={{ color: "#475569", fontSize: "0.875rem", lineHeight: 1.6, mb: 2, bgcolor: '#f8fafc', p: 2, borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                {item.details}
+                              </Typography>
+                            )}
+                            {item.isTable && (
+                              <SopTable headers={item.tableHeaders} rows={item.tableRows} />
+                            )}
+                            {item.note && (
+                              <Box sx={{ mt: 2, p: 1.5, bgcolor: '#fffbeb', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
+                                <Typography variant="caption" sx={{ color: '#92400e', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                                  NOTE / REMINDER
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: '#b45309', fontSize: '0.775rem' }}>
+                                  {item.note}
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
+                        </Collapse>
+                      </Box>
+                    );
+                  })
+                )}
+
+                {activeTab === 2 && filteredSop.length === 0 && (
+                  <Box sx={{ textAlign: 'center', py: 8 }}>
+                    <DescriptionIcon sx={{ fontSize: 48, color: '#e2e8f0', mb: 2 }} />
+                    <Typography sx={{ color: '#64748b' }}>
+                      No SOP sections found for this category.
                     </Typography>
                   </Box>
                 )}
